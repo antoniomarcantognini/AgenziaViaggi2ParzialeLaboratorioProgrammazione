@@ -7,3 +7,5 @@ gestisci menu con le funzioni singole
 
 - controllare override e const (!!!)
 - gestione della memoria con uso corretto di new e delete (provare a utilizzare gli smart pointer)
+- try catch sul costruttore
+- fare il diagramma di classi UML, draw.io, Visual paradigm (ereditarietà e composizioni)
