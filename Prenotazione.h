@@ -1,0 +1,46 @@
+#pragma once
+
+#include <iostream>
+#include <memory>
+#include "Cliente.h"
+#include "Pacchetto_viaggio.h"
+
+class Prenotazione{
+
+private:
+    std::string codice_prenotazione; // Formato: "BKG-XXXX" (generato automaticamente)
+    std::shared_ptr<Cliente> cliente;
+    std::shared_ptr<Pacchetto_viaggio> pacchetto_viaggio;
+    int numero_persone;
+    std::string data_prenotazione;
+    double prezzo_totale;
+    bool confermata;
+    bool valida_codice_prenotazione() const; // Ai fini della gestione aziendale questo controllo è superfluo (il codice viene generato automaticamente), ma è stato inserito per completezza.
+    bool valida_pacchetto() const;
+    bool valida_cliente() const;
+    
+    // Costruttore privato
+    Prenotazione(std::string codice, std::shared_ptr<Cliente> cliente, std::shared_ptr<Pacchetto_viaggio> pacchetto_viaggio, int num_persone, std::string data);
+
+public:
+    // Metodo statico per creare una prenotazione (shared_ptr per permettere la condivisione tra più prenotazioni dello stesso cliente o pacchetto)
+    static std::shared_ptr<Prenotazione> crea_prenotazione(std::string codice, std::shared_ptr<Cliente> cliente, std::shared_ptr<Pacchetto_viaggio> pacchetto_viaggio, int num_persone, std::string data);
+    
+    // Getter
+    std::string get_codice_prenotazione() const;
+    std::shared_ptr<Cliente> get_cliente() const;
+    std::shared_ptr<Pacchetto_viaggio> get_pacchetto() const;
+    double get_prezzo_totale() const;
+    bool is_confermata() const; 
+
+    // Calcola prezzo totale: 
+    // (pacchetto->calcola_prezzo_finale() * num_persone)
+    // con sconto del cliente applicato
+    bool calcola_prezzo_totale();
+
+    bool conferma_prenotazione();
+    bool stampa_dettagli(int indice_produzione) const;
+
+    // Distruttore
+    ~Prenotazione();
+};
