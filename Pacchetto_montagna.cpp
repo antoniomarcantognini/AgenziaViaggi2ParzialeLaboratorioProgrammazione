@@ -6,9 +6,9 @@
 using namespace std;
 
 // Costruttore
-Pacchetto_montagna::Pacchetto_montagna(string codice, string destinazione, int giorni, double prezzo,
+Pacchetto_montagna::Pacchetto_montagna(string codice, string dest, int giorni, double prezzo,
                                        bool skipass, int num_escursioni, Categoria_difficolta diff)
-    : Pacchetto_viaggio(codice, destinazione, giorni, prezzo),
+    : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       skipass_incluso(skipass),
       numero_escursioni(num_escursioni),
       difficolta(diff)
