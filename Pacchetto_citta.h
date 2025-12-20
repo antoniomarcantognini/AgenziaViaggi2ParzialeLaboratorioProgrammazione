@@ -12,7 +12,7 @@ private:
 
 public:
     // costruttore:
-    Pacchetto_citta(std::string codice, std::string destinazione, int giorni, double prezzo,
+    Pacchetto_citta(std::string codice, std::string dest, int giorni, double prezzo,
                    int num_musei, bool guida, Categoria_hotel hotel);
 
     // Override dei metodi virtuali puri
