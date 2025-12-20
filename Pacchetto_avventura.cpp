@@ -6,10 +6,10 @@
 using namespace std;
 
 // Costruttore
-Pacchetto_avventura::Pacchetto_avventura(string codice, string destinazione, int giorni, double prezzo,
+Pacchetto_avventura::Pacchetto_avventura(string codice, string dest, int giorni, double prezzo,
                                          const vector<string>& lista_attivita, 
                                          Categoria_adrenalina categoria, bool assicurazione)
-    : Pacchetto_viaggio(codice, destinazione, giorni, prezzo),
+    : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       attivita(lista_attivita),
       assicurazione_extra(assicurazione),
       categoria_adrenalina(categoria)
