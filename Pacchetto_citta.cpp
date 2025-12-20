@@ -6,9 +6,9 @@
 using namespace std;
 
 // costruttore (richiama quello di Pacchetto_viaggio)
-Pacchetto_citta::Pacchetto_citta(string codice, string destinazione, int giorni, double prezzo,
+Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
                                int num_musei, bool guida, Categoria_hotel hotel)
-    : Pacchetto_viaggio(codice, destinazione, giorni, prezzo),
+    : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       numero_musei(num_musei),
       guida_turistica(guida),
       categoria_hotel(hotel)
