@@ -6,14 +6,14 @@
 class Pacchetto_mare : public Pacchetto_viaggio{
     
 private:
-    int ombrellone_incluso;
+    bool ombrellone_incluso;
     bool attrezzatura_sportiva;
     Categoria_pensione tipologia;
 
 public:
     // costruttore
-    Pacchetto_mare(std::string codice, std::string destinazione, int giorni, double prezzo,
-                   int ombrellone, bool attrezzatura, Categoria_pensione tipo);
+    Pacchetto_mare(std::string codice, std::string dest, int giorni, double prezzo,
+                   bool ombrellone, bool attrezzatura, Categoria_pensione tipo);
 
     // Override dei metodi virtuali puri
     double calcola_prezzo_finale() const override;
@@ -21,7 +21,7 @@ public:
     std::string get_tipologia() const override;
 
     // Getter specifici
-    int get_ombrellone_incluso() const;
+    bool has_ombrellone_incluso() const;
     bool has_attrezzatura_sportiva() const;
     Categoria_pensione get_categoria_pensione() const;
 
