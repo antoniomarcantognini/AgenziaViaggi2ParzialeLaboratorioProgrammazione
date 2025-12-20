@@ -12,7 +12,7 @@ private:
 
 public:
     // Costruttore
-    Pacchetto_montagna(std::string codice, std::string destinazione, int giorni, double prezzo,
+    Pacchetto_montagna(std::string codice, std::string dest, int giorni, double prezzo,
                        bool skipass, int num_escursioni, Categoria_difficolta diff);
 
     // Override dei metodi virtuali puri
