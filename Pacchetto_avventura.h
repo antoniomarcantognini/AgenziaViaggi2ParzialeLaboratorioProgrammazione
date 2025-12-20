@@ -13,7 +13,7 @@ private:
 
 public:
     // Costruttore
-    Pacchetto_avventura(std::string codice, std::string destinazione, int giorni, double prezzo,
+    Pacchetto_avventura(std::string codice, std::string dest, int giorni, double prezzo,
                         const std::vector<std::string>& lista_attivita, 
                         Categoria_adrenalina categoria, bool assicurazione);
 
