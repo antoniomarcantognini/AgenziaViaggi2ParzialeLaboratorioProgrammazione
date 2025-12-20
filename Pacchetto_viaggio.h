@@ -13,7 +13,7 @@ protected:
 
 public:
     // Costruttore
-    Pacchetto_viaggio(std::string codice, std::string destinazione, int giorni, double prezzo);
+    Pacchetto_viaggio(std::string codice, std::string dest, int giorni, double prezzo);
 
     // Distruttore virtuale
     virtual ~Pacchetto_viaggio();
