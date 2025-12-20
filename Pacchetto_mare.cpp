@@ -6,15 +6,13 @@
 using namespace std;
 
 // Costruttore
-Pacchetto_mare::Pacchetto_mare(string codice, string destinazione, int giorni, double prezzo,
-                               int ombrellone, bool attrezzatura, Categoria_pensione tipo)
-    : Pacchetto_viaggio(codice, destinazione, giorni, prezzo),
+Pacchetto_mare::Pacchetto_mare(string codice, string dest, int giorni, double prezzo,
+                               bool ombrellone, bool attrezzatura, Categoria_pensione tipo)
+    : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       ombrellone_incluso(ombrellone),
       attrezzatura_sportiva(attrezzatura),
       tipologia(tipo)
-{
-    if(ombrellone_incluso < 0) throw invalid_argument("Valore ombrellone non valido.");
-    
+{   
     cout << "Costruito Pacchetto Mare: " << codice << endl;
 }
 
@@ -23,9 +21,7 @@ double Pacchetto_mare::calcola_prezzo_finale() const {
     double prezzo_totale = get_prezzo_base();
 
     // Se ombrelloneIncluso > 0 : +100€
-    if(ombrellone_incluso > 0){
-        prezzo_totale += 100.0;
-    }
+    if(ombrellone_incluso) prezzo_totale += 100.0;
 
     // Se attrezzaturaSportiva == true : +150€
     if(attrezzatura_sportiva){
@@ -75,7 +71,7 @@ string Pacchetto_mare::get_tipologia() const {
 }
 
 // Getter specifici
-int Pacchetto_mare::get_ombrellone_incluso() const {
+bool Pacchetto_mare::has_ombrellone_incluso() const {
     return this->ombrellone_incluso;
 }
 
