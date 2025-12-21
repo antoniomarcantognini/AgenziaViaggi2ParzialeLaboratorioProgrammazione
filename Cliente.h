@@ -14,11 +14,13 @@ private:
     int eta;
     Tipologia_cliente tipologia;
 
+    // Metodo privato che contiene le Lambda per la validazione
+    bool valida_dati() const;
     // Costruttore privato: può essere chiamato solo dal metodo statico crea_cliente
     Cliente(std::string codice, std::string nome, std::string cognome, 
             std::string email, std::string tel, int eta, Tipologia_cliente tipo);
 
-public:
+ public:
     static std::shared_ptr<Cliente> crea_cliente(std::string codice, std::string nome, std::string cognome, 
                                                  std::string email, std::string tel, int eta, Tipologia_cliente tipo);
 
@@ -35,4 +37,7 @@ public:
     // Helpers statici
     static std::string tipologia_to_string(Tipologia_cliente tipo);
     static Tipologia_cliente string_to_tipologia(std::string tipo);
+
+    // Distruttore
+    ~Cliente();
 };
