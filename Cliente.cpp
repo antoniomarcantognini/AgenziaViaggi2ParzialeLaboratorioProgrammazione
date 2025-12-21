@@ -6,87 +6,94 @@
 
 using namespace std;
 
-// Implementazione del Factory Method con validazioni tramite Lambda
-shared_ptr<Cliente> Cliente::crea_cliente(string codice, string nome, string cognome, 
-                                          string email, string tel, int eta, Tipologia_cliente tipo) {
+// Metodo di Validazione input cliente con Lambda Functions
+bool Cliente::valida_dati() const {
     
-    // Definizione Lambda functions per validazione
-    // 1. Validazione Stringhe non vuote
+    // 1. Lambda per stringhe vuote
     auto check_not_empty = [](const string& s, const string& field_name) {
-        if (s.empty()) throw invalid_argument("Il campo " + field_name + " non può essere vuoto.");
+        if (s.empty()) throw runtime_error("Il campo " + field_name + " non può essere vuoto.");
     };
 
-    // 2. Validazione Formato Codice (CLT-XXXX)
+    // 2. Lambda per Codice (CLT-XXXX)
     auto check_codice = [](const string& s) {
         if (s.length() != 8 || s.substr(0, 4) != "CLT-") 
-            throw invalid_argument("Formato codice errato. Richiesto: CLT-XXXX.");
-        // Controlla che gli ultimi 4 caratteri siano cifre
-        if (!all_of(s.begin() + 4, s.end(), ::isdigit))
-            throw invalid_argument("La parte numerica del codice deve contenere solo cifre.");
+            throw runtime_error("Formato codice errato (" + s + "). Richiesto: CLT-XXXX.");
+        if (!all_of(s.begin() + 4, s.end(), ::isdigit)) 
+            throw runtime_error("La parte numerica del codice deve contenere solo cifre.");
     };
 
-    // 3. Validazione Email (deve contenere '@')
+    // 3. Lambda per Email (@)
     auto check_email = [](const string& s) {
         if (s.find('@') == string::npos) 
-            throw invalid_argument("Email non valida: manca il carattere '@'.");
+            throw runtime_error("Email non valida (" + s + "): manca il carattere '@'.");
     };
 
-    // 4. Validazione Telefono (solo cifre, 10 caratteri)
+    // 4. Lambda per Telefono (10 cifre)
     auto check_telefono = [](const string& s) {
         if (s.length() != 10) 
-            throw invalid_argument("Il numero di telefono deve essere di 10 cifre.");
-        if (!all_of(s.begin(), s.end(), ::isdigit))
-            throw invalid_argument("Il numero di telefono deve contenere solo numeri.");
+            throw runtime_error("Il telefono deve essere di 10 cifre.");
+        if (!all_of(s.begin(), s.end(), ::isdigit)) 
+            throw runtime_error("Il telefono deve contenere solo numeri.");
     };
 
-    // 5. Validazione Età (valore positivo)
+    // 5. Lambda per Età
     auto check_eta = [](int n) {
-        if (n <= 0) throw invalid_argument("L'età deve essere un numero positivo.");
-        if (n > 120) throw invalid_argument("Età non valida (troppo alta).");
+        if (n <= 0) throw runtime_error("L'età deve essere un numero positivo.");
+        if (n > 130) throw runtime_error("Età non valida (troppo alta).");
     };
 
-    // 6. Validazione Tipologia
+    // 6. Lambda per Tipologia
     auto check_tipo = [](Tipologia_cliente t) {
         if (t == Tipologia_cliente::UNKNOWN) 
-            throw invalid_argument("Tipologia cliente non valida.");
+            throw runtime_error("Tipologia cliente non valida.");
     };
 
-    // --- ESECUZIONE CONTROLLI (TRY-CATCH) ---
+    // Esecuzione dei controlli
+    check_not_empty(this->codice_cliente, "Codice");
+    check_not_empty(this->nome, "Nome");
+    check_not_empty(this->cognome, "Cognome");
+    check_not_empty(this->email, "Email");
+    check_not_empty(this->telefono, "Telefono");
+    
+    check_codice(this->codice_cliente);
+    check_email(this->email);
+    check_telefono(this->telefono);
+    check_eta(this->eta);
+    check_tipo(this->tipologia);
+
+    return true;
+}
+
+// --- Costruttore Privato ---
+Cliente::Cliente(string codice, string nome, string cognome, 
+                 string email, string tel, int eta, Tipologia_cliente tipo)
+    : codice_cliente(codice), 
+      nome(nome), 
+      cognome(cognome),
+      email(email), 
+      telefono(tel), 
+      eta(eta), 
+      tipologia(tipo) 
+{
+    valida_dati();
+    
+    cout << "Cliente " << this->codice_cliente << " creato correttamente." << endl;
+}
+
+// Factory Method Statico
+shared_ptr<Cliente> Cliente::crea_cliente(string codice, string nome, string cognome, 
+                                          string email, string tel, int eta, Tipologia_cliente tipo) {
     try {
-        check_not_empty(codice, "Codice");
-        check_not_empty(nome, "Nome");
-        check_not_empty(cognome, "Cognome");
-        check_not_empty(email, "Email");
-        check_not_empty(tel, "Telefono");
-        
-        check_codice(codice);
-        check_email(email);
-        check_telefono(tel);
-        check_eta(eta);
-        check_tipo(tipo);
-
-        // Se tutti i controlli passano, crea l'oggetto usando il costruttore privato
-        // Nota: usiamo new perché make_shared non può accedere al costruttore privato
+        // Tenta di creare l'oggetto. Se le lambda nel costruttore lanciano eccezione, andiamo al catch.
         return shared_ptr<Cliente>(new Cliente(codice, nome, cognome, email, tel, eta, tipo));
-
-    } catch (const invalid_argument& e) {
-        // Gestione dell'errore: stampiamo il messaggio e ritorniamo nullptr
+    } catch (const runtime_error& e) {
+        // Gestione uniforme dell'errore (cerr + return nullptr)
         cerr << "Errore creazione Cliente (" << nome << " " << cognome << "): " << e.what() << endl;
         return nullptr;
     }
 }
 
-// Costruttore Privato
-Cliente::Cliente(string codice, string nome, string cognome, 
-                 string email, string tel, int eta, Tipologia_cliente tipo)
-    : codice_cliente(codice), nome(nome), cognome(cognome),
-      email(email), telefono(tel), eta(eta), tipologia(tipo) 
-{
-    cout << "Cliente " << codice << " creato con successo." << endl;
-}
-
 // Getter
-
 string Cliente::get_codice_cliente() const{
     return this->codice_cliente;
 }
@@ -137,4 +144,9 @@ Tipologia_cliente Cliente::string_to_tipologia(string tipo) {
     if (tipo == "Premium" || tipo == "premium")   return Tipologia_cliente::PREMIUM;
     if (tipo == "VIP" || tipo == "vip" || tipo == "Vip") return Tipologia_cliente::VIP;
     return Tipologia_cliente::UNKNOWN;
+}
+
+// Distruttore
+Cliente::~Cliente() {
+    cout << "Cliente " << this->codice_cliente << " distrutto." << endl;
 }
