@@ -6,18 +6,6 @@
 
 using namespace std;
 
-// Specializzazione Mappa per Categoria_difficolta
-template <>
-const std::map<Categoria_difficolta, std::string>& EnumMappa<Categoria_difficolta>::get_map() {
-    static const std::map<Categoria_difficolta, std::string> mappa = {
-        {Categoria_difficolta::FACILE,    "Facile"},
-        {Categoria_difficolta::MEDIA,     "Media"},
-        {Categoria_difficolta::DIFFICILE, "Difficile"},
-        {Categoria_difficolta::UNKNOWN,   "Sconosciuto"}
-    };
-    return mappa;
-}
-
 // Costruttore
 Pacchetto_montagna::Pacchetto_montagna(string codice, string dest, int giorni, double prezzo,
                                        bool skipass, int num_escursioni, Categoria_difficolta diff)
@@ -46,7 +34,7 @@ double Pacchetto_montagna::calcola_prezzo_finale() const {
     prezzo_totale += (numero_escursioni * 30.0);
 
     // Se difficolta == "Difficile": +20% sul totale (equipaggiamento specializzato)
-    if (difficolta == Categoria_difficolta::DIFFICILE) {
+    if (difficolta == Categoria_difficolta::Difficile) {
         prezzo_totale += (prezzo_totale * 0.20); // Aumento del 20%
     }
 
