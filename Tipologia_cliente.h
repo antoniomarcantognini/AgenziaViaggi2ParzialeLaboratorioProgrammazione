@@ -3,6 +3,6 @@
 enum class Tipologia_cliente {
     Standard,
     Premium,
-    Vip,
+    VIP,
     Unknown
 };
