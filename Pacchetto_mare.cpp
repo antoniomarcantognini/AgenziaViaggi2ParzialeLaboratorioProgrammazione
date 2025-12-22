@@ -1,9 +1,22 @@
 #include "Pacchetto_mare.h"
+#include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+
+// Specializzazione Mappa per Categoria_pensione
+template <>
+const std::map<Categoria_pensione, std::string>& EnumMappa<Categoria_pensione>::get_map() {
+    static const std::map<Categoria_pensione, std::string> mappa = {
+        {Categoria_pensione::SOLO_COLAZIONE,    "Solo Colazione"},
+        {Categoria_pensione::MEZZA_PENSIONE,    "Mezza Pensione"},
+        {Categoria_pensione::PENSIONE_COMPLETA, "Pensione Completa"},
+        {Categoria_pensione::UNKNOWN,           "Sconosciuto"}
+    };
+    return mappa;
+}
 
 // Costruttore
 Pacchetto_mare::Pacchetto_mare(string codice, string dest, int giorni, double prezzo,
@@ -83,20 +96,11 @@ Categoria_pensione Pacchetto_mare::get_categoria_pensione() const {
     return this->tipologia;
 }
 
-// Metodi statici per enum
-
+// Metodi di conversione usando il template
 string Pacchetto_mare::pensione_to_string(Categoria_pensione tipo) {
-    switch (tipo) {
-        case Categoria_pensione::SOLO_COLAZIONE:    return "Solo Colazione";
-        case Categoria_pensione::MEZZA_PENSIONE:    return "Mezza Pensione";
-        case Categoria_pensione::PENSIONE_COMPLETA: return "Pensione Completa";
-        default: return "Sconosciuto";
-    }
+    return Utils_enum::to_string(tipo);
 }
 
 Categoria_pensione Pacchetto_mare::string_to_pensione(string tipo) {
-    if (tipo == "Solo Colazione")    return Categoria_pensione::SOLO_COLAZIONE;
-    if (tipo == "Mezza Pensione")    return Categoria_pensione::MEZZA_PENSIONE;
-    if (tipo == "Pensione Completa") return Categoria_pensione::PENSIONE_COMPLETA;
-    return Categoria_pensione::UNKNOWN;
+    return Utils_enum::from_string<Categoria_pensione>(tipo);
 }
