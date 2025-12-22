@@ -6,18 +6,6 @@
 
 using namespace std;
 
-// Specializzazione Mappa per Categoria_hotel
-template <>
-const std::map<Categoria_hotel, std::string>& EnumMappa<Categoria_hotel>::get_map() {
-    static const std::map<Categoria_hotel, std::string> mappa = {
-        {Categoria_hotel::TRE_STELLE,     "3 stelle"},
-        {Categoria_hotel::QUATTRO_STELLE, "4 stelle"},
-        {Categoria_hotel::CINQUE_STELLE,  "5 stelle"},
-        {Categoria_hotel::UNKNOWN,        "Sconosciuto"}
-    };
-    return mappa;
-}
-
 // costruttore (richiama quello di Pacchetto_viaggio)
 Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
                                int num_musei, bool guida, Categoria_hotel hotel)
@@ -44,13 +32,13 @@ double Pacchetto_citta::calcola_prezzo_finale() const{
 
     // maggiorazione per categoria Hotel
     switch (categoria_hotel) {
-        case Categoria_hotel::CINQUE_STELLE:
+        case Categoria_hotel::Cinque_stelle:
             prezzo_totale += (prezzo_totale * 0.30); // +30%
             break;
-        case Categoria_hotel::QUATTRO_STELLE:
+        case Categoria_hotel::Quattro_stelle:
             prezzo_totale += (prezzo_totale * 0.15); // +15%
             break;
-        case Categoria_hotel::TRE_STELLE: // nessuna maggiorazione
+        case Categoria_hotel::Tre_stelle: // nessuna maggiorazione
             break;
         default:
             break;
