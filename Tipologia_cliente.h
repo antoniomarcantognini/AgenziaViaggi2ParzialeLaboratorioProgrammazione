@@ -1,8 +1,8 @@
 #pragma once
 
 enum class Tipologia_cliente {
-    STANDARD,
-    PREMIUM,
-    VIP,
-    UNKNOWN
+    Standard,
+    Premium,
+    Vip,
+    Unknown
 };
