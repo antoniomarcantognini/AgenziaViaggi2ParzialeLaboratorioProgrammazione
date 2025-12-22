@@ -1,9 +1,22 @@
 #include "Pacchetto_avventura.h"
+#include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+
+// Specializzazione Mappa per Categoria_adrenalina
+template <>
+const std::map<Categoria_adrenalina, std::string>& EnumMappa<Categoria_adrenalina>::get_map() {
+    static const std::map<Categoria_adrenalina, std::string> mappa = {
+        {Categoria_adrenalina::BASSO,   "Basso"},
+        {Categoria_adrenalina::MEDIO,   "Medio"},
+        {Categoria_adrenalina::ALTO,    "Alto"},
+        {Categoria_adrenalina::UNKNOWN, "Sconosciuto"}
+    };
+    return mappa;
+}
 
 // Costruttore
 Pacchetto_avventura::Pacchetto_avventura(string codice, string dest, int giorni, double prezzo,
@@ -99,20 +112,11 @@ Categoria_adrenalina Pacchetto_avventura::get_categoria_adrenalina() const {
     return this->categoria_adrenalina;
 }
 
-// Metodi statici per enum
-
+// Metodi statici di conversione usando i template
 string Pacchetto_avventura::categoria_to_string(Categoria_adrenalina cat) {
-    switch (cat) {
-        case Categoria_adrenalina::BASSO: return "Basso";
-        case Categoria_adrenalina::MEDIO: return "Medio";
-        case Categoria_adrenalina::ALTO:  return "Alto";
-        default: return "Sconosciuto";
-    }
+    return Utils_enum::to_string(cat);
 }
 
 Categoria_adrenalina Pacchetto_avventura::string_to_categoria(string cat) {
-    if (cat == "Basso") return Categoria_adrenalina::BASSO;
-    if (cat == "Medio") return Categoria_adrenalina::MEDIO;
-    if (cat == "Alto")  return Categoria_adrenalina::ALTO;
-    return Categoria_adrenalina::UNKNOWN;
+    return Utils_enum::from_string<Categoria_adrenalina>(cat);
 }
