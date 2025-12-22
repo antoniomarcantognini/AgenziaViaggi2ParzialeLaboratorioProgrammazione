@@ -7,18 +7,6 @@
 
 using namespace std;
 
-// Specializzo la mappa per Tipologia_cliente
-template <>
-const std::map<Tipologia_cliente, std::string>& EnumMappa<Tipologia_cliente>::get_map() {
-    static const std::map<Tipologia_cliente, std::string> mappa = {
-        {Tipologia_cliente::STANDARD, "Standard"},
-        {Tipologia_cliente::PREMIUM,  "Premium"},
-        {Tipologia_cliente::VIP,      "VIP"},
-        {Tipologia_cliente::UNKNOWN,  "Sconosciuto"}
-    };
-    return mappa;
-}
-
 // Metodo di Validazione input cliente con Lambda Functions
 bool Cliente::valida_dati() const {
     
@@ -77,7 +65,7 @@ bool Cliente::valida_dati() const {
     return true;
 }
 
-// --- Costruttore Privato ---
+// Costruttore Privato
 Cliente::Cliente(string codice, string nome, string cognome, 
                  string email, string tel, int eta, Tipologia_cliente tipo)
     : codice_cliente(codice), 
@@ -128,7 +116,7 @@ double Cliente::applica_sconto(double prezzo_base) const {
     if (prezzo_base < 0) return 0.0; // Controllo difensivo extra
     switch (this->tipologia) {
         case Tipologia_cliente::VIP:      return prezzo_base * 0.80;
-        case Tipologia_cliente::PREMIUM:  return prezzo_base * 0.90;
+        case Tipologia_cliente::Premium:  return prezzo_base * 0.90;
         default:                          return prezzo_base;
     }
 }
