@@ -1,10 +1,23 @@
 #include "Cliente.h"
+#include "Utils_enum.h"
 #include <sstream>
 #include <stdexcept>
 #include <cctype>
 #include <algorithm>
 
 using namespace std;
+
+// Specializzo la mappa per Tipologia_cliente
+template <>
+const std::map<Tipologia_cliente, std::string>& EnumMappa<Tipologia_cliente>::get_map() {
+    static const std::map<Tipologia_cliente, std::string> mappa = {
+        {Tipologia_cliente::STANDARD, "Standard"},
+        {Tipologia_cliente::PREMIUM,  "Premium"},
+        {Tipologia_cliente::VIP,      "VIP"},
+        {Tipologia_cliente::UNKNOWN,  "Sconosciuto"}
+    };
+    return mappa;
+}
 
 // Metodo di Validazione input cliente con Lambda Functions
 bool Cliente::valida_dati() const {
@@ -130,20 +143,13 @@ string Cliente::stampa_info() const {
     return ss.str();
 }
 
+// Metodi di conversione usando il template
 string Cliente::tipologia_to_string(Tipologia_cliente tipo) {
-    switch (tipo) {
-        case Tipologia_cliente::STANDARD: return "Standard";
-        case Tipologia_cliente::PREMIUM:  return "Premium";
-        case Tipologia_cliente::VIP:      return "VIP";
-        default: return "Sconosciuto";
-    }
+    return Utils_enum::to_string(tipo); 
 }
 
 Tipologia_cliente Cliente::string_to_tipologia(string tipo) {
-    if (tipo == "Standard" || tipo == "standard") return Tipologia_cliente::STANDARD;
-    if (tipo == "Premium" || tipo == "premium")   return Tipologia_cliente::PREMIUM;
-    if (tipo == "VIP" || tipo == "vip" || tipo == "Vip") return Tipologia_cliente::VIP;
-    return Tipologia_cliente::UNKNOWN;
+    return Utils_enum::from_string<Tipologia_cliente>(tipo); 
 }
 
 // Distruttore
