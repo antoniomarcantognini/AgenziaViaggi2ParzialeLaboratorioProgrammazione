@@ -6,18 +6,6 @@
 
 using namespace std;
 
-// Specializzazione Mappa per Categoria_pensione
-template <>
-const std::map<Categoria_pensione, std::string>& EnumMappa<Categoria_pensione>::get_map() {
-    static const std::map<Categoria_pensione, std::string> mappa = {
-        {Categoria_pensione::SOLO_COLAZIONE,    "Solo Colazione"},
-        {Categoria_pensione::MEZZA_PENSIONE,    "Mezza Pensione"},
-        {Categoria_pensione::PENSIONE_COMPLETA, "Pensione Completa"},
-        {Categoria_pensione::UNKNOWN,           "Sconosciuto"}
-    };
-    return mappa;
-}
-
 // Costruttore
 Pacchetto_mare::Pacchetto_mare(string codice, string dest, int giorni, double prezzo,
                                bool ombrellone, bool attrezzatura, Categoria_pensione tipo)
@@ -43,13 +31,13 @@ double Pacchetto_mare::calcola_prezzo_finale() const {
 
     // Maggiorazione per Tipologia Pensione
     switch (tipologia) {
-        case Categoria_pensione::PENSIONE_COMPLETA:
+        case Categoria_pensione::Pensione_completa:
             prezzo_totale += 200.0;
             break;
-        case Categoria_pensione::MEZZA_PENSIONE:
+        case Categoria_pensione::Mezza_pensione:
             prezzo_totale += 100.0;
             break;
-        case Categoria_pensione::SOLO_COLAZIONE: // nessuna maggiorazione
+        case Categoria_pensione::Solo_colazione: // nessuna maggiorazione
             break;
         default:
             break;
@@ -98,7 +86,7 @@ Categoria_pensione Pacchetto_mare::get_categoria_pensione() const {
 
 // Metodi di conversione usando il template
 string Pacchetto_mare::pensione_to_string(Categoria_pensione tipo) {
-    return Utils_enum::to_string(tipo);
+    return Utils_enum::to_string(tipo); 
 }
 
 Categoria_pensione Pacchetto_mare::string_to_pensione(string tipo) {
