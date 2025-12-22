@@ -10,6 +10,8 @@ gestisci menu con le funzioni singole
 - try catch sul costruttore
 - fare il diagramma di classi UML, draw.io, Visual paradigm (ereditarietà e composizioni)
 
-# PER RICk:
+# PER RICK:
 -I metodi privati di validazione dentro la classe prenotazione possono  essere definiti come lambda function
 - studia Cliente.h e modifica codice prenotazione di conseguenza
+## IMPORTANTE ## 
+-Ho messo il template per le conversioni fra classi di enum e stringhe
