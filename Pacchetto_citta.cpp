@@ -1,9 +1,22 @@
 #include "Pacchetto_citta.h"
+#include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+
+// Specializzazione Mappa per Categoria_hotel
+template <>
+const std::map<Categoria_hotel, std::string>& EnumMappa<Categoria_hotel>::get_map() {
+    static const std::map<Categoria_hotel, std::string> mappa = {
+        {Categoria_hotel::TRE_STELLE,     "3 stelle"},
+        {Categoria_hotel::QUATTRO_STELLE, "4 stelle"},
+        {Categoria_hotel::CINQUE_STELLE,  "5 stelle"},
+        {Categoria_hotel::UNKNOWN,        "Sconosciuto"}
+    };
+    return mappa;
+}
 
 // costruttore (richiama quello di Pacchetto_viaggio)
 Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
@@ -85,20 +98,11 @@ Categoria_hotel Pacchetto_citta::get_categoria_hotel() const {
     return this->categoria_hotel;
 }
 
-// metodi per enum
-
+// Metodi statici di conversione usando i template
 string Pacchetto_citta::categoria_to_string(Categoria_hotel cat) {
-    switch (cat) {
-        case Categoria_hotel::TRE_STELLE: return "3 stelle";
-        case Categoria_hotel::QUATTRO_STELLE: return "4 stelle";
-        case Categoria_hotel::CINQUE_STELLE: return "5 stelle";
-        default: return "Sconosciuto";
-    }
+    return Utils_enum::to_string(cat);
 }
 
 Categoria_hotel Pacchetto_citta::string_to_categoria(string cat) {
-    if (cat == "3 stelle") return Categoria_hotel::TRE_STELLE;
-    if (cat == "4 stelle") return Categoria_hotel::QUATTRO_STELLE;
-    if (cat == "5 stelle") return Categoria_hotel::CINQUE_STELLE;
-    return Categoria_hotel::UNKNOWN;
+    return Utils_enum::from_string<Categoria_hotel>(cat);
 }
