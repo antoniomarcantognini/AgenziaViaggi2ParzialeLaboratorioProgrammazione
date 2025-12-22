@@ -6,18 +6,6 @@
 
 using namespace std;
 
-// Specializzazione Mappa per Categoria_adrenalina
-template <>
-const std::map<Categoria_adrenalina, std::string>& EnumMappa<Categoria_adrenalina>::get_map() {
-    static const std::map<Categoria_adrenalina, std::string> mappa = {
-        {Categoria_adrenalina::BASSO,   "Basso"},
-        {Categoria_adrenalina::MEDIO,   "Medio"},
-        {Categoria_adrenalina::ALTO,    "Alto"},
-        {Categoria_adrenalina::UNKNOWN, "Sconosciuto"}
-    };
-    return mappa;
-}
-
 // Costruttore
 Pacchetto_avventura::Pacchetto_avventura(string codice, string dest, int giorni, double prezzo,
                                          const vector<string>& lista_attivita, 
@@ -40,13 +28,13 @@ double Pacchetto_avventura::calcola_prezzo_finale() const {
 
     // Applicazione maggiorazione in base alla Categoria Adrenalina
     switch (categoria_adrenalina) {
-        case Categoria_adrenalina::ALTO:
+        case Categoria_adrenalina::Alto:
             prezzo_totale += (prezzo_totale * 0.25); // +25%
             break;
-        case Categoria_adrenalina::MEDIO:
+        case Categoria_adrenalina::Medio:
             prezzo_totale += (prezzo_totale * 0.15); // +15%
             break;
-        case Categoria_adrenalina::BASSO:
+        case Categoria_adrenalina::Basso:
             // Nessuna maggiorazione
             break;
         default:
