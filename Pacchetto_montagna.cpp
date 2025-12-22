@@ -1,9 +1,22 @@
 #include "Pacchetto_montagna.h"
+#include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+
+// Specializzazione Mappa per Categoria_difficolta
+template <>
+const std::map<Categoria_difficolta, std::string>& EnumMappa<Categoria_difficolta>::get_map() {
+    static const std::map<Categoria_difficolta, std::string> mappa = {
+        {Categoria_difficolta::FACILE,    "Facile"},
+        {Categoria_difficolta::MEDIA,     "Media"},
+        {Categoria_difficolta::DIFFICILE, "Difficile"},
+        {Categoria_difficolta::UNKNOWN,   "Sconosciuto"}
+    };
+    return mappa;
+}
 
 // Costruttore
 Pacchetto_montagna::Pacchetto_montagna(string codice, string dest, int giorni, double prezzo,
@@ -78,20 +91,11 @@ Categoria_difficolta Pacchetto_montagna::get_difficolta() const {
     return this->difficolta;
 }
 
-// Metodi statici per enum
-
+// Metodi statici di conversione usando il template
 string Pacchetto_montagna::difficolta_to_string(Categoria_difficolta diff) {
-    switch (diff) {
-        case Categoria_difficolta::FACILE:    return "Facile";
-        case Categoria_difficolta::MEDIA:     return "Media";
-        case Categoria_difficolta::DIFFICILE: return "Difficile";
-        default: return "Sconosciuto";
-    }
+    return Utils_enum::to_string(diff);
 }
 
 Categoria_difficolta Pacchetto_montagna::string_to_difficolta(string diff) {
-    if (diff == "Facile")    return Categoria_difficolta::FACILE;
-    if (diff == "Media")     return Categoria_difficolta::MEDIA;
-    if (diff == "Difficile") return Categoria_difficolta::DIFFICILE;
-    return Categoria_difficolta::UNKNOWN;
+    return Utils_enum::from_string<Categoria_difficolta>(diff);
 }
