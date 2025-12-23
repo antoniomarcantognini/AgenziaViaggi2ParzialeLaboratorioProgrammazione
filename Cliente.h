@@ -13,7 +13,7 @@ private:
     std::string telefono;
     int eta;
     Tipologia_cliente tipologia;
-    static int prossimo_codice_cliente;
+    static int clienti_creati;
 
     // Metodo privato che contiene le Lambda per la validazione
     bool valida_dati() const;
