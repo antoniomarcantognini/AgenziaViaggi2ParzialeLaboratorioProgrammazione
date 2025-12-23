@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include "menu.h"
 
 using namespace std;
 using namespace magic_enum;
@@ -324,6 +325,8 @@ Gestore_azienda::~Gestore_azienda() {
 
 // === GESTIONE CATALOGO PACCHETTI ===
 
+// METODI DI AGGIUNTA INTERATTIVI DA INTRODURRE DOPO LA MODIFICA DEL COSTRUTTORE (privato con try/catch)
+
 // Metodo per l'aggiunta di un pacchetto avventura
 bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
                     const vector<string>& lista_attivita, 
@@ -345,6 +348,8 @@ bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, 
 bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
                     bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
 
+                    auto nuovo_pacchetto = [this](string codice, string dest, int giorni, double prezzo,
+                    bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
                     // Creazione del puntatore al nuovo pacchetto mare
                     shared_ptr<Pacchetto_mare> nuovo_pacchetto = make_shared<Pacchetto_mare>(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo);
 
@@ -353,9 +358,10 @@ bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, 
                     if (temp == nullptr) {
                         throw runtime_error("Errore nell'aggiunta del pacchetto mare al catalogo.");
                     }
-
                     return true;
-}
+                    };
+                    return nuovo_pacchetto(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo);
+                }
 
 // Metodo per l'aggiunta di un pacchetto montagna
 bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
@@ -408,18 +414,68 @@ bool Gestore_azienda::visualizzaPacchettiDisponibili() const {
 }
 
 // === GESTIONE CLIENTI ===
-bool Gestore_azienda::aggiungiCliente(string codice, string nome, string cognome, 
-                    string email, string tel, int eta, Tipologia_cliente tipo) {
+bool Gestore_azienda::aggiungiCliente() {
 
-                    // Creazione del puntatore e del nuovo cliente            
-                    shared_ptr<Cliente> nuovo_cliente = crea_cliente(codice, nome, cognome, email, tel, eta, tipo);
-                    
-                    // Aggiunta alla lista clienti
-                    shared_ptr<Cliente> temp = aggiungi_elemento(this->clienti, nuovo_cliente);
-                    if (temp == nullptr) {
-                        throw runtime_error("Errore nell'aggiunta del cliente al catalogo.");
-                    }
-                    return true;
+    // Lambda function per la creazione del cliente e del suo puntatore
+    auto crea_cliente = [this](string codice, string nome, string cognome, 
+        string email, string tel, int eta, Tipologia_cliente tipo) {
+        // Creazione del puntatore e del nuovo cliente            
+        shared_ptr<Cliente> nuovo_cliente = crea_cliente(codice, nome, cognome, email, tel, eta, tipo);
+        if (nuovo_cliente == nullptr) {
+            return false; // Errore nella creazione del cliente
+        }
+
+        // Aggiunta alla lista clienti
+        shared_ptr<Cliente> temp = aggiungi_elemento(this->clienti, nuovo_cliente);
+        if (temp == nullptr) {
+            return false;
+        }
+        return true;
+    };
+
+    // Lambda function per l'inserimento interattivo dei dati del cliente
+    auto inserimento_dati_cliente = [](string& nome, string& cognome, string& email, string& telefono,
+        int& eta, string& tipo_str, Tipologia_cliente& tipo) {
+        cout << "=== INSERIMENTO DATI NUOVO CLIENTE ===" << endl;
+        
+        cout << "Nome: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, nome);
+
+        cout << "Cognome: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, cognome);
+
+        cout << "Email (deve contenere @!): ";
+        cin >> email;
+
+        cout << "Telefono (10 cifre!): ";
+        cin >> telefono;
+
+        cout << "Età (deve essere maggiore di 0): ";
+        cin >> eta;
+
+        cout << "Tipologia Cliente (scrivere ESATTAMENTE Standard, Premium o VIP): ";
+        cin >> tipo_str;
+        Tipologia_cliente tipo = enum_cast<Tipologia_cliente>(tipo_str);
+        return true;
+    };
+
+    // Corpo del metodo
+    do {
+        string nome; string cognome; string email; string telefono; int eta; string tipo_str; Tipologia_cliente tipo;
+        inserimento_dati_cliente(nome, cognome, email, telefono, eta, tipo_str, tipo);
+
+        if (crea_cliente(generaCodiceUnico('C'), nome, cognome, email, telefono, eta, tipo)) {
+        cout << "Cliente " << nome << " " << cognome << " aggiunto correttamente al sistema." << endl;
+        return true;
+        } else {
+            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO CLIENTE", "Riprova inserimento dati cliente", "Annulla operazione e torna al menu principale"});
+            if (scelta == 2) {
+                return false;
+            }
+        }
+    } while (1);
 }
 shared_ptr<Cliente> Gestore_azienda::cercaCliente(string codice) {
     return cerca_elemento(this->clienti, codice);
@@ -435,18 +491,75 @@ bool Gestore_azienda::visualizzaClientiPerTipologia(string tipo) const {
 
 
 // === GESTIONE PRENOTAZIONI ===
-bool Gestore_azienda::creaPrenotazione(string codice, shared_ptr<Cliente> cliente, shared_ptr<Pacchetto_viaggio> pacchetto_viaggio,
-                     int num_persone, string data) {
-    
-                    // Creazione del puntatore e della nuova prenotazione
-                    shared_ptr<Prenotazione> nuova_prenotazione = Prenotazione::crea_prenotazione(codice, cliente, pacchetto_viaggio, num_persone, data);
+bool Gestore_azienda::aggiungiPrenotazione() {
                     
-                    // Aggiunta alla lista prenotazioni
-                    shared_ptr<Prenotazione> temp = aggiungi_elemento(this->prenotazioni, nuova_prenotazione);
-                    if (temp == nullptr) {
-                        throw runtime_error("Errore nell'aggiunta della prenotazione al catalogo.");
-                    }
-                    return true;
+    // Lambda function per la creazione della prenotazione e del suo puntatore
+    auto crea_prenotazione = [this](string codice, shared_ptr<Cliente> cliente, shared_ptr<Pacchetto_viaggio> pacchetto_viaggio,
+        int num_persone, string data) {
+        // Creazione del puntatore e della nuova prenotazione
+        shared_ptr<Prenotazione> nuova_prenotazione = Prenotazione::crea_prenotazione(codice, cliente, pacchetto_viaggio, num_persone, data);
+        if (nuova_prenotazione == nullptr) {
+            return false;
+        }
+
+        // Aggiunta alla lista prenotazioni
+        shared_ptr<Prenotazione> temp = aggiungi_elemento(this->prenotazioni, nuova_prenotazione);
+        if (temp == nullptr) {
+            return false;
+        }
+        return true;
+    };
+
+    // Lambda function per l'inserimento interattivo dei dati della prenotazione
+    auto inserisci_dati_prenotazione = [](shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio,
+        int& num_persone, string& data) {
+        string codice_cliente; string codice_pacchetto;
+        cout << "=== INSERIMENTO DATI NUOVA PRENOTAZIONE ===" << endl;
+
+        cout << "Codice Cliente: ";
+        cin >> codice_cliente;
+        cliente = cercaCliente(codice_cliente);
+        if (cliente == nullptr) {
+            return false;
+        }
+
+        cout << "Codice Pacchetto Viaggio: ";
+        cin >> codice_pacchetto;
+        pacchetto_viaggio = cercaPacchetto(codice_pacchetto);
+        if (pacchetto_viaggio == nullptr) {
+            return false;
+        }
+
+        cout << "Numero di Persone: ";
+        cin >> num_persone;
+
+        cout << "Data Prenotazione (DD/MM/YYYY): ";
+        cin >> data;
+
+        return true;
+    };
+
+    // Corpo del metodo
+    do {
+        shared_ptr<Cliente> cliente; shared_ptr<Pacchetto_viaggio> pacchetto_viaggio; int num_persone; string data;
+        if (!inserisci_dati_prenotazione(cliente, pacchetto_viaggio, num_persone, data)) {
+            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PRENOTAZIONE", "Riprova inserimento dati prenotazione", "Annulla operazione e torna al menu principale"});
+            if (scelta == 2) {
+                return false;
+            }
+            continue;
+        }
+
+        if (crea_prenotazione(generaCodiceUnico('B'), cliente, pacchetto_viaggio, num_persone, data)) {
+            cout << "Prenotazione per il cliente " << cliente->get_nome_completo() << " aggiunta correttamente al sistema." << endl;
+            return true;
+        } else {
+            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PRENOTAZIONE", "Riprova inserimento dati prenotazione", "Annulla operazione e torna al menu principale"});
+            if (scelta == 2) {
+                return false;
+            }
+        }
+    } while (1);
 }
 bool Gestore_azienda::confermaPrenotazione(string codice) {
     // Questo metodo ritorna true se la modifica è stata apportata, altrimenti ritorna false (se il codice era già confermato ritorna false)
@@ -459,7 +572,7 @@ bool Gestore_azienda::confermaPrenotazione(string codice) {
             return true;
         }
     } else {
-        cerr << "Prenotazione con codice " << codice << " non trovata." << endl;
+        cerr << "Elemento con codice " << codice << " non trovato." << endl;
         return false;
     }
 }

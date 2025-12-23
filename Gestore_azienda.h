@@ -61,14 +61,12 @@ public:
     bool visualizzaPacchettiDisponibili() const;
 
     // === GESTIONE CLIENTI ===
-    bool aggiungiCliente(std::string codice, std::string nome, std::string cognome, 
-                    std::string email, std::string tel, int eta, Tipologia_cliente tipo); // Wizard interattivo
+    bool aggiungiCliente();
     std::shared_ptr<Cliente> cercaCliente(std::string codice);
     bool visualizzaClienti() const;
     bool visualizzaClientiPerTipologia(std::string tipo) const;
     // === GESTIONE PRENOTAZIONI ===
-    bool creaPrenotazione(std::string codice, std::shared_ptr<Cliente> cliente, std::shared_ptr<Pacchetto_viaggio> pacchetto_viaggio,
-                     int num_persone, std::string data); 
+    bool aggiungiPrenotazione(); 
     bool confermaPrenotazione(std::string codicePrenotazione);
     bool visualizzaPrenotazioni() const;
     bool visualizzaPrenotazioniCliente(std::string codiceCliente) const;
