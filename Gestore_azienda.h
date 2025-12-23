@@ -16,10 +16,7 @@ private:
     std::vector<std::shared_ptr<Cliente>> clienti;
     std::vector<std::shared_ptr<Prenotazione>> prenotazioni;
 
-    // Contatori per generare codici univoci
-    int prossimoCodicePacchetto;      // Es: 1 -> "PCK-0001"
-    int prossimoCodiceCliente;        // Es: 1 -> "CLT-0001"
-    int prossimoCodicePrenotazione;   // Es: 1 -> "BKG-0001"
+    // I contatori per generare codici univoci sono statici e definiti nelle rispettive classi
 
     // METODI PRIVATI DI UTILITY
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
@@ -31,29 +28,46 @@ public:
     ~Gestore_agenzia(); 
 
     // === GESTIONE CATALOGO PACCHETTI ===
-    void aggiungiPacchettoManuale();
+
+    // Aggiunta pacchetto avventura
+    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
+                    const vector<string>& lista_attivita, 
+                    Categoria_adrenalina categoria, bool assicurazione);
+    
+    // Aggiunta pacchetto mare
+    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
+                    bool ombrellone, bool attrezzatura, Categoria_pensione tipo);
+    
+    // Aggiunta pacchetto montagna
+    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
+                    bool guida_inclusa, bool skipass_incluso, Categoria_difficolta difficolta);
+    
+    // Aggiunta pacchetto città
+    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
+                    int num_musei, bool guida, Categoria_hotel categoria);
+
     std::shared_ptr<Pacchetto_viaggio> cercaPacchetto(std::string codice);
-    void visualizzaCatalogo() const;
-    void visualizzaPacchettiPerTipologia(std::string tipo) const; 
-    void visualizzaPacchettiDisponibili() const;
+    bool visualizzaCatalogo() const;
+    bool visualizzaPacchettiPerTipologia(std::string tipo) const; 
+    bool visualizzaPacchettiDisponibili() const;
 
     // === GESTIONE CLIENTI ===
-    void aggiungiCliente(); // Wizard interattivo
+    bool aggiungiCliente(); // Wizard interattivo
     std::shared_ptr<Cliente> cercaCliente(std::string codice);
-    void visualizzaClienti() const;
-    void visualizzaClientiPerTipologia(std::string tipo) const;
+    bool visualizzaClienti() const;
+    bool visualizzaClientiPerTipologia(std::string tipo) const;
     // === GESTIONE PRENOTAZIONI ===
-    void creaPrenotazione(); 
-    void confermaPrenotazione(std::string codicePrenotazione);
-    void visualizzaPrenotazioni() const;
-    void visualizzaPrenotazioniCliente(std::string codiceCliente) const;
-    void visualizzaPrenotazioniConfermate() const;
+    bool creaPrenotazione(); 
+    bool confermaPrenotazione(std::string codicePrenotazione);
+    bool visualizzaPrenotazioni() const;
+    bool visualizzaPrenotazioniCliente(std::string codiceCliente) const;
+    bool visualizzaPrenotazioniConfermate() const;
 
     // === STATISTICHE ===
-    void statisticheGenerali() const;
+    bool statisticheGenerali() const;
     // Stampa: Totale pacchetti, clienti, prenotazioni, Fatturato, Top Pacchetto, Top Destinazione
     
-    void statistichePerTipologia() const;
+    bool statistichePerTipologia() const;
     // Stampa quante prenotazioni ci sono per Mare, Montagna, ecc.
 
     std::shared_ptr<Cliente> clienteMigliore() const;
@@ -61,6 +75,6 @@ public:
 
     // === GESTIONE FILE ===
     // Salva/Carica lo stato intero dell'agenzia (CSV simulato)
-    void salvaDatiSuFile(const std::string& nomefile) const;
-    void caricaDatiDaFile(const std::string& nomefile);
+    bool salvaDatiSuFile(const std::string& nomefile) const;
+    bool caricaDatiDaFile(const std::string& nomefile);
 };

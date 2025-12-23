@@ -51,7 +51,7 @@ string Pacchetto_citta::stampa_dettagli() const{
     stringstream ss; // uso stringstream ss per incollare insieme stringhe e numeri in stringhe, altrimenti si concatenano con to_string
     
     ss << "--- Pacchetto Città d'Arte ---" << endl;
-    ss << "Codice: " << get_codice_pacchetto() << endl;
+    ss << "Codice: " << get_codice() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
