@@ -77,6 +77,8 @@ Cliente::Cliente(string codice, string nome, string cognome,
       tipologia(tipo) 
 {
     valida_dati();
+
+    clienti_creati++; // Aggiorno il contatore statico
     
     cout << "Cliente " << this->codice_cliente << " creato correttamente." << endl;
 }
@@ -95,7 +97,7 @@ shared_ptr<Cliente> Cliente::crea_cliente(string codice, string nome, string cog
 }
 
 // Getter
-string Cliente::get_codice_cliente() const{
+string Cliente::get_codice() const{
     return this->codice_cliente;
 }
 
@@ -107,7 +109,7 @@ int Cliente::get_eta() const{
     return this->eta;
 }
 
-Tipologia_cliente Cliente::get_tipologia_cliente() const{
+Tipologia_cliente Cliente::get_tipolologia() const{
     return this->tipologia;
 }
 
@@ -122,7 +124,7 @@ double Cliente::applica_sconto(double prezzo_base) const {
 }
 
 // Metodo stampa info
-string Cliente::stampa_info() const {
+string Cliente::stampa_dettagli() const {
     stringstream ss;
     ss << "Cliente: " << get_nome_completo() << " (" << this->codice_cliente << ")" << endl;
     ss << "Email: " << this->email << " | Tel: " << this->telefono << endl;

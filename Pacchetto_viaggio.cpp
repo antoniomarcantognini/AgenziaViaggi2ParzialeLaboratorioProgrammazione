@@ -15,6 +15,7 @@ Pacchetto_viaggio::Pacchetto_viaggio(string codice, string dest, int giorni, dou
     if(dest.empty() || dest == nullptr) throw invalid_argument("Destinazione vuota.");
 
     this->disponibile = true;
+    pacchetti_creati++;
     cout << "Costruito pacchetto base: " << codice << endl;
 }
 
@@ -24,7 +25,7 @@ Pacchetto_viaggio::~Pacchetto_viaggio(){
 }
 
 // getter:
-string Pacchetto_viaggio::get_codice_pacchetto() const{
+string Pacchetto_viaggio::get_codice() const{
     return this->codice_pacchetto;
 }
 

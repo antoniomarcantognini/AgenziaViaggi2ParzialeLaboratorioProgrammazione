@@ -46,7 +46,7 @@ string Pacchetto_montagna::stampa_dettagli() const {
     stringstream ss;
 
     ss << "--- Pacchetto Vacanze Montagna ---" << endl;
-    ss << "Codice: " << get_codice_pacchetto() << endl;
+    ss << "Codice: " << get_codice() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;

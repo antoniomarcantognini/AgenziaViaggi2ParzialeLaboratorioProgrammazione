@@ -49,6 +49,7 @@ Prenotazione::Prenotazione(string cod, shared_ptr<Cliente> cli, shared_ptr<Pacch
     cout << "Prezzo totale impostato a 0.0" << endl;
     this->confermata = false;
     cout << "Impostazione di default: prenotazione non confermata." << endl;
+    prenotazioni_create++; // Aggiorno il contatore statico
     cout << "Prenotazione " << this->codice_prenotazione << " creata correttamente." << endl;
 }
 
@@ -63,7 +64,7 @@ shared_ptr<Prenotazione> Prenotazione::crea_prenotazione(string codice, shared_p
 }
 
 // Getter
-string Prenotazione::get_codice_prenotazione() const {
+string Prenotazione::get_codice() const {
     return this->codice_prenotazione;
 }
 
@@ -88,23 +89,65 @@ bool Prenotazione::calcola_prezzo_totale() {
     double prezzo_base = pacchetto_viaggio->calcola_prezzo_finale();
     this->prezzo_totale = cliente->applica_sconto(prezzo_base) * numero_persone;
     cout << "Prezzo totale calcolato: " << this->prezzo_totale << endl;
+    
+    // Modifica del fatturato clienti e totale se la prenotazione è già confermata
+    if (this->confermata) {
+        // Modifica fatturato totale
+        fatturato_totale += this->prezzo_totale;
+        cout << "Fatturato totale aggiornato (la prenotazione è già stata confermata): " << fatturato_totale << endl;
+
+        // Modifica fatturato cliente
+        spesa_clienti.insert({cliente->get_codice(), 0.0}); // Inizializzo il cliente se non esiste
+        spesa_clienti[cliente->get_codice()] += this->prezzo_totale;
+        cout << "Fatturato cliente  " << cliente->get_codice() << " aggiornato: " << spesa_clienti[cliente->get_codice()] << endl;
+    }
+
     return true;
 }
 
 // Metodo che conferma la prenotazione
 bool Prenotazione::conferma_prenotazione() {
+    
+    // Lambda per modificare i valori statici solo se la prenotazione viene confermata
+    auto modifica_valori_static = []() {
+        
+        // Modifica del fatturato clienti e totale
+        if (this->prezzo_totale != 0.0) { // Se il prezzo totale è stato calcolato, aggiorno il fatturato
+            // Modifica fatturato totale
+            fatturato_totale += this->prezzo_totale;
+            cout << "Fatturato totale aggiornato (il prezzo totale è già stato calcolato): " << fatturato_totale << endl;
+
+            // Modifica fatturato cliente
+            spesa_clienti.insert({cliente->get_codice(), 0.0}); // Inizializzo il cliente se non esiste
+            spesa_clienti[cliente->get_codice()] += this->prezzo_totale;
+            cout << "Fatturato cliente  " << cliente->get_codice() << " aggiornato: " << spesa_clienti[cliente->get_codice()] << endl;
+        }
+
+        // Modifica conteggio delle destinazioni
+        destinazioni_counter.insert({pacchetto_viaggio->get_destinazione(), 0}); // Inizializzo la destinazione se non esiste
+        destinazioni_counter[pacchetto_viaggio->get_destinazione()]++;
+        cout << "Conteggio destinazione " << pacchetto_viaggio->get_destinazione() << " aggiornato: " << destinazioni_counter[pacchetto_viaggio->get_destinazione()] << endl;
+
+        // Modifica conteggio dei pacchetti
+        pacchetti_counter.insert({pacchetto_viaggio->get_tipologia(), 0}); // Inizializzo il pacchetto se non esiste
+        pacchetti_counter[pacchetto_viaggio->get_tipologia()]++;
+        cout << "Conteggio pacchetto " << pacchetto_viaggio->get_tipologia() << " aggiornato: " << pacchetti_counter[pacchetto_viaggio->get_tipologia()] << endl;
+
+    }
+
     if (this->is_confermata()) {
         cout << "Prenotazione già confermata." << endl;
         return false;
     } else {
         this->confermata = true;
         cout << "Prenotazione confermata." << endl;
+        modifica_valori_static();
         return true;
     }
 }
 
 // Metodo che stampa i dettagli della prenotazione (anche dettagli cliente e pacchetto)
-bool Prenotazione::stampa_dettagli(int indice_produzione) const {
+bool Prenotazione::stampa_info(int indice_produzione) const {
     cout << "Dettagli Prenotazione:" << endl;
     cout << "Codice Prenotazione: " << this->codice_prenotazione << endl;
     cout << "Data Prenotazione: " << this->data_prenotazione << endl;
