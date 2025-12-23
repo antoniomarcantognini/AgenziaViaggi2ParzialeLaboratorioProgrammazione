@@ -21,7 +21,7 @@ Pacchetto_viaggio::Pacchetto_viaggio(string codice, string dest, int giorni, dou
 
 // distruttore virtuale:
 Pacchetto_viaggio::~Pacchetto_viaggio(){
-    cout << "Distruzione pacchetto base: " << codice_pacchetto << endl;
+    cout << "Distruzione pacchetto " << codice_pacchetto << " avvenuta con successo." << endl;
 }
 
 // getter:

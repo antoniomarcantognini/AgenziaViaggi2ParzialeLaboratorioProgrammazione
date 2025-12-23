@@ -22,6 +22,15 @@ private:
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string generaCodiceUnico(char tipo);
 
+    bool salvataggio_clienti(std::ofstream& file) const;
+    bool carica_clienti(std::ifstream& file); 
+
+    bool salvataggio_pacchetti(std::ofstream& file) const;
+    bool carica_pacchetti(std::ifstream& file);
+    
+    bool salvataggio_prenotazioni(std::ofstream& file) const;
+    bool carica_prenotazioni(std::ifstream& file);
+    
 public:
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia();
@@ -40,7 +49,7 @@ public:
     
     // Aggiunta pacchetto montagna
     bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    bool guida_inclusa, bool skipass_incluso, Categoria_difficolta difficolta);
+                    bool skipass_incluso, int num_escursioni, Categoria_difficolta difficolta);
     
     // Aggiunta pacchetto città
     bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
@@ -52,12 +61,12 @@ public:
     bool visualizzaPacchettiDisponibili() const;
 
     // === GESTIONE CLIENTI ===
-    bool aggiungiCliente(); // Wizard interattivo
+    bool aggiungiCliente();
     std::shared_ptr<Cliente> cercaCliente(std::string codice);
     bool visualizzaClienti() const;
     bool visualizzaClientiPerTipologia(std::string tipo) const;
     // === GESTIONE PRENOTAZIONI ===
-    bool creaPrenotazione(); 
+    bool aggiungiPrenotazione(); 
     bool confermaPrenotazione(std::string codicePrenotazione);
     bool visualizzaPrenotazioni() const;
     bool visualizzaPrenotazioniCliente(std::string codiceCliente) const;
