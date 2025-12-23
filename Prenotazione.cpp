@@ -65,7 +65,7 @@ bool valida_input_prenotazione() const {
         // Ulteriori validazioni sulla data possono essere aggiunte qui
         return true;
     };
-    
+
     // Esecuzione delle validazioni
     check_pacchetto();
     check_cliente();
@@ -114,7 +114,10 @@ shared_ptr<Pacchetto_viaggio> Prenotazione::get_pacchetto() const {
     return this->pacchetto_viaggio;
 }
 
-double Prenotazione::get_prezzo_totale() const {
+double Prenotazione::get_prezzo_totale() {
+    if (this->prezzo_totale == 0.0) {
+        calcola_prezzo_totale();
+    }
     return this->prezzo_totale;
 }
 
@@ -122,14 +125,27 @@ bool Prenotazione::is_confermata() const {
     return this->confermata;
 }
 
+int Prenotazione::get_numero_persone() const {
+    return this->numero_persone;
+}
+
+string Prenotazione::get_data_prenotazione() const {
+    return this->data_prenotazione;
+}
+
 // Metodo che calcola il prezzo totale con sconto del cliente applicato
 bool Prenotazione::calcola_prezzo_totale() {
+    bool flag_aggiornamento = false;
+    if (this->prezzo_totale == 0.0) {
+        flag_aggiornamento = true;
+    }
+    
     double prezzo_base = pacchetto_viaggio->calcola_prezzo_finale();
     this->prezzo_totale = cliente->applica_sconto(prezzo_base) * numero_persone;
     cout << "Prezzo totale calcolato: " << this->prezzo_totale << endl;
     
     // Modifica del fatturato clienti e totale se la prenotazione è già confermata
-    if (this->confermata) {
+    if (this->confermata && flag_aggiornamento) {
         // Modifica fatturato totale
         fatturato_totale += this->prezzo_totale;
         cout << "Fatturato totale aggiornato (la prenotazione è già stata confermata): " << fatturato_totale << endl;

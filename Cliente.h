@@ -29,7 +29,9 @@ private:
     std::string get_codice() const;
     std::string get_nome_completo() const;  // Ritorna "Nome Cognome"
     int get_eta() const;
-    Tipologia_cliente get_tipolologia() const;
+    Tipologia_cliente get_tipologia() const;
+    std::string get_email() const;
+    std::string get_telefono() const;
 
     // Logica di business
     double applica_sconto(double prezzo_base) const; // Standard: 0%, Premium: 10%, VIP 20%

@@ -1,5 +1,9 @@
 #include "magic_enum.hpp"
 #include "Gestore_azienda.h"
+#include <fstream>
+#include <algorithm>
+#include <iostream>
+
 using namespace std;
 using namespace magic_enum;
 
@@ -66,6 +70,8 @@ string calcola_massimo_mappa(const unordered_map<string, T> counter) {
 
     )->first;
 }
+
+
 // METODI PRIVATI DI UTILITY
 // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
 string Gestore_azienda::generaCodiceUnico(char tipo) {
@@ -88,6 +94,84 @@ string Gestore_azienda::generaCodiceUnico(char tipo) {
             throw runtime_error("Tipo di codice non riconosciuto.");
     }
     return codice_univoco;
+}
+
+bool Gestore_azienda::salvataggio_clienti(std::ofstream& file) const {
+    for (const auto& cliente : this->clienti) {
+        file << cliente->get_codice() << ";"
+             << cliente->get_nome_completo() << ";"
+             << cliente->get_email() << ";"
+             << cliente->get_telefono() << ";"
+             << cliente->get_eta() << ";"
+             << enum_name(cliente->get_tipologia()) << endl;
+    }
+    return true;
+}
+
+
+bool Gestore_azienda::salvataggio_pacchetti(std::ofstream& file) const {
+
+    auto salva_avventura = [](const shared_ptr<Pacchetto_avventura>& pacchetto_avventura) {
+        file << enum_name(pacchetto_avventura->get_categoria_adrenalina()) << ";"
+             << (pacchetto_avventura->has_assicurazione() ? "Con Assicurazione" : "Senza Assicurazione") << ";";
+        for (const auto& attivita : pacchetto_avventura->get_lista_attivita()) {
+            file << attivita << ";";
+        }
+        file << endl;
+    };
+
+    auto salva_mare = [](const shared_ptr<Pacchetto_mare>& pacchetto_mare) {
+        file << (pacchetto_mare->has_ombrellone_incluso() ? "Con Ombrellone" : "Senza Ombrellone") << ";"
+             << (pacchetto_mare->has_attrezzatura_sportiva() ? "Con Attrezzatura" : "Senza Attrezzatura") << ";"
+             << enum_name(pacchetto_mare->get_categoria_pensione()) << endl;
+    };
+
+    auto salva_montagna = [](const shared_ptr<Pacchetto_montagna>& pacchetto_montagna) {
+        file << (pacchetto->has_skipass_incluso() ? "Con Skipass" : "Senza Skipass") << ";"
+             << pacchetto->get_numero_escursioni() << ";"
+             << enum_name(pacchetto->get_difficolta()) << endl;
+    };
+
+    auto salva_citta = [](const shared_ptr<Pacchetto_citta>& pacchetto_citta) {
+        file << (pacchetto_citta->has_guida_inclusa() ? "Con Guida" : "Senza Guida") << ";"
+             << pacchetto_citta->get_numero_musei() << ";"
+             << enum_name(pacchetto_citta->get_categoria_hotel()) << endl;
+    };
+
+    for (const auto& pacchetto : this->catalogo) {
+        file << pacchetto->get_codice() << ";"
+             << pacchetto->get_destinazione() << ";";
+             << pacchetto->get_furata_giorni() << ";"
+             << (pacchetto->is_disponibile() ? "Disponibile" : "Non Disponibile") << ";";
+             << pacchetto->calcola_prezzo_finale() << ";";
+        string tipologia_pacchetto = enum_name(pacchetto->get_tipologia());
+        file << tipologia_pacchetto << ";";
+
+        // Salvataggio dei campi specifici in base alla tipologia
+        if (tipologia_pacchetto == "Turismo Avventura") {
+            salva_avventura(pacchetto);
+        } else if (tipologia_pacchetto == "Turismo Balneare") {
+            salva_mare(pacchetto);
+        } else if (tipologia_pacchetto == "Turismo Montano") {
+            salva_montagna(pacchetto);
+        } else if (tipologia_pacchetto == "Turismo Culturale") {
+            salva_citta(pacchetto);
+        }
+    }
+    return true;
+}
+
+bool Gestore_azienda::salvataggio_prenotazioni(std::ofstream& file) const {
+    for (const auto& prenotazione : this->prenotazioni) {
+        file << prenotazione->get_codice() << ";"
+             << prenotazione->get_cliente()->get_codice() << ";"
+             << prenotazione->get_pacchetto()->get_codice() << ";"
+             << prenotazione->get_numero_persone() << ";"
+             << prenotazione->get_data_prenotazione() << ";"
+             << (prenotazione->is_confermata() ? "Confermata" : "Non Confermata") << ";"
+             << prenotazione->get_prezzo_totale() << endl;
+    }
+    return true;
 }
 
 // === COSTRUTTORE E DISTRUTTORE ===
@@ -288,5 +372,27 @@ shared_ptr<Cliente> Gestore_azienda::clienteMigliore() const {
 
 // === GESTIONE FILE ===
 // Salva/Carica lo stato intero dell'agenzia (CSV simulato)
-bool Gestore_azienda::salvaDatiSuFile(const string& nomefile) const;
+bool Gestore_azienda::salvaDatiSuFile(const string& nomefile, const string& tipo) const {
+    ofstream file(nomefile);
+    if (!file) cerr << "Errore nell'apertura del file per la scrittura: " << nomefile << endl;
+
+    // Salvataggio clienti
+    if (tolower(tipo) == "clienti") {
+        salvataggio_clienti(file);
+        
+    } else if (tolower(tipo) == "pacchetti") {
+        salvataggio_pacchetti(file);
+        
+    } else if (tolower(tipo) == "prenotazioni") {
+        salvataggio_prenotazioni(file);
+
+    } else {
+        cerr << "Tipo di dato non riconosciuto per il salvataggio: " << tipo << endl;
+        file.close();
+        return false;
+        }
+
+    file.close();
+    return true;
+}
 bool Gestore_azienda::caricaDatiDaFile(const string& nomefile);

@@ -22,6 +22,10 @@ private:
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string generaCodiceUnico(char tipo);
 
+    bool salvataggio_clienti(std::ofstream& file) const;
+    bool salvataggio_pacchetti(std::ofstream& file) const;
+    bool salvataggio_prenotazioni(std::ofstream& file) const;
+
 public:
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia();

@@ -35,7 +35,9 @@ public:
     std::string get_codice() const;
     std::shared_ptr<Cliente> get_cliente() const;
     std::shared_ptr<Pacchetto_viaggio> get_pacchetto() const;
-    double get_prezzo_totale() const;
+    int get_numero_persone() const;
+    std::string get_data_prenotazione() const;
+    double get_prezzo_totale();
     bool is_confermata() const; 
 
     // Calcola prezzo totale: 

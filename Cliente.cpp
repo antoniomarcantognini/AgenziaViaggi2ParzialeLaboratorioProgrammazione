@@ -109,8 +109,16 @@ int Cliente::get_eta() const{
     return this->eta;
 }
 
-Tipologia_cliente Cliente::get_tipolologia() const{
+Tipologia_cliente Cliente::get_tipologia() const{
     return this->tipologia;
+}
+
+string Cliente::get_email() const{
+    return this->email;
+}
+
+string Cliente::get_telefono() const{
+    return this->telefono;
 }
 
 // Metodo applica sconto
