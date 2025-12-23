@@ -78,7 +78,7 @@ Cliente::Cliente(string codice, string nome, string cognome,
 {
     valida_dati();
 
-    prossimo_codice_cliente++;
+    clienti_database++;
     
     cout << "Cliente " << this->codice_cliente << " creato correttamente." << endl;
 }
