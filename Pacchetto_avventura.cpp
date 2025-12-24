@@ -21,6 +21,9 @@ bool Pacchetto_avventura::valida_dati() const {
         // Questa è una scelta di business: decidiamo che un pacchetto avventura DEVE avere attività
         throw runtime_error("Un pacchetto avventura deve contenere almeno un'attività.");
     }
+    if(get_categoria_adrenalina == Categoria_adrenalina::Unknown){
+        throw runtime_error("Livello di adrenalina non valido")
+    }
     return true;
 }
 
