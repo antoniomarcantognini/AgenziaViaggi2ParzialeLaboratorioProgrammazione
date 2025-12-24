@@ -8,24 +8,23 @@ using namespace std;
 Pacchetto_viaggio::Pacchetto_viaggio(string codice, string dest, int giorni, double prezzo)
     : codice_pacchetto(codice), destinazione(dest), durata_giorni(giorni), prezzo_base(prezzo)
 {
-    // validazione input:
+    // Validazione input:
     if(giorni <= 0) throw invalid_argument("Durata del viaggio negativa.");
     if(prezzo < 0) throw invalid_argument("Prezzo base negativo.");
-    if(codice.empty() || codice == nullptr) throw invalid_argument("Codice vuoto.");
-    if(dest.empty() || dest == nullptr) throw invalid_argument("Destinazione vuota.");
+    if(codice.empty()) throw invalid_argument("Codice vuoto.");
+    if(dest.empty()) throw invalid_argument("Destinazione vuota.");
 
     this->disponibile = true;
-    pacchetti_creati++;
     cout << "Costruito pacchetto base: " << codice << endl;
 }
 
-// distruttore virtuale:
+// Distruttore virtuale:
 Pacchetto_viaggio::~Pacchetto_viaggio(){
-    cout << "Distruzione pacchetto " << codice_pacchetto << " avvenuta con successo." << endl;
+    cout << "Distruzione pacchetto base: " << codice_pacchetto << endl;
 }
 
-// getter:
-string Pacchetto_viaggio::get_codice() const{
+// Getter:
+string Pacchetto_viaggio::get_codice_pacchetto() const{
     return this->codice_pacchetto;
 }
 
@@ -35,6 +34,10 @@ string Pacchetto_viaggio::get_destinazione() const{
 
 int Pacchetto_viaggio::get_durata_giorni() const{
     return this->durata_giorni;
+}
+
+double Pacchetto_viaggio::get_prezzo_base() const{
+    return this->prezzo_base;
 }
 
 bool Pacchetto_viaggio::is_disponibile() const{
