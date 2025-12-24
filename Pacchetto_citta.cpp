@@ -17,13 +17,16 @@ bool Pacchetto_citta::valida_dati() const {
     }
 
     // Validazione specifica Città
-    if (numero_musei < 0) {
+    if (get_numero_musei < 0) {
         throw runtime_error("Il numero di musei non può essere negativo.");
+    }
+    if(get_categoria_hotel == Categoria_hotel::Unknown){
+        throw runtime_error("Categoria hotel non valida")
     }
     return true;
 }
 
-// Costruttore Privato
+// --- Costruttore Privato ---
 Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
                                  int num_musei, bool guida, Categoria_hotel hotel)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
