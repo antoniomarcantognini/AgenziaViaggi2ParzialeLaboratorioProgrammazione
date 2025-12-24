@@ -2,6 +2,7 @@
 #include "Pacchetto_viaggio.h"
 #include "Categoria_pensione.h"
 #include <string>
+#include <memory>
 
 class Pacchetto_mare : public Pacchetto_viaggio{
     
@@ -9,12 +10,15 @@ private:
     bool ombrellone_incluso;
     bool attrezzatura_sportiva;
     Categoria_pensione tipologia;
+    bool valida_dati() const;
 
-public:
-    // costruttore
+    // Costruttore privato
     Pacchetto_mare(std::string codice, std::string dest, int giorni, double prezzo,
                    bool ombrellone, bool attrezzatura, Categoria_pensione tipo);
-
+public:
+   // Factory Method statico
+    static std::shared_ptr<Pacchetto_mare> crea_pacchetto(std::string codice, std::string dest, int giorni, double prezzo,
+                                                          bool ombrellone, bool attrezzatura, Categoria_pensione tipo);
     // Override dei metodi virtuali puri
     double calcola_prezzo_finale() const override;
     std::string stampa_dettagli() const override;
