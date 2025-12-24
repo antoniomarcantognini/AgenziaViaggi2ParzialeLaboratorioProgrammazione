@@ -14,10 +14,10 @@ bool Pacchetto_montagna::valida_dati() const {
     if (get_durata_giorni() <= 0) {
         throw runtime_error("La durata del viaggio deve essere positiva.");
     }
-    if (get_numero_escursioni < 0) {
+    if (get_numero_escursioni() < 0) {
         throw runtime_error("Il numero di escursioni non può essere negativo.");
     }
-    if (get_difficolta == Categoria_difficolta::Unknown) {
+    if (get_difficolta() == Categoria_difficolta::Unknown) {
         throw runtime_error("Categoria difficoltà non valida (Unknown).");
     }
 
