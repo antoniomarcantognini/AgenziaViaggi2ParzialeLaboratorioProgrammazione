@@ -6,7 +6,25 @@
 
 using namespace std;
 
-// Costruttore
+// Metodo Privato di Validazione
+bool Pacchetto_avventura::valida_dati() const {
+    // Validazione ereditata: controlli base sul prezzo e giorni
+    if (get_prezzo_base() < 0) {
+        throw runtime_error("Il prezzo base non può essere negativo.");
+    }
+    if (get_durata_giorni() <= 0) {
+        throw runtime_error("La durata del viaggio deve essere positiva.");
+    }
+
+    // Validazione specifica Avventura
+    if (attivita.empty()) {
+        // Questa è una scelta di business: decidiamo che un pacchetto avventura DEVE avere attività
+        throw runtime_error("Un pacchetto avventura deve contenere almeno un'attività.");
+    }
+    return true;
+}
+
+// Costruttore Privato
 Pacchetto_avventura::Pacchetto_avventura(string codice, string dest, int giorni, double prezzo,
                                          const vector<string>& lista_attivita, 
                                          Categoria_adrenalina categoria, bool assicurazione)
@@ -15,7 +33,25 @@ Pacchetto_avventura::Pacchetto_avventura(string codice, string dest, int giorni,
       assicurazione_extra(assicurazione),
       categoria_adrenalina(categoria)
 {
+    // Chiamiamo la validazione. Se fallisce, il costruttore si interrompe e lancia eccezione.
+    valida_dati();
+
     cout << "Costruito Pacchetto Avventura: " << codice << endl;
+}
+
+// Factory Method Statico (Try-Catch)
+shared_ptr<Pacchetto_avventura> Pacchetto_avventura::crea_pacchetto(string codice, string dest, int giorni, double prezzo,
+                                                                    const vector<string>& lista_attivita, 
+                                                                    Categoria_adrenalina categoria, bool assicurazione) {
+    try {
+        // Proviamo a creare l'oggetto, e usiamo 'new' perché il costruttore è privato
+        return shared_ptr<Pacchetto_avventura>(new Pacchetto_avventura(codice, dest, giorni, prezzo, lista_attivita, categoria, assicurazione));
+        
+    } catch (const runtime_error& e) {
+        // Gestione dell'errore centralizzata: stampa e ritorna nullptr
+        cerr << "Errore creazione Pacchetto Avventura (" << codice << "): " << e.what() << endl;
+        return nullptr;
+    }
 }
 
 // Override di calcola prezzo finale
@@ -54,7 +90,7 @@ string Pacchetto_avventura::stampa_dettagli() const {
     stringstream ss;
 
     ss << "--- Pacchetto Vacanze Avventura ---" << endl;
-    ss << "Codice: " << get_codice() << endl;
+    ss << "Codice: " << get_codice_pacchetto() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
