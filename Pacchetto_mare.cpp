@@ -6,7 +6,24 @@
 
 using namespace std;
 
-// Costruttore
+// --- Metodo Privato di Validazione (Booleano) ---
+bool Pacchetto_mare::valida_dati() const {
+    // Validazione ereditata: controlli base su prezzo e giorni
+    if (get_prezzo_base() < 0) {
+        throw runtime_error("Il prezzo base non può essere negativo.");
+    }
+    if (get_durata_giorni() <= 0) {
+        throw runtime_error("La durata del viaggio deve essere positiva.");
+    }
+    if (tipologia == Categoria_pensione::Unknown) {
+        throw runtime_error("Tipologia pensione non valida.");
+    }
+
+    // Se arriviamo qui, è tutto valido
+    return true;
+}
+
+// Costruttore Privato
 Pacchetto_mare::Pacchetto_mare(string codice, string dest, int giorni, double prezzo,
                                bool ombrellone, bool attrezzatura, Categoria_pensione tipo)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
@@ -14,7 +31,24 @@ Pacchetto_mare::Pacchetto_mare(string codice, string dest, int giorni, double pr
       attrezzatura_sportiva(attrezzatura),
       tipologia(tipo)
 {   
+    // Chiamiamo la validazione interna
+    valida_dati();
+
     cout << "Costruito Pacchetto Mare: " << codice << endl;
+}
+
+// Factory Method Statico 
+shared_ptr<Pacchetto_mare> Pacchetto_mare::crea_pacchetto(string codice, string dest, int giorni, double prezzo,
+                                                          bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
+    try {
+        // Proviamo a creare l'oggetto e usiamo new perché il costruttore è privato
+        return shared_ptr<Pacchetto_mare>(new Pacchetto_mare(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo));
+
+    } catch (const runtime_error& e) {
+        // Gestione dell'errore
+        cerr << "Errore creazione Pacchetto Mare (" << codice << "): " << e.what() << endl;
+        return nullptr;
+    }
 }
 
 // Override di calcola prezzo finale
@@ -51,7 +85,7 @@ string Pacchetto_mare::stampa_dettagli() const {
     stringstream ss; 
     
     ss << "--- Pacchetto Vacanze Mare ---" << endl;
-    ss << "Codice: " << get_codice() << endl;
+    ss << "Codice: " << get_codice_pacchetto() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
