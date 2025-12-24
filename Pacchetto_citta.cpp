@@ -17,11 +17,11 @@ bool Pacchetto_citta::valida_dati() const {
     }
 
     // Validazione specifica Città
-    if (get_numero_musei < 0) {
+    if (get_numero_musei() < 0) {
         throw runtime_error("Il numero di musei non può essere negativo.");
     }
-    if(get_categoria_hotel == Categoria_hotel::Unknown){
-        throw runtime_error("Categoria hotel non valida")
+    if(get_categoria_hotel() == Categoria_hotel::Unknown){
+        throw runtime_error("Categoria hotel non valida");
     }
     return true;
 }
