@@ -6,18 +6,49 @@
 
 using namespace std;
 
-// costruttore (richiama quello di Pacchetto_viaggio)
+// Metodo Privato di Validazione
+bool Pacchetto_citta::valida_dati() const {
+    // Validazione ereditata (Prezzo e Giorni)
+    if (get_prezzo_base() < 0) {
+        throw runtime_error("Il prezzo base non può essere negativo.");
+    }
+    if (get_durata_giorni() <= 0) {
+        throw runtime_error("La durata del viaggio deve essere positiva.");
+    }
+
+    // Validazione specifica Città
+    if (numero_musei < 0) {
+        throw runtime_error("Il numero di musei non può essere negativo.");
+    }
+    return true;
+}
+
+// Costruttore Privato
 Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
-                               int num_musei, bool guida, Categoria_hotel hotel)
+                                 int num_musei, bool guida, Categoria_hotel hotel)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       numero_musei(num_musei),
       guida_turistica(guida),
       categoria_hotel(hotel)
 {
-    // validazione parametri specifici
-    if(numero_musei < 0) throw invalid_argument("Numero di musei negativo.");
+    // Chiamiamo la validazione
+    valida_dati();
     
     cout << "Costruito Pacchetto Città: " << codice << endl;
+}
+
+// Factory Method Statico
+shared_ptr<Pacchetto_citta> Pacchetto_citta::crea_pacchetto(string codice, string dest, int giorni, double prezzo,
+                                                            int num_musei, bool guida, Categoria_hotel hotel) {
+    try {
+        // Proviamo a creare l'oggetto e usiamo new perché il costruttore è privato
+        return shared_ptr<Pacchetto_citta>(new Pacchetto_citta(codice, dest, giorni, prezzo, num_musei, guida, hotel));
+
+    } catch (const runtime_error& e) {
+        // Gestione errore
+        cerr << "Errore creazione Pacchetto Città (" << codice << "): " << e.what() << endl;
+        return nullptr;
+    }
 }
 
 // Override di calcola prezzo finale
@@ -51,7 +82,7 @@ string Pacchetto_citta::stampa_dettagli() const{
     stringstream ss; // uso stringstream ss per incollare insieme stringhe e numeri in stringhe, altrimenti si concatenano con to_string
     
     ss << "--- Pacchetto Città d'Arte ---" << endl;
-    ss << "Codice: " << get_codice() << endl;
+    ss << "Codice: " << get_codice_pacchetto() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
