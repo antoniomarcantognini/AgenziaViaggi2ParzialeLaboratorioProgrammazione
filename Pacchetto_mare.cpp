@@ -15,7 +15,7 @@ bool Pacchetto_mare::valida_dati() const {
     if (get_durata_giorni() <= 0) {
         throw runtime_error("La durata del viaggio deve essere positiva.");
     }
-    if (get_tipologia == Categoria_pensione::Unknown) {
+    if (get_categoria_pensione() == Categoria_pensione::Unknown) {
         throw runtime_error("Tipologia pensione non valida.");
     }
 
