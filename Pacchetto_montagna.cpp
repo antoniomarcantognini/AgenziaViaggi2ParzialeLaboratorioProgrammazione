@@ -6,7 +6,26 @@
 
 using namespace std;
 
-// Costruttore
+// Metodo Privato di Validazione 
+bool Pacchetto_montagna::valida_dati() const {
+    if (get_prezzo_base() < 0) {
+        throw runtime_error("Il prezzo base non può essere negativo.");
+    }
+    if (get_durata_giorni() <= 0) {
+        throw runtime_error("La durata del viaggio deve essere positiva.");
+    }
+    if (numero_escursioni < 0) {
+        throw runtime_error("Il numero di escursioni non può essere negativo.");
+    }
+    if (difficolta == Categoria_difficolta::Unknown) {
+        throw runtime_error("Categoria difficoltà non valida (Unknown).");
+    }
+
+    // Se arriviamo qui, è tutto valido
+    return true;
+}
+
+// Costruttore Privato
 Pacchetto_montagna::Pacchetto_montagna(string codice, string dest, int giorni, double prezzo,
                                        bool skipass, int num_escursioni, Categoria_difficolta diff)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
@@ -14,10 +33,24 @@ Pacchetto_montagna::Pacchetto_montagna(string codice, string dest, int giorni, d
       numero_escursioni(num_escursioni),
       difficolta(diff)
 {
-    // Validazione input
-    if (numero_escursioni < 0) throw invalid_argument("Numero escursioni negativo.");
+    // Chiamiamo la validazione interna
+    valida_dati();
 
     cout << "Costruito Pacchetto Montagna: " << codice << endl;
+}
+
+// Factory Method Statico
+shared_ptr<Pacchetto_montagna> Pacchetto_montagna::crea_pacchetto(string codice, string dest, int giorni, double prezzo,
+                                                                  bool skipass, int num_escursioni, Categoria_difficolta diff) {
+    try {
+        // Proviamo a creare l'oggetto e usiamo new perché il costruttore è privato
+        return shared_ptr<Pacchetto_montagna>(new Pacchetto_montagna(codice, dest, giorni, prezzo, skipass, num_escursioni, diff));
+
+    } catch (const runtime_error& e) {
+        // Gestione dell'errore
+        cerr << "Errore creazione Pacchetto Montagna (" << codice << "): " << e.what() << endl;
+        return nullptr;
+    }
 }
 
 // Override di calcola prezzo finale
@@ -46,7 +79,7 @@ string Pacchetto_montagna::stampa_dettagli() const {
     stringstream ss;
 
     ss << "--- Pacchetto Vacanze Montagna ---" << endl;
-    ss << "Codice: " << get_codice() << endl;
+    ss << "Codice: " << get_codice_pacchetto() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
