@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef GESTORE_AZIENDA_H
+#define GESTORE_AZIENDA_H
+
 #include <vector>
 #include <string>
 #include <memory>
@@ -22,6 +25,8 @@ private:
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string generaCodiceUnico(char tipo);
 
+    bool Gestore_azienda::valida_inserimento_S_N(std::string stringa_S_N&, bool flag_da_aggiornare&);
+
     bool salvataggio_clienti(std::ofstream& file) const;
     bool carica_clienti(std::ifstream& file); 
 
@@ -32,6 +37,25 @@ private:
     bool carica_prenotazioni(std::ifstream& file);
     
 public:
+    // === TEMPLATES ===
+    template <typename T>
+    std::shared_ptr<T> aggiungi_elemento(vector<std::shared_ptr<T>>& lista, std::shared_ptr<T> elemento);
+    template <typename T>
+    std::shared_ptr<T> cerca_elemento(const vector<std::shared_ptr<T>>& lista, const std::string& codice)
+    template <typename T>
+    bool stampa_elementi(const vector<std::shared_ptr<T>>& lista)
+    template <typename T>
+    bool stampa_elementi_per_tipologia(const vector<std::shared_ptr<T>>& lista, const std::string& tipologia)
+    template <typename T>
+    std::string calcola_massimo_mappa(const std::unordered_map<std::string, T> counter)
+    template <typename T>
+    std::string etos(T categoria);
+    template <typename T>
+    auto stoe(string stringa, int numero_riga);
+    template <typename T>
+    auto stoe(string stringa);
+    
+
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia();
     ~Gestore_agenzia(); 
@@ -39,21 +63,16 @@ public:
     // === GESTIONE CATALOGO PACCHETTI ===
 
     // Aggiunta pacchetto avventura
-    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    const vector<string>& lista_attivita, 
-                    Categoria_adrenalina categoria, bool assicurazione);
+    bool aggiungiPacchettoAvventura();
     
     // Aggiunta pacchetto mare
-    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    bool ombrellone, bool attrezzatura, Categoria_pensione tipo);
+    bool aggiungiPacchettoMare();
     
     // Aggiunta pacchetto montagna
-    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    bool skipass_incluso, int num_escursioni, Categoria_difficolta difficolta);
+    bool aggiungiPacchettoMontagna();
     
     // Aggiunta pacchetto città
-    bool aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    int num_musei, bool guida, Categoria_hotel categoria);
+    bool aggiungiPacchettoCitta();
 
     std::shared_ptr<Pacchetto_viaggio> cercaPacchetto(std::string codice);
     bool visualizzaCatalogo() const;
@@ -87,3 +106,7 @@ public:
     bool salvaDatiSuFile(const std::string& nomefile) const;
     bool caricaDatiDaFile(const std::string& nomefile);
 };
+
+#include "Gestore_azienda.tpp"
+
+#endif 

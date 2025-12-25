@@ -8,69 +8,7 @@
 using namespace std;
 using namespace magic_enum;
 
-// TEMPLATE PER AGGIUNTA DI UN ELEMENTO AL VETTORE DI PUNTATORI
 
-template <typename T>
-shared_ptr<T> aggiungi_elemento(vector<shared_ptr<T>>& lista, shared_ptr<T> elemento) {
-    if (elemento != nullptr) {
-        lista.push_back(elemento);
-        return elemento;
-    } else {
-        throw runtime_error("Impossibile aggiungere elemento nullo alla lista.");
-        return nullptr;
-    }
-}
-
-// TEMPLATE PER RICERCA DI UN ELEMENTO NEL VETTORE DI PUNTATORI
-template <typename T>
-shared_ptr<T> cerca_elemento(const vector<shared_ptr<T>>& lista, const string& codice) {
-    for (const auto& elemento : lista) {
-        if (elemento->get_codice() == codice) {
-            return elemento;
-        }
-    }
-    return nullptr; // Elemento non trovato
-}
-
-// TEMPLATE PER LA STAMPA DI ELEMENTI IN UN VETTORE DI PUNTATORI
-template <typename T>
-bool stampa_elementi(const vector<shared_ptr<T>>& lista) {
-    for (const auto& elemento : lista) {
-        cout << elemento->stampa_dettagli() << endl;
-    }
-    return true;
-}
-
-// TEMPLATE PER LA STAMPA DI ELEMENTI IN UN VETTORE DI PUNTATORI FILTRATI PER TIPOLOGIA
-template <typename T>
-bool stampa_elementi_per_tipologia(const vector<shared_ptr<T>>& lista, const string& tipologia) {
-    for (const auto& elemento : lista) {
-        if (enum_name(elemento->get_tipologia()) == tipologia) {
-            cout << elemento->stampa_dettagli() << endl;
-        }
-    }
-    return true;
-}
-
-// TEMPLATE PER IL CALCOLO DELLA CATEGORIA PIÙ RICHIESTA
-template <typename T>
-string calcola_massimo_mappa(const unordered_map<string, T> counter) {
-    if (counter.empty()) {
-            return "Nessuna prenotazione effettuata";
-    }
-    return max_element(
-        
-        // Posizioni di inizio e fine della mappa
-        counter.begin(), 
-        counter.end(),
-
-        // Lambda per confrontare i valori delle mappe: considero "massimo" quello con il conteggio più alto
-        [](const auto& a, const auto& b) {
-            return a.second < b.second;
-        }
-
-    )->first;
-}
 
 
 // METODI PRIVATI DI UTILITY
@@ -97,6 +35,24 @@ string Gestore_azienda::generaCodiceUnico(char tipo) {
     return codice_univoco;
 }
 
+bool Gestore_azienda::valida_inserimento_S_N(string stringa_S_N&, bool flag_da_aggiornare&) {
+
+    auto calcola_flag = [](string input) {
+        if (tolower(input) == 's') return true;
+        else if (tolower(input) == 'n') return false;
+        else return menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento S/N", "Annulla operazione e torna al menu principale"});          
+    };
+
+    do{
+        cin >> stringa_S_N;
+        auto flag = calcola_flag(stringa_S_N);
+        if (flag == 2) return false;
+        else if (flag == 1) continue;
+        else flag_da_aggiornare = flag;
+    } while(1);
+    return true;
+}
+
 bool Gestore_azienda::salvataggio_clienti(std::ofstream& file) const {
     for (const auto& cliente : this->clienti) {
         file << cliente->get_codice() << ";"
@@ -104,7 +60,7 @@ bool Gestore_azienda::salvataggio_clienti(std::ofstream& file) const {
              << cliente->get_email() << ";"
              << cliente->get_telefono() << ";"
              << cliente->get_eta() << ";"
-             << enum_name(cliente->get_tipologia()) << endl;
+             << etos(cliente->get_tipologia()) << endl;
         cout << "Cliente " << cliente->get_nome_completo() << " salvato correttamente." << endl;
     }
     return true;
@@ -112,6 +68,7 @@ bool Gestore_azienda::salvataggio_clienti(std::ofstream& file) const {
 
 bool Gestore_azienda::carica_clienti(std::ifstream& file) {
     string linea;
+    int numero_riga = 0;
     vector<string> campi;
     while (getline(file, linea)) {
         for (const auto& campo : split(linea, ';')) {
@@ -124,7 +81,8 @@ bool Gestore_azienda::carica_clienti(std::ifstream& file) {
         string email = campi[2];
         string telefono = campi[3];
         int eta = stoi(campi[4]);
-        Tipologia_cliente tipologia = enum_cast<Tipologia_cliente>(campi[5]);
+        auto tipologia = stoe<Tipologia_cliente>(campi[5],++numero_riga);
+        if (!tipologia.has_value()) return false;
         aggiungiCliente(codice, nome, cognome, email, telefono, eta, tipologia);
         cout << "Cliente " << nome_cognome << " caricato correttamente." << endl;
     }
@@ -134,7 +92,7 @@ bool Gestore_azienda::carica_clienti(std::ifstream& file) {
 bool Gestore_azienda::salvataggio_pacchetti(std::ofstream& file) const {
 
     auto salva_avventura = [](const shared_ptr<Pacchetto_avventura>& pacchetto_avventura) {
-        file << enum_name(pacchetto_avventura->get_categoria_adrenalina()) << ";"
+        file << etos(pacchetto_avventura->get_categoria_adrenalina()) << ";"
              << (pacchetto_avventura->has_assicurazione() ? "Con Assicurazione" : "Senza Assicurazione") << ";";
         for (const auto& attivita : pacchetto_avventura->get_lista_attivita()) {
             file << attivita << ";";
@@ -146,21 +104,21 @@ bool Gestore_azienda::salvataggio_pacchetti(std::ofstream& file) const {
     auto salva_mare = [](const shared_ptr<Pacchetto_mare>& pacchetto_mare) {
         file << (pacchetto_mare->has_ombrellone_incluso() ? "Con Ombrellone" : "Senza Ombrellone") << ";"
              << (pacchetto_mare->has_attrezzatura_sportiva() ? "Con Attrezzatura" : "Senza Attrezzatura") << ";"
-             << enum_name(pacchetto_mare->get_categoria_pensione()) << endl;
+             << etos(pacchetto_mare->get_categoria_pensione()) << endl;
         cout << "Pacchetto Mare " << pacchetto_mare->get_codice() << " salvato correttamente." << endl;
     };
 
     auto salva_montagna = [](const shared_ptr<Pacchetto_montagna>& pacchetto_montagna) {
         file << (pacchetto_montagna->has_skipass_incluso() ? "Con Skipass" : "Senza Skipass") << ";"
              << pacchetto_montagna->get_numero_escursioni() << ";"
-             << enum_name(pacchetto_montagna->get_difficolta()) << endl;
+             << etos(pacchetto_montagna->get_difficolta()) << endl;
         cout << "Pacchetto Montagna " << pacchetto_montagna->get_codice() << " salvato correttamente." << endl;
     };
 
     auto salva_citta = [](const shared_ptr<Pacchetto_citta>& pacchetto_citta) {
         file << (pacchetto_citta->has_guida_inclusa() ? "Con Guida" : "Senza Guida") << ";"
              << pacchetto_citta->get_numero_musei() << ";";
-             << enum_name(pacchetto_citta->get_categoria_hotel()) << endl;
+             << etos(pacchetto_citta->get_categoria_hotel()) << endl;
         cout << "Pacchetto Città " << pacchetto_citta->get_codice() << " salvato correttamente." << endl;
     };
 
@@ -170,7 +128,7 @@ bool Gestore_azienda::salvataggio_pacchetti(std::ofstream& file) const {
              << pacchetto->get_durata_giorni() << ";"
              << (pacchetto->is_disponibile() ? "Disponibile" : "Non Disponibile") << ";";
              << pacchetto->calcola_prezzo_finale() << ";";
-        string tipologia_pacchetto = enum_name(pacchetto->get_tipologia());
+        string tipologia_pacchetto = etos(pacchetto->get_tipologia());
         file << tipologia_pacchetto << ";";
 
         // Salvataggio dei campi specifici in base alla tipologia
@@ -189,42 +147,47 @@ bool Gestore_azienda::salvataggio_pacchetti(std::ofstream& file) const {
 
 bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
     
-    auto carica_avventura = [this](const vector<string>& campi) {
+    auto carica_avventura = [this](const vector<string>& campi,int& numero_linea) {
         vector<string> lista_attivita;
-        Categoria_adrenalina categoria = enum_cast<Categoria_adrenalina>(campi[6]);
+        auto categoria = stoe<Categoria_adrenalina>(campi[6],++numero_linea);
+        if (!categoria.has_value()) return false;
         bool assicurazione = (campi[7] == "Con Assicurazione");
         for (size_t i = 8; i < campi.size(); ++i) {
             lista_attivita.push_back(campi[i]);
         }
-        aggiungiPacchetto(codice, destinazione, giorni, prezzo, lista_attivita, categoria, assicurazione);
+        aggiungiPacchettoAvventura();
         cout << "Pacchetto Avventura " << codice << " caricato correttamente." << endl;
     }
 
-    auto carica_mare = [this](const vector<string>& campi) {
+    auto carica_mare = [this](const vector<string>& campi,int& numero_linea) {
         bool ombrellone = (campi[6] == "Con Ombrellone");
         bool attrezzatura = (campi[7] == "Con Attrezzatura");
-        Categoria_pensione tipo = enum_cast<Categoria_pensione>(campi[8]);
-        aggiungiPacchetto(codice, destinazione, giorni, prezzo, ombrellone, attrezzatura, tipo);
+        auto tipo = stoe<Categoria_pensione>(campi[8],++numero_linea);
+        if (!categoria.has_value()) return false;
+        aggiungiPacchettoMare();
         cout << "Pacchetto Mare " << codice << " caricato correttamente." << endl;
     }
 
-    auto carica_montagna = [this](const vector<string>& campi) {
+    auto carica_montagna = [this](const vector<string>& campi, int& numero_linea) {
         bool skipass = (campi[6] == "Con Skipass");
         int numero_escursioni = stoi(campi[7]);
-        Categoria_difficolta difficolta = enum_cast<Categoria_difficolta>(campi[8]);
-        aggiungiPacchetto(codice, destinazione, giorni, prezzo, skipass, numero_escursioni, difficolta);
+        auto difficolta = stoe<Categoria_difficolta>(campi[8],++numero_linea);
+        if (!categoria.has_value()) return false;
+        aggiungiPacchettoMontagna();
         cout << "Pacchetto Montagna " << codice << " caricato correttamente." << endl;
     }
 
-    auto carica_citta = [this](const vector<string>& campi) {
+    auto carica_citta = [this](const vector<string>& campi, int& numero_linea) {
         bool guida_inclusa = (campi[6] == "Con Guida");
         int numero_musei = stoi(campi[7]);
-        Categoria_hotel categoria_hotel = enum_cast<Categoria_hotel>(campi[8]);
-        aggiungiPacchetto(codice, destinazione, giorni, prezzo, numero_musei, guida_inclusa, categoria_hotel);
+        auto categoria_hotel = stoe<Categoria_hotel>(campi[8],++numero_linea);
+        if (!categoria.has_value()) return false;
+        aggiungiPacchettoCitta();
         cout << "Pacchetto Città " << codice << " caricato correttamente." << endl;
     }
     
     string linea;
+    int numero_riga = 0;
     vector<string> campi;
     while (getline(file, linea)) {
         for (const auto& campo : split(linea, ';')) {
@@ -239,19 +202,19 @@ bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
 
         if (tipologia == "Turismo Avventura") {
             // Estrazione dei campi specifici Avventura
-            carica_avventura(campi);
+            carica_avventura(campi,numero_riga);
 
         } else if (tipologia == "Turismo Balneare") {
             // Estrazione dei campi specifici Mare
-            carica_mare(campi);
+            carica_mare(campi,numero_riga);
 
         } else if (tipologia == "Turismo Montano") {
             // Estrazione dei campi specifici Montagna
-            carica_montagna(campi);
+            carica_montagna(campi,numero_riga);
 
         } else if (tipologia == "Turismo Culturale") {
             // Estrazione dei campi specifici Città
-            carica_citta(campi);
+            carica_citta(campi,numero_riga);
 
         } else {
             cerr << "Tipologia di pacchetto non riconosciuta durante il caricamento: " << tipologia << endl;
@@ -328,71 +291,322 @@ Gestore_azienda::~Gestore_azienda() {
 // METODI DI AGGIUNTA INTERATTIVI DA INTRODURRE DOPO LA MODIFICA DEL COSTRUTTORE (privato con try/catch)
 
 // Metodo per l'aggiunta di un pacchetto avventura
-bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    const vector<string>& lista_attivita, 
-                    Categoria_adrenalina categoria, bool assicurazione) {
+bool Gestore_azienda::aggiungiPacchettoAvventura() {
 
-                    // Creazione del puntatore al nuovo pacchetto avventura
-                    shared_ptr<Pacchetto_avventura> nuovo_pacchetto = make_shared<Pacchetto_avventura>(codice, dest, giorni, prezzo, lista_attivita, categoria, assicurazione);
-                    
-                    // Aggiunta al catalogo
-                    shared_ptr<Pacchetto_avventura> temp = aggiungi_elemento(this->catalogo, nuovo_pacchetto);
-                    if (temp == nullptr) {
-                        throw runtime_error("Errore nell'aggiunta del pacchetto avventura al catalogo.");
+                    auto crea_pacchetto = [this](string codice, string dest, int giorni, double prezzo, const vector<string>& lista_attivita, Categoria_adrenalina categoria, bool assicurazione) {
+
+                        // Creazione del puntatore al nuovo pacchetto avventura
+                        shared_ptr<Pacchetto_avventura> nuovo_pacchetto = make_shared<Pacchetto_avventura>(codice, dest, giorni, prezzo, lista_attivita, categoria, assicurazione
+                        if (nuovo_pacchetto == nullptr) )  {
+                            cerr << "Errore nella creazione del pacchetto avventura." << endl;
+                            return false;
+                        } else {
+                            cout << "Pacchetto avventura creato con successo." << endl;
+                        }
+                        
+                        // Aggiunta al catalogo
+                        if (aggiungi_elemento(this->catalogo, nuovo_pacchetto) == nullptr) {
+                            cerr << "Errore nell'aggiunta del pacchetto avventura al catalogo." << endl;
+                            nuovo_pacchetto->~Pacchetto_avventura();
+                            cout << "Pacchetto avventura " << codice << " distrutto correttamente." << endl;
+                            return false;
+                        }
+    
+                        return true;
                     }
-                    
-                    return true;
+
+                    auto inserisci_dati_pacchetto = [](string& codice, string& dest, int& giorni, double& prezzo,
+                        vector<string>& lista_attivita, Categoria_adrenalina& categoria, bool& assicurazione) {
+                        cout << "=== INSERIMENTO DATI NUOVO PACCHETTO AVVENTURA ===" << endl;
+
+                        cout << "Codice Pacchetto: ";
+                        cin >> codice;
+
+                        cout << "Destinazione: ";
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        getline(cin, dest);
+
+                        cout << "Durata in giorni: ";
+                        cin >> giorni;
+
+                        cout << "Prezzo base: ";
+                        cin >> prezzo;
+
+                        cout << "Numero di attività incluse: ";
+                        int num_attivita;
+                        cin >> num_attivita;
+                        lista_attivita.clear();
+                        for (int i = 0; i < num_attivita; ++i) {
+                            string attivita;
+                            cout << "Attività #" << (i + 1) << ": ";
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            getline(cin, attivita);
+                            lista_attivita.push_back(attivita);
+                        }
+
+                        cout << "Categoria Adrenalina (scrivere ESATTAMENTE Basso, Medio o Alto): ";
+                        string categoria_str;
+                        cin >> categoria_str;
+                        auto temp = stoe<Categoria_adrenalina>(categoria_str);
+                        if (!temp.has_value()) return false;
+                        else categoria = temp;
+
+                        cout << "Assicurazione inclusa? (S/N): ";
+                        string stringa_assicurazione_inclusa;
+                        if (!stringa_S_N(stringa_assicurazione_inclusa,assicurazione)) return false;
+
+                    };
+
+                    do {
+                        string codice; string dest; int giorni; double prezzo; vector<string> lista_attivita; Categoria_adrenalina categoria; bool assicurazione;
+                        if (!inserisci_dati_pacchetto(codice, dest, giorni, prezzo, lista_attivita, categoria, assicurazione)) {
+                            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                            if (scelta == 2) {
+                                return false;
+                            } else continue;
+                        }
+                        if (crea_pacchetto(codice, dest, giorni, prezzo, lista_attivita, categoria, assicurazione)) {
+                            cout << "Pacchetto avventura " << codice << " aggiunto correttamente al sistema." << endl;
+                            return true;
+                        } else {
+                            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                            if (scelta == 2) {
+                                return false;
+                            }
+                        }
+                    } while (1);
 }
 
 // Metodo per l'aggiunta di un pacchetto mare
-bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
+bool Gestore_azienda::aggiungiPacchettoMare() {
 
-                    auto nuovo_pacchetto = [this](string codice, string dest, int giorni, double prezzo,
-                    bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
-                    // Creazione del puntatore al nuovo pacchetto mare
-                    shared_ptr<Pacchetto_mare> nuovo_pacchetto = make_shared<Pacchetto_mare>(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo);
+                    auto crea_pacchetto = [this](string codice, string dest, int giorni, double prezzo,
+                        bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
+                        // Creazione del puntatore al nuovo pacchetto mare
+                        shared_ptr<Pacchetto_mare> nuovo_pacchetto = make_shared<Pacchetto_mare>(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo);
 
-                    // Aggiunta al catalogo
-                    shared_ptr<Pacchetto_mare> temp = aggiungi_elemento(this->catalogo, nuovo_pacchetto);
-                    if (temp == nullptr) {
-                        throw runtime_error("Errore nell'aggiunta del pacchetto mare al catalogo.");
-                    }
-                    return true;
+                        // Aggiunta al catalogo
+                        if (aggiungi_elemento(this->catalogo, nuovo_pacchetto) == nullptr) {
+                            cerr << "Errore nell'aggiunta del pacchetto mare al catalogo." << endl;
+                            nuovo_pacchetto->~Pacchetto_mare();
+                            return false;
+                        }
+                        return true;    
                     };
-                    return nuovo_pacchetto(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo);
+
+                    auto inserisci_dati_pacchetto = [](string& codice, string& dest, int& giorni, double& prezzo,
+                        bool& ombrellone, bool& attrezzatura, Categoria_pensione& tipo) {
+                        cout << "=== INSERIMENTO DATI NUOVO PACCHETTO MARE ===" << endl;
+
+                        cout << "Codice Pacchetto: ";
+                        cin >> codice;
+
+                        cout << "Destinazione: ";
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        getline(cin, dest);
+
+                        cout << "Durata in giorni: ";
+                        cin >> giorni;
+
+                        cout << "Prezzo base: ";
+                        cin >> prezzo;
+
+                        cout << "Ombrellone incluso? (S/N): ";
+                        string stringa_ombrellone_incluso;
+                        if(!valida_inserimento_S_N(stringa_ombrellone_incluso,ombrellone)) return false;
+
+                        cout << "Attrezzatura inclusa? (S/N): ";
+                        string stringa_attrezzatura_inclusa;
+                        if(!valida_inserimento_S_N(stringa_attrezzatura_inclusa,attrezzatura)) return false;
+
+                        cout << "Categoria Pensione (Inserire ESATTAMENTE Solo colazione, Mezza pensione o Pensione completa): "
+                        string string_pensione;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        getline(cin, string_pensione);
+                        auto temp = stoe<Categoria_pensione>(pensione);
+                        if (!temp.has_value()) return false;
+                        else tipo = temp;
+
+                    };
+
+                    string codice; string dest; int giorni; double prezzo; bool ombrellone; bool attrezzatura; Categoria_pensione tipo;
+
+                    do {
+                    if (!inserisci_dati_pacchetto(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo)) {
+                        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                        if (scelta == 2) {
+                            return false;
+                        } else continue;
+                    }
+
+                    if (crea_pacchetto(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo)) {
+                        cout << "Pacchetto Mare " << codice << " inserito correttamente." << endl;
+                        return true; 
+                    } else {
+                        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                        if (scelta == 2) {
+                            return false;
+                        }
+                    }
+                    } while(1);
                 }
 
 // Metodo per l'aggiunta di un pacchetto montagna
-bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
-                    bool skipass_incluso, int num_escursioni, Categoria_difficolta difficolta) {
+bool Gestore_azienda::aggiungiPacchettoMontagna() {
 
-                    // Creazione del puntatore al nuovo pacchetto montagna
-                    shared_ptr<Pacchetto_montagna> nuovo_pacchetto = make_shared<Pacchetto_montagna>(codice, dest, giorni, prezzo, skipass_incluso, num_escursioni, difficolta);
+                    auto crea_pacchetto = [](string codice, string dest, int giorni, double prezzo,
+                        bool skipass_incluso, int num_escursioni, Categoria_difficolta difficolta) {
+                        
+                        // Creazione del puntatore al nuovo pacchetto montagna
+                        shared_ptr<Pacchetto_montagna> nuovo_pacchetto = make_shared<Pacchetto_montagna>(codice, dest, giorni, prezzo, skipass_incluso, num_escursioni, difficolta);
+                        if (nuovo_pacchetto == nullptr) {
+                            cerr << "Errore nella creazione del pacchetto montagna." << endl;
+                            return false;
+                        }
 
-                    // Aggiunta al catalogo
-                    shared_ptr<Pacchetto_montagna> temp = aggiungi_elemento(this->catalogo, nuovo_pacchetto);
-                    if (temp == nullptr) {
-                        throw runtime_error("Errore nell'aggiunta del pacchetto montagna al catalogo.");
+                        // Aggiunta al catalogo
+                        shared_ptr<Pacchetto_montagna> temp = aggiungi_elemento(this->catalogo, nuovo_pacchetto);
+                        if (temp == nullptr) {
+                            cerr << "Errore nell'aggiunta del pacchetto montagna al catalogo." << endl;
+                            nuovo_pacchetto->~Pacchetto_montagna();
+                            return false;
+                        }
+                    };
+
+                    auto inserisci_dati_pacchetto = [](string& codice, string& dest, int& giorni, double& prezzo,
+                        bool& skipass_incluso, int& num_escursioni, Categoria_difficolta& difficolta) {
+                        
+                        cout << "=== INSERIMENTO DATI NUOVO PACCHETTO MARE ===" << endl;
+
+                        cout << "Codice Pacchetto: ";
+                        cin >> codice;
+
+                        cout << "Destinazione: ";
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        getline(cin, dest);
+
+                        cout << "Durata in giorni: ";
+                        cin >> giorni;
+
+                        cout << "Prezzo base: ";
+                        cin >> prezzo;
+                        
+                        cout << "Skipass incluso? (S/N): ";
+                        string stringa_skipass_incluso;
+                        if(!valida_inserimento_S_N(stringa_skipass_incluso,skipass_incluso)) return false;
+
+                        cout << "Numero di escursioni: ";
+                        cin >> num_escursioni;
+
+                        cout << "Difficoltà (inserire ESATTAMENTE Facile, Media o Difficile): ";
+                        string stringa_difficolta;
+                        cin >> stringa_difficolta;
+                        auto temp = stoe<Categoria_difficolta>(stringa_difficolta);
+                        if (!temp.has_value()) return false;
+                        else difficolta = temp;
+                    };
+
+                    string codice; string dest; int giorni; double prezzo; bool skipass_incluso; int num_escursioni; Categoria_difficolta difficolta;
+
+                    do {
+                    if (!inserisci_dati_pacchetto(codice, dest, giorni, prezzo, skipass_incluso, num_escursioni, difficolta)) {
+                        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                        if (scelta == 2) {
+                            return false;
+                        } else continue;
                     }
+
+                    if (crea_pacchetto(codice, dest, giorni, prezzo, skipass_incluso, num_escursioni, difficolta)) {
+                        cout << "Pacchetto Montagna " << codice << " inserito correttamente." << endl;
+                        return true; 
+                    } else {
+                        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                        if (scelta == 2) {
+                            return false;
+                        }
+                    }
+                    } while(1);
                     
                     return true;
 }
 
 // Metodo per l'aggiunta di un pacchetto città
-bool Gestore_azienda::aggiungiPacchetto(string codice, string dest, int giorni, double prezzo,
+bool Gestore_azienda::aggiungiPacchetto() {
+
+                auto crea_pacchetto = [](string codice, string dest, int giorni, double prezzo,
                     int num_musei, bool guida, Categoria_hotel hotel) {
 
                     // Creazione del puntatore al nuovo pacchetto città
                     shared_ptr<Pacchetto_citta> nuovo_pacchetto = make_shared<Pacchetto_citta>(codice, dest, giorni, prezzo, num_musei, guida, hotel);
+                    if (nuovo_pacchetto == nullptr) {
+                        cerr << "Errore nella creazione del pacchetto città." << endl;
+                        return false;
+                    }
 
                     // Aggiunta al catalogo
                     shared_ptr<Pacchetto_citta> temp = aggiungi_elemento(this->catalogo, nuovo_pacchetto);
                     if (temp == nullptr) {
-                        throw runtime_error("Errore nell'aggiunta del pacchetto città al catalogo.");
+                        cerr << "Errore nell'aggiunta del pacchetto città al catalogo." << endl;
+                        nuovo_pacchetto->~Pacchetto_citta();
+                        return false;
+                    }
+                }
+
+                auto inserisci_dati_pacchetto = [](string& codice, string& dest, int& giorni, double& prezzo,
+                    int& num_musei, bool& guida, Categoria_hotel& hotel) {
+                    
+                    cout << "=== INSERIMENTO DATI NUOVO PACCHETTO MARE ===" << endl;
+
+                    cout << "Codice Pacchetto: ";
+                    cin >> codice;
+
+                    cout << "Destinazione: ";
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    getline(cin, dest);
+
+                    cout << "Durata in giorni: ";
+                    cin >> giorni;
+
+                    cout << "Prezzo base: ";
+                    cin >> prezzo;
+
+                    cout << "Numero di musei: ";
+                    cin >> num_musei;
+
+                    cout << "Guida inclusa? (S/N): ";
+                    string stringa_guida_inclusa;
+                    if (!valida_inserimento_S_N(stringa_guida_inclusa,guida)) return false;
+
+                    cout << "Hotel (inserire esattamente Tre stelle, Quattro stelle o Cinque stelle): ";
+                    string stringa_hotel;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    getline(cin, stringa_hotel)
+                    auto temp = stoe<Categoria_hotel>(stringa_hotel);
+                    if (!temp.has_value()) return false;
+                    else hotel = temp;
+                
+                }
+
+                string codice; string dest; int giorni; double prezzo; int num_musei; bool guida; Categoria_hotel hotel;
+
+                do {
+                    if (!inserisci_dati_pacchetto(codice, dest, giorni, prezzo, num_musei, guida, hotel)) {
+                        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                        if (scelta == 2) {
+                            return false;
+                        } else continue;
                     }
 
-                    return true;
+                    if (crea_pacchetto(codice, dest, giorni, prezzo, num_musei, guida, hotel)) {
+                        cout << "Pacchetto Montagna " << codice << " inserito correttamente." << endl;
+                        return true; 
+                    } else {
+                        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+                        if (scelta == 2) {
+                            return false;
+                        }
+                    }
+                } while(1);
 }
 shared_ptr<Pacchetto_viaggio> Gestore_azienda::cercaPacchetto(string codice) {
     return cerca_elemento(this->catalogo, codice);
@@ -422,12 +636,14 @@ bool Gestore_azienda::aggiungiCliente() {
         // Creazione del puntatore e del nuovo cliente            
         shared_ptr<Cliente> nuovo_cliente = crea_cliente(codice, nome, cognome, email, tel, eta, tipo);
         if (nuovo_cliente == nullptr) {
+            cerr << "Errore nella creazione del cliente." << endl;
             return false; // Errore nella creazione del cliente
         }
 
         // Aggiunta alla lista clienti
-        shared_ptr<Cliente> temp = aggiungi_elemento(this->clienti, nuovo_cliente);
-        if (temp == nullptr) {
+        if (aggiungi_elemento(this->clienti, nuovo_cliente) == nullptr) {
+            cerr << "Errore nell'aggiunta del cliente al sistema." << endl;
+            nuovo_cliente->~Cliente();
             return false;
         }
         return true;
@@ -457,7 +673,9 @@ bool Gestore_azienda::aggiungiCliente() {
 
         cout << "Tipologia Cliente (scrivere ESATTAMENTE Standard, Premium o VIP): ";
         cin >> tipo_str;
-        Tipologia_cliente tipo = enum_cast<Tipologia_cliente>(tipo_str);
+        auto temp = stoe<Tipologia_cliente>(tipo_str);
+        if (!temp.has_value()) return false;
+        else tipo = temp;
         return true;
     };
 
@@ -499,12 +717,15 @@ bool Gestore_azienda::aggiungiPrenotazione() {
         // Creazione del puntatore e della nuova prenotazione
         shared_ptr<Prenotazione> nuova_prenotazione = Prenotazione::crea_prenotazione(codice, cliente, pacchetto_viaggio, num_persone, data);
         if (nuova_prenotazione == nullptr) {
+            cerr << "Errore nella creazione della prenotazione." << endl;
             return false;
         }
 
         // Aggiunta alla lista prenotazioni
         shared_ptr<Prenotazione> temp = aggiungi_elemento(this->prenotazioni, nuova_prenotazione);
         if (temp == nullptr) {
+            cerr << "Errore nell'aggiunta della prenotazione al sistema." << endl;
+            nuova_prenotazione->~Prenotazione();
             return false;
         }
         return true;
