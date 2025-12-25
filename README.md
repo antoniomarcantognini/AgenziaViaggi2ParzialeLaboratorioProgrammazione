@@ -21,6 +21,8 @@ gestisci menu con le funzioni singole
 - Assicurarsi che vengano effettuati tutti i controlli su stoe tramite if(...has_value()) (__DONE__)
 - Snellire il codice del gestore_azienda
 - Scrivere i commenti nel gestore_azienda
+- Finire il main e aggiungere i prototipi
+- Correggere la visualizzazione per tipologia (eliminare template)
 # PER ANTO:
 - Togliere tipologia_to_string, string_to_tipologia ed Utils_enum (basta usare direttamente magic_enum e un template sul gestore_azienda)
 - Aggiungere il costruttore privato e try/catch nei pacchetti (poi avvisare rick e segnare nel readme di modificare gestore_azienda di conseguenza) (__DONE__)

@@ -898,3 +898,25 @@ bool Gestore_azienda::caricaDatiDaFile(const string& nomefile, const string& tip
     }
     return true;
 }
+
+// COSTRUTTORE
+Gestore_azienda::Gestore_azienda(std::vector<std::shared_ptr<Pacchetto_viaggio>> cat, std::vector<std::shared_ptr<Cliente>> cli,
+                     std::vector<std::shared_ptr<Prenotazione>> pre) :
+    catalogo(cat), clienti(cli), prenotazioni(pre) {
+        cout << "Gestione azienda inizializzata correttamente!" << endl;
+}
+
+// DISTRUTTORE
+Gestore_azienda::~Gestore_azienda() {
+    for (const auto& cliente : this->clienti) {
+        cliente->~Cliente();
+    }
+
+    for (const auto& pacchetto : this->catalogo) {
+        pacchetto->~Pacchetto_viaggio();
+    }
+
+    for (const auto& prenotazione : this->prenotazioni) {
+        prenotazione->~Prenotazione();
+    }
+}

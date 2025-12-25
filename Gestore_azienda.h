@@ -57,7 +57,8 @@ public:
     
 
     // === COSTRUTTORE E DISTRUTTORE ===
-    Gestore_agenzia();
+    Gestore_agenzia(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
+                     std::vector<std::shared_ptr<Prenotazione>> prenotazioni);
     ~Gestore_agenzia(); 
 
     // === GESTIONE CATALOGO PACCHETTI ===
