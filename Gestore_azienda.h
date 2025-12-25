@@ -102,8 +102,8 @@ public:
 
     // === GESTIONE FILE ===
     // Salva/Carica lo stato intero dell'agenzia (CSV simulato)
-    bool salvaDatiSuFile(const std::string& nomefile) const;
-    bool caricaDatiDaFile(const std::string& nomefile);
+    bool salvaDatiSuFile(const std::string& nomefile, const string& tipo) const;
+    bool caricaDatiDaFile(const std::string& nomefile, const string& tipo);
 };
 
 #include "Gestore_azienda.tpp"

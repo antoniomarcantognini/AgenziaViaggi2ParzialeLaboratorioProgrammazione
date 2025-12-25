@@ -10,6 +10,7 @@ protected:
     int durata_giorni;
     double prezzo_base;
     bool disponibile;
+    static int pacchetti_creati;
     // Costruttore
     Pacchetto_viaggio(std::string codice, std::string dest, int giorni, double prezzo);
     

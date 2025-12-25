@@ -874,15 +874,15 @@ bool Gestore_azienda::salvaDatiSuFile(const string& nomefile, const string& tipo
     if (!file) {cerr << "Errore nell'apertura del file per la scrittura: " << nomefile << endl; return false;}
 
     // Salvataggio clienti
-    if (tolower(tipo) == "clienti") {
+    if (tolower(tipo) == "cliente") {
         salvataggio_clienti(file);
         
     // Salvataggio pacchetti
-    } else if (tolower(tipo) == "pacchetti") {
+    } else if (tolower(tipo) == "pacchetto") {
         salvataggio_pacchetti(file);
     
     // Salvataggio prenotazioni
-    } else if (tolower(tipo) == "prenotazioni") {
+    } else if (tolower(tipo) == "prenotazione") {
         salvataggio_prenotazioni(file);
 
     } else {

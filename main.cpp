@@ -7,6 +7,14 @@
 
 using namespace std;
 
+static int Cliente::clienti_creati = 0;
+static int Pacchetto_viaggio::pacchetti_creati = 0;
+static int Prenotazione::prenotazioni_create = 0;
+static double Prenotazione::fatturato_totale = 0.0;
+static std::unordered_map<std::string, int> Prenotazioni::destinazioni_counter; // Mappa per contare le prenotazioni per destinazione
+static std::unordered_map<std::string, int> Prenotazioni::pacchetti_counter;   // Mappa per contare le prenotazioni per pacchetto
+static std::unordered_map<std::string, int> Prenotazioni::spesa_clienti;
+
 int main() {
     vector<shared_ptr<Pacchetto_viaggio>> catalogo;
     vector<shared_ptr<Cliente>> clienti;
@@ -23,6 +31,78 @@ int main() {
             case 6: if(uscita()); return 0;
         }
     } while(1);
+}
+
+bool uscita() {
+    int scelta = menu::stampa_menu_e_scelta(vector<string> nome_opzioni = {"MENU SALVATAGGIO IN USCITA","Salvare dati su un file","Non salvare i dati","Annulla uscita"});
+    switch (scelta) {
+        case 1: 
+            do{
+                salvataggio_dati(); 
+                int scelta_2 menu::stampa_menu_e_scelta("MENU SALVATAGGIO IN USCITA","Salvare altri tipi di dato o su altri file","Non salvare altri dati","Annulla uscita");
+                switch (scelta_2) {
+                    case 1: continue;
+                    case 2: return true;
+                    case 3: return false;
+                }while(1);
+            }
+        case 2: return true;
+        case 3: return false;
+    }
+}
+
+bool menu_file() {
+    do{
+        int scelta = menu::stampa_menu_e_scelta(vector<string> nome_opzioni = {"MENU FILE","Salva dati su file","Carica dati da file","Torna al menù principale"});
+        switch (scelta) {
+            case 1: salvataggio_dati(); break;
+            case 2: caricamento_dati(); break;
+            case 3: return true;
+        }
+    }while(1);
+}
+
+bool salvataggio_dati() {
+    string nome_file; string tipo;
+    cout << "Inserisci il nome del file: ";
+    cin >> nome_file;
+    cout << "Inserisci il tipo di variabile che deve essere salvata su questo file (Cliente, Pacchetto o Prenotazione): ";
+    cin >> tipo;
+    return gestore.salvaDatiSuFile(nome_file, tipo);
+}
+
+bool caricamento_dati() {
+    string nome_file; string tipo;
+    cout << "Inserisci il nome del file: ";
+    cin >> nome_file;
+    cout << "Inserisci il tipo di variabile che deve essere caricata da questo file (Cliente, Pacchetto o Prenotazione): ";
+    cin >> tipo;
+    return gestore.caricaDatiDaFile(nome_file, tipo);
+}
+
+bool menu_statistiche_report() {
+    do{
+        int scelta = menu::stampa_menu_e_scelta(vector<string> nome_opzioni = {"MENU STATISTICHE E REPORT","Statistiche generali","Statistiche per tipologia di pacchetto","Trova cliente migliore","Report delle destinazioni più popolari"});
+        switch (scelta) {
+            case 1: gestore.statisticheGenerali(); break;
+            case 2: gestore.statistichePerTipologia() break;
+            case 3: gestore.clienteMigliore(); break;
+            case 4: stampa_destinazioni_prenotate(); break;
+            case 5: return true;
+        }
+    }while(1);
+}
+
+bool stampa_destinazioni_prenotate() {
+    vector<pair<string, int>> destinazioni_ordinate(destinazioni.begin(), destinazioni.end());
+    sort(destinazioni_ordinate.begin(), destinazioni_ordinate.end(), 
+        [](const pair<string, int>& a, const pair<string, int>& b) {
+            return a.second < b.second;
+        }
+    )
+    for (const auto& elementi : destinazioni_ordinate) {
+        cout << pair.first << ": " << pair.second << endl;
+    }
 }
 
 bool menu_prenotazioni() {
