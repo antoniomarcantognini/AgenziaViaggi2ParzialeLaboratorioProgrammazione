@@ -39,17 +39,6 @@ bool stampa_elementi(const vector<std::shared_ptr<T>>& lista) {
     return true;
 }
 
-// TEMPLATE PER LA STAMPA DI ELEMENTI IN UN VETTORE DI PUNTATORI FILTRATI PER TIPOLOGIA
-template <typename T>
-bool stampa_elementi_per_tipologia(const vector<std::shared_ptr<T>>& lista, const std::string& tipologia) {
-    for (const auto& elemento : lista) {
-        if (enum_name(elemento->get_tipologia()) == tipologia) {
-            cout << elemento->stampa_dettagli() << endl;
-        }
-    }
-    return true;
-}
-
 // TEMPLATE PER IL CALCOLO DELLA CATEGORIA PIÙ RICHIESTA
 template <typename T>
 std::string calcola_massimo_mappa(const std::unordered_map<std::string, T> counter) {

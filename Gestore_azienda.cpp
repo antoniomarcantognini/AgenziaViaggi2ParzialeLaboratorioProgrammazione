@@ -616,8 +616,16 @@ bool Gestore_azienda::visualizzaCatalogo() const {
 }
 
 bool Gestore_azienda::visualizzaPacchettiPerTipologia(string tipo) const {
-    return stampa_elementi_per_tipologia(this->catalogo, tipo);
+    bool flag = false;
+    for (const auto& elemento : this->catalogo) {
+        if (elemento->get_tipologia() == tipo) {
+            flag = elemento->stampa_dettagli();
+        }
+    }
+    if (!flag) {cerr << "Errore! La tipologia inserita è errata!" << endl; return false;}
+    return true;
 }
+
 bool Gestore_azienda::visualizzaPacchettiDisponibili() const {
     for (const auto& pacchetto : catalogo) {
         if (pacchetto->is_disponibile()) {
@@ -704,7 +712,14 @@ bool Gestore_azienda::visualizzaClienti() const {
 }
 
 bool Gestore_azienda::visualizzaClientiPerTipologia(string tipo) const {
-    return stampa_elementi_per_tipologia(this->clienti, tipo);
+    bool flag = false;
+    for (const auto& elemento : lista) {
+        if (etos(elemento->get_tipologia()) == tipo) {
+            flag = elemento->stampa_dettagli();
+        }
+    }
+    if (!flag) {cerr << "Errore! La tipologia inserita è errata!" << endl; return false;}
+    return true;
 }
 
 
@@ -805,20 +820,24 @@ bool Gestore_azienda::visualizzaPrenotazioniCliente(string codiceCliente) const 
     for (const auto& prenotazione : prenotazioni) {
         if (prenotazione->get_cliente()->get_codice() == codiceCliente) {
             cout << "Prenotazione #" << ++i << " del cliente " << prenotazione->get_cliente()->get_nome_completo() << ":" << endl;
-            cout << prenotazione->stampa_dettagli() << endl;
+            prenotazione->stampa_dettagli();
+            return true;
         }
     }
-    return true;
+    cerr << "Cliente con codice " << codice << "non trovato";
+    return false;
 }
 bool Gestore_azienda::visualizzaPrenotazioniConfermate() const {
     int i = 0;
+    bool flag = false;
     for (const auto& prenotazione : prenotazioni) {
         if (prenotazione->is_confermata()) {
             cout << "Prenotazione confermata #" << ++i << ":" << endl;
-            cout << prenotazione->stampa_dettagli() << endl;
+            flag = prenotazione->stampa_dettagli();
         }
     }
-    return true;
+    if (!flag) cerr << "Non ci sono prenotazioni confermate!" << endl;
+    return flag;
 }
 
 // === STATISTICHE ===

@@ -45,8 +45,6 @@ public:
     template <typename T>
     bool stampa_elementi(const vector<std::shared_ptr<T>>& lista)
     template <typename T>
-    bool stampa_elementi_per_tipologia(const vector<std::shared_ptr<T>>& lista, const std::string& tipologia)
-    template <typename T>
     std::string calcola_massimo_mappa(const std::unordered_map<std::string, T> counter)
     template <typename T>
     std::string etos(T categoria);
