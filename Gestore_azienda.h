@@ -25,8 +25,10 @@ private:
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string generaCodiceUnico(char tipo);
 
+    // Metodo che valida l'inserimento corretto del valore 'S' o 'N'
     bool Gestore_azienda::valida_inserimento_S_N(std::string stringa_S_N&, bool flag_da_aggiornare&);
 
+    // Metodi per il salvataggio e il caricamento di specifiche classi
     bool salvataggio_clienti(std::ofstream& file) const;
     bool carica_clienti(std::ifstream& file); 
 
@@ -37,21 +39,37 @@ private:
     bool carica_prenotazioni(std::ifstream& file);
     
 public:
-    // === TEMPLATES ===
+    // === TEMPLATES === //
+
+    // Template per l'aggiunta di un elemento ad un vettore
     template <typename T>
     std::shared_ptr<T> aggiungi_elemento(vector<std::shared_ptr<T>>& lista, std::shared_ptr<T> elemento);
+
+    // Template per la ricerca di un elemento dato il codice e la lista in cui cercare
     template <typename T>
     std::shared_ptr<T> cerca_elemento(const vector<std::shared_ptr<T>>& lista, const std::string& codice)
+    
+    // Template di stampa di tutti gli elementi di una certa lista
     template <typename T>
     bool stampa_elementi(const vector<std::shared_ptr<T>>& lista)
+
+    // Template che calcola il massimo valore in una mappa con valori interi in .second
     template <typename T>
     std::string calcola_massimo_mappa(const std::unordered_map<std::string, T> counter)
+    
+    // Template che trasfroma variabili enum in stringhe
     template <typename T>
     std::string etos(T categoria);
+
+    // Template che trasforma stringhe in variabili enum (stampa anche il numero di riga in cui è presente l'errore - per caricamento di file)
     template <typename T>
     auto stoe(string stringa, int numero_riga);
+    
+    // Template che trasforma stringhe in variabili enum
     template <typename T>
     auto stoe(string stringa);
+
+    // Template che crea un elemento della tipologia T
     template <typename T, typename... Args>
     auto crea_elemento(Args...& args);
     
@@ -75,7 +93,10 @@ public:
     // Aggiunta pacchetto città
     bool aggiungiPacchettoCitta();
 
+    // Metodo che trova un pacchetto in funzione del codice univoco
     std::shared_ptr<Pacchetto_viaggio> cercaPacchetto(std::string codice);
+
+    // Metodi di stampa pacchetti
     bool visualizzaCatalogo() const;
     bool visualizzaPacchettiPerTipologia(std::string tipo) const; 
     bool visualizzaPacchettiDisponibili() const;
@@ -85,6 +106,7 @@ public:
     std::shared_ptr<Cliente> cercaCliente(std::string codice);
     bool visualizzaClienti() const;
     bool visualizzaClientiPerTipologia(std::string tipo) const;
+    
     // === GESTIONE PRENOTAZIONI ===
     bool aggiungiPrenotazione(); 
     bool confermaPrenotazione(std::string codicePrenotazione);
@@ -93,16 +115,18 @@ public:
     bool visualizzaPrenotazioniConfermate() const;
 
     // === STATISTICHE ===
-    bool statisticheGenerali() const;
-    // Stampa: Totale pacchetti, clienti, prenotazioni, Fatturato, Top Pacchetto, Top Destinazione
-    
-    bool statistichePerTipologia() const;
-    // Stampa quante prenotazioni ci sono per Mare, Montagna, ecc.
 
-    std::shared_ptr<Cliente> clienteMigliore() const;
+    // Stampa: Totale pacchetti, clienti, prenotazioni, Fatturato, Top Pacchetto, Top Destinazione
+    bool statisticheGenerali() const;
+    
+    // Stampa quante prenotazioni ci sono per Mare, Montagna, ecc.
+    bool statistichePerTipologia() const;
+
     // Ritorna il cliente che ha speso di più
+    std::shared_ptr<Cliente> clienteMigliore() const;
 
     // === GESTIONE FILE ===
+    
     // Salva/Carica lo stato intero dell'agenzia (CSV simulato)
     bool salvaDatiSuFile(const std::string& nomefile, const string& tipo) const;
     bool caricaDatiDaFile(const std::string& nomefile, const string& tipo);

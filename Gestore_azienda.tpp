@@ -86,12 +86,12 @@ auto stoe(string stringa) {
 template <typename T, typename... Args>
 auto crea_elemento(Args...& args) { {
     // Creazione del puntatore al nuovo pacchetto mare
-    shared_ptr<T> nuovo_pacchetto = make_shared<T>(Args... args);
+    shared_ptr<T> nuovo_elemento = make_shared<T>(Args... args);
 
     // Aggiunta al catalogo
-    if (aggiungi_elemento(this->catalogo, nuovo_pacchetto) == nullptr) {
-        cerr << "Errore nella creazione del pacchetto. Operazione annullata" << endl;
-        return nuovo_pacchetto; // aggiungi_elemento da errore solo se nuovo_pacchetto è nullo, quindi non è necessario controllare nuovo_pacchetto. 
+    if (aggiungi_elemento(this->catalogo, nuovo_elemento) == nullptr) {
+        cerr << "Errore nella creazione. Operazione annullata" << endl;
+        return false; // aggiungi_elemento da errore solo se nuovo_pacchetto è nullo, quindi non è necessario controllare nuovo_pacchetto. 
     }
     return true;
 };

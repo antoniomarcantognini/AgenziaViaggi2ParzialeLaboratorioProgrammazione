@@ -14,6 +14,7 @@ using namespace magic_enum;
 // METODI PRIVATI DI UTILITY
 // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
 string Gestore_azienda::generaCodiceUnico(char tipo) {
+    
     int numero = 0;
     string codice_univoco;
     switch (tipo) {
@@ -30,24 +31,29 @@ string Gestore_azienda::generaCodiceUnico(char tipo) {
             codice_univoco = "BKG-" + to_string(numero);
             break;
         default:
-            throw runtime_error("Tipo di codice non riconosciuto.");
+            cerr << "Errore nella creazione del codice unico: tipo non valido."
     }
     return codice_univoco;
 }
 
+// Funzione che valida l'inserimento di 'S' e 'N'. Ritorna false se si deve annullare l'operazione, true se è andata a buon fine
 bool Gestore_azienda::valida_inserimento_S_N(string stringa_S_N&, bool flag_da_aggiornare&) {
 
+    // Funzione che restituisce true se il valore inserito è 's'/'S', false se il valore inserito è 'n'/'N', valore 1 se si vuole riprovare l'inserimento, valore 2 altrimenti
     auto calcola_flag = [](string input) {
         if (tolower(input) == 's') return true;
         else if (tolower(input) == 'n') return false;
-        else return menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento S/N", "Annulla operazione e torna al menu principale"});          
+        else {
+            cerr << "Valore inserito non valido: puoi solo inserire 'S' o 'N'. Riprova: " << endl;
+            return menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento S/N", "Annulla operazione e torna al menu principale"});
+        }          
     };
 
     do{
         cin >> stringa_S_N;
         auto flag = calcola_flag(stringa_S_N);
         if (flag == 2) return false;
-        else if (flag == 1) continue;
+        else if (flag == 1) continue; // Se l'utente ha scelto di riprovare, ricomincia il ciclo while (e quindi reinserisci il valore)
         else flag_da_aggiornare = flag;
     } while(1);
     return true;
@@ -71,11 +77,14 @@ bool Gestore_azienda::carica_clienti(std::ifstream& file) {
     int numero_riga = 0;
     vector<string> campi;
     while (getline(file, linea)) {
+        // Dividiamo la stringa nel file in "campi"
         for (const auto& campo : split(linea, ';')) {
             campi.push_back(campo);
         }
+
+        // Assegnamo i valori a partire dei campi
         string codice = campi[0];
-        vector<string> nome_cognome = split(campi[1], ' ');
+        vector<string> nome_cognome = split(campi[1], ' '); // Il campo "Nome Cognome" deve essere diviso in "Nome" e "Cognome"
         string nome = nome_cognome[0];
         string cognome = nome_cognome[1];
         string email = campi[2];
@@ -83,8 +92,7 @@ bool Gestore_azienda::carica_clienti(std::ifstream& file) {
         int eta = stoi(campi[4]);
         auto tipologia = stoe<Tipologia_cliente>(campi[5],++numero_riga);
         if (!tipologia.has_value()) return false;
-        crea_elemento<Cliente>(codice, nome, cognome, email, telefono, eta, tipologia);
-        cout << "Cliente " << nome_cognome << " caricato correttamente." << endl;
+        if(crea_elemento<Cliente>(codice, nome, cognome, email, telefono, eta, tipologia)) cout << "Cliente " << nome_cognome << " caricato correttamente." << endl;
     }
     return true;
 }
@@ -155,8 +163,7 @@ bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
         for (size_t i = 8; i < campi.size(); ++i) {
             lista_attivita.push_back(campi[i]);
         }
-        crea_elemento<Pacchetto_avventura>(codice,destinazione,giorni,disponibile,prezzo,lista_attivita,categoria,assicurazione);
-        cout << "Pacchetto Avventura " << codice << " caricato correttamente." << endl;
+        if(crea_elemento<Pacchetto_avventura>(codice,destinazione,giorni,disponibile,prezzo,lista_attivita,categoria,assicurazione)) cout << "Pacchetto Avventura " << codice << " caricato correttamente." << endl;
     }
 
     auto carica_mare = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi,int& numero_linea) {
@@ -164,8 +171,7 @@ bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
         bool attrezzatura = (campi[7] == "Con Attrezzatura");
         auto tipo = stoe<Categoria_pensione>(campi[8],++numero_linea);
         if (!tipo.has_value()) return false;
-        crea_elemento(codice,destinazione,giorni,disponibile,prezzo,ombrellone,attrezzatura,tipo);
-        cout << "Pacchetto Mare " << codice << " caricato correttamente." << endl;
+        if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,ombrellone,attrezzatura,tipo)) cout << "Pacchetto Mare " << codice << " caricato correttamente." << endl;
     }
 
     auto carica_montagna = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi, int& numero_linea) {
@@ -173,8 +179,7 @@ bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
         int numero_escursioni = stoi(campi[7]);
         auto difficolta = stoe<Categoria_difficolta>(campi[8],++numero_linea);
         if (!difficolta.has_value()) return false;
-        crea_elemento(codice,destinazione,giorni,disponibile,prezzo,skipass,numero_escursioni,difficolta);
-        cout << "Pacchetto Montagna " << codice << " caricato correttamente." << endl;
+        if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,skipass,numero_escursioni,difficolta)) cout << "Pacchetto Montagna " << codice << " caricato correttamente." << endl;
     }
 
     auto carica_citta = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi, int& numero_linea) {
@@ -182,8 +187,7 @@ bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
         int numero_musei = stoi(campi[7]);
         auto categoria_hotel = stoe<Categoria_hotel>(campi[8],++numero_linea);
         if (!categoria_hotel.has_value()) return false;
-        crea_elemento(codice,destinazione,giorni,disponibile,prezzo,guida_inclusa,numero_musei,categoria_hotel);
-        cout << "Pacchetto Città " << codice << " caricato correttamente." << endl;
+        if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,guida_inclusa,numero_musei,categoria_hotel)) cout << "Pacchetto Città " << codice << " caricato correttamente." << endl;
     }
     
     string linea;
@@ -258,9 +262,7 @@ bool Gestore_azienda::carica_prenotazioni(std::ifstream& file) {
 
         shared_ptr<Cliente> cliente = cercaCliente(codice_cliente);
         shared_ptr<Pacchetto_viaggio> pacchetto = cercaPacchetto(codice_pacchetto);
-        cout << "Prenotazione " << codice_prenotazione << " per il cliente " << codice_cliente << " e il pacchetto " << codice_pacchetto << " caricata correttamente" << endl;
-
-        crea_elemento(codice_prenotazione, cliente, pacchetto, numero_persone, data_prenotazione);
+        if(crea_elemento(codice_prenotazione, cliente, pacchetto, numero_persone, data_prenotazione)) cout << "Prenotazione " << codice_prenotazione << " per il cliente " << codice_cliente << " e il pacchetto " << codice_pacchetto << " caricata correttamente" << endl;
         
     }
     return true;

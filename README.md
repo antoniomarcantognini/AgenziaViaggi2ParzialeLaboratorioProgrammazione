@@ -22,10 +22,11 @@ gestisci menu con le funzioni singole
 - Snellire il codice del gestore_azienda
 - Scrivere i commenti nel gestore_azienda
 - (__DONE__) Finire il main
-- Aggiungere i prototipi
+- (__DONE__) Aggiungere i prototipi
 - (__DONE__) Correggere la visualizzazione per tipologia (eliminare template)
 - (__DONE__) Creare un metodo "crea..." privato e utilizzarlo nel caricamento dei file
-- Fare il controllo del "crea_elemento" nelle varie funzioni di caricamento file
+- (__DONE__) Fare il controllo del "crea_elemento" nelle varie funzioni di caricamento file
+- Scrivere le funzioni di Gestore_azienda in sneak_case
 # PER ANTO:
 - Togliere tipologia_to_string, string_to_tipologia ed Utils_enum (basta usare direttamente magic_enum e un template sul gestore_azienda)
 - Aggiungere il costruttore privato e try/catch nei pacchetti (poi avvisare rick e segnare nel readme di modificare gestore_azienda di conseguenza) (__DONE__)
