@@ -91,7 +91,9 @@ bool Gestore_azienda::carica_clienti(std::ifstream& file) {
         string telefono = campi[3];
         int eta = stoi(campi[4]);
         auto tipologia = stoe<Tipologia_cliente>(campi[5],++numero_riga);
-        if (!tipologia.has_value()) return false;
+        if (!tipologia.has_value()) return false; // Il template stoe restituisce una variabile senza valore in caso di errore
+
+        // Se la creazione dell'elemento avviene correttamente, la funzione restituisce false
         if(crea_elemento<Cliente>(codice, nome, cognome, email, telefono, eta, tipologia)) cout << "Cliente " << nome_cognome << " caricato correttamente." << endl;
     }
     return true;
