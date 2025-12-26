@@ -14,7 +14,7 @@ std::shared_ptr<T> aggiungi_elemento(vector<std::shared_ptr<T>>& lista, std::sha
         lista.push_back(elemento);
         return elemento;
     } else {
-        throw runtime_error("Impossibile aggiungere elemento nullo alla lista.");
+        cerr << "Errore! Impossibile aggiungere elemento nullo alla lista." << endl;
         return nullptr;
     }
 }
@@ -81,4 +81,18 @@ auto stoe(string stringa) {
         cerr < "Errore! La tipologia non è stata inserita correttamente!" << endl;
         return nullopt;
     }
+}
+
+template <typename T, typename... Args>
+auto crea_elemento(Args...& args) { {
+    // Creazione del puntatore al nuovo pacchetto mare
+    shared_ptr<T> nuovo_pacchetto = make_shared<T>(Args... args);
+
+    // Aggiunta al catalogo
+    if (aggiungi_elemento(this->catalogo, nuovo_pacchetto) == nullptr) {
+        cerr << "Errore nella creazione del pacchetto. Operazione annullata" << endl;
+        return nuovo_pacchetto; // aggiungi_elemento da errore solo se nuovo_pacchetto è nullo, quindi non è necessario controllare nuovo_pacchetto. 
+    }
+    return true;
+};
 }

@@ -52,6 +52,8 @@ public:
     auto stoe(string stringa, int numero_riga);
     template <typename T>
     auto stoe(string stringa);
+    template <typename T, typename... Args>
+    auto crea_elemento(Args...& args);
     
 
     // === COSTRUTTORE E DISTRUTTORE ===

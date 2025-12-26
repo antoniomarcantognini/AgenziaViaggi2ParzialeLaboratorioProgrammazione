@@ -24,7 +24,8 @@ gestisci menu con le funzioni singole
 - (__DONE__) Finire il main
 - Aggiungere i prototipi
 - (__DONE__) Correggere la visualizzazione per tipologia (eliminare template)
-- Creare un metodo "crea..." privato e utilizzarlo nel caricamento dei file
+- (__DONE__) Creare un metodo "crea..." privato e utilizzarlo nel caricamento dei file
+- Fare il controllo del "crea_elemento" nelle varie funzioni di caricamento file
 # PER ANTO:
 - Togliere tipologia_to_string, string_to_tipologia ed Utils_enum (basta usare direttamente magic_enum e un template sul gestore_azienda)
 - Aggiungere il costruttore privato e try/catch nei pacchetti (poi avvisare rick e segnare nel readme di modificare gestore_azienda di conseguenza) (__DONE__)
