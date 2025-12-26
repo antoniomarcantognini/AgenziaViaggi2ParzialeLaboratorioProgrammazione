@@ -15,6 +15,23 @@ static std::unordered_map<std::string, int> Prenotazioni::destinazioni_counter; 
 static std::unordered_map<std::string, int> Prenotazioni::pacchetti_counter;   // Mappa per contare le prenotazioni per pacchetto
 static std::unordered_map<std::string, int> Prenotazioni::spesa_clienti;
 
+bool uscita();
+bool menu_file();
+bool salvataggio_dati();
+bool caricamento_dati();
+bool menu_statistiche_report();
+bool stampa_destinazioni_prenotate();
+bool menu_prenotazioni();
+bool conferma_prenotazioni();
+bool visualizza_prenotazioni_cliente();
+bool menu_clienti();
+bool ricerca_cliente();
+bool visualizza_tipologia_clienti();
+bool menu_pacchetti();
+bool aggiunta_pacchetto();
+bool ricerca_pacchetto();
+bool visualizza_tipologia_pacchetti();
+
 int main() {
     vector<shared_ptr<Pacchetto_viaggio>> catalogo;
     vector<shared_ptr<Cliente>> clienti;
