@@ -215,6 +215,18 @@ bool Prenotazione::stampa_info(int indice_produzione) const {
     return true;
 }
 
+// Metodo per il savataggio di dati su un file
+bool Prenotazione::salva_dati_su_file(std::ofstream& file) const {
+    file << this->codice << ";"
+         << this->cliente->get_codice() << ";"
+         << this->pacchetto->get_codice() << ";"
+         << this->numero_persone << ";"
+         << this->data_prenotazione << ";"
+         << (this->confermata ? "Confermata" : "Non Confermata") << ";"
+         << this->prezzo_totale << endl;
+    cout << "Prenotazione " << this->codice << " salvata correttamente." << endl;
+}
+
 // Distruttore
 Prenotazione::~Prenotazione() {
     cout << "Prenotazione " << this->codice_prenotazione << " distrutta." << endl;

@@ -47,3 +47,12 @@ bool Pacchetto_viaggio::is_disponibile() const{
 void Pacchetto_viaggio::set_disponibile(bool disponibilita){
     this->disponibile = disponibilita;
 }
+
+bool Pacchetto_viaggio::salva_dati_su_file(ofstream& file){
+    file << this->codice_pacchetto << ";"
+         << this->destinazione << ";";
+         << this->durata_giorni << ";"
+         << (this->disponibile ? "Disponibile" : "Non Disponibile") << ";";
+         << this->prezzo_base << ";";
+    return true;
+}

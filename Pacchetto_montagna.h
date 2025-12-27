@@ -33,4 +33,7 @@ public:
     // Metodi statici di supporto
     static std::string difficolta_to_string(Categoria_difficolta diff);
     static Categoria_difficolta string_to_difficolta(std::string diff);
+
+    // Override del metodo di salvataggio su file e caricamento da file 
+    bool salva_dati_su_file(std::ofstream& file) const override;
 };

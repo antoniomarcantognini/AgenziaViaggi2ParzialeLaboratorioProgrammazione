@@ -41,6 +41,9 @@ private:
     static std::string tipologia_to_string(Tipologia_cliente tipo);
     static Tipologia_cliente string_to_tipologia(std::string tipo);
 
+    // Metodo di salvataggio di file
+    bool salva_dati_su_file(std::string& file) const;
+
     // Distruttore
     ~Cliente();
 };

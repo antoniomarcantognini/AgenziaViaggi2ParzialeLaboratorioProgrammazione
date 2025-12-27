@@ -1,15 +1,138 @@
 #include "magic_enum.hpp"
 #include "Gestore_azienda.h"
+#include "Esito_input_SN.h"
 #include <fstream>
 #include <algorithm>
+#include <cctype>
 #include <iostream>
 #include "menu.h"
 
 using namespace std;
 using namespace magic_enum;
+using namespace Esito_input_SN;
+
+namespace {
+    // Funzione che restituisce SI se il valore inserito è 's'/'S', NO se il valore inserito è 'n'/'N', RIPROVA se si vuole riprovare l'inserimento, ANNULLA altrimenti.
+    Esito_input_SN analizza_input_sn(const stringa& input) {
+        char c = tolower(input[0]);
+        if (c == 's') return SI;
+        if (c == 'n') return NO;
+
+        cerr << "Valore inserito non valido: puoi inserire solo 'S' o 'N'." << endl;
+
+        if(menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento S/N", "Annulla operazione e torna al menu principale"}) == 1) return RIPROVA;
+        else return ANNULLA;
+    }
+    
+    // Funzione che richiede carica il valore
+    bool assegna_valore_cliente(vector<string>& campi, int& numero_riga, string& codice,vector<string>& nome_cognome, string& email, string& telefono, int& eta, Tipologia_cliente& tipologia)
+        string codice = campi[0];
+        vector<string> nome_cognome = split(campi[1], ' '); // Il campo "Nome Cognome" deve essere diviso in "Nome" e "Cognome"
+        string nome = nome_cognome[0];
+        string cognome = nome_cognome[1];
+        string email = campi[2];
+        string telefono = campi[3];
+        int eta = stoi(campi[4]);
+        auto temp = stoe<Tipologia_cliente>(campi[5],++numero_riga);
+        if (!tipologia.has_value()) return false; // Il template stoe restituisce una variabile senza valore in caso di errore
+        else {tipologia = temp; return true;} 
 
 
+    // Mappa statica tra una stringa e una funzione che a seconda della tipologia di oggetto, restituisce la giusta funzione di caricamento
+    static const map<string, function<shared_ptr<Pacchetto_viaggio>(string& codice, string& destinazione, int& giorni, bool& disponibile, double& prezzo, const vector<string>& campi, int& numero_linea)>> mappa_caricamento_specifico = {
 
+        {
+            "Turismo Avventura", 
+            [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo,const vector<string>& campi,int& numero_linea) {
+                vector<string> lista_attivita;
+                auto categoria = stoe<Categoria_adrenalina>(campi[6],++numero_linea);
+                if (!categoria.has_value()) return false;
+                bool assicurazione = (campi[7] == "Con Assicurazione");
+                for (size_t i = 8; i < campi.size(); ++i) {
+                    lista_attivita.push_back(campi[i]);
+                }
+                if(crea_elemento<Pacchetto_avventura>(codice,destinazione,giorni,disponibile,prezzo,lista_attivita,categoria,assicurazione)) cout << "Pacchetto Avventura " << codice << " caricato correttamente." << endl;
+            }
+        }
+
+        {
+            "Turismo Balneare", 
+            [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi,int& numero_linea) {
+                bool ombrellone = (campi[6] == "Con Ombrellone");
+                bool attrezzatura = (campi[7] == "Con Attrezzatura");
+                auto tipo = stoe<Categoria_pensione>(campi[8],++numero_linea);
+                if (!tipo.has_value()) return false;
+                if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,ombrellone,attrezzatura,tipo)) cout << "Pacchetto Mare " << codice << " caricato correttamente." << endl;
+            }
+        }
+
+        {
+            "Turismo Montano",
+            [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi, int& numero_linea) {
+                bool skipass = (campi[6] == "Con Skipass");
+                int numero_escursioni = stoi(campi[7]);
+                auto difficolta = stoe<Categoria_difficolta>(campi[8],++numero_linea);
+                if (!difficolta.has_value()) return false;
+                if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,skipass,numero_escursioni,difficolta)) cout << "Pacchetto Montagna " << codice << " caricato correttamente." << endl;
+            }
+        }
+
+        {
+            "Città d'Arte",
+            [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi, int& numero_linea) {
+                bool guida_inclusa = (campi[6] == "Con Guida");
+                int numero_musei = stoi(campi[7]);
+                auto categoria_hotel = stoe<Categoria_hotel>(campi[8],++numero_linea);
+                if (!categoria_hotel.has_value()) return false;
+                if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,guida_inclusa,numero_musei,categoria_hotel)) cout << "Pacchetto Città " << codice << " caricato correttamente." << endl;
+            }
+        }
+    }
+
+    // Funzione di inserimento manuale dei dati da tastiera per pacchetti avventura
+    bool inserisci_dati_pacchetto(string& codice, string& dest, int& giorni, double& prezzo,
+                                    vector<string>& lista_attivita, Categoria_adrenalina& categoria, bool& assicurazione) {
+        cout << "=== INSERIMENTO DATI NUOVO PACCHETTO AVVENTURA ===" << endl;
+
+        cout << "Codice Pacchetto: ";
+        cin >> codice;
+
+        cout << "Destinazione: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, dest);
+
+        cout << "Durata in giorni: ";
+        cin >> giorni;
+
+        cout << "Prezzo base: ";
+        cin >> prezzo;
+
+        cout << "Numero di attività incluse: ";
+        int num_attivita;
+        cin >> num_attivita;
+        lista_attivita.clear();
+        for (int i = 0; i < num_attivita; ++i) {
+            string attivita;
+            cout << "Attività #" << (i + 1) << ": ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            getline(cin, attivita);
+            lista_attivita.push_back(attivita);
+        }
+
+        cout << "Categoria Adrenalina (scrivere ESATTAMENTE Basso, Medio o Alto): ";
+        string categoria_str;
+        cin >> categoria_str;
+        auto temp = stoe<Categoria_adrenalina>(categoria_str);
+        if (!temp.has_value()) return false;
+        else categoria = temp;
+
+        cout << "Assicurazione inclusa? (S/N): ";
+        string stringa_assicurazione_inclusa;
+        if (!stringa_S_N(stringa_assicurazione_inclusa,assicurazione)) return false;
+
+    }
+
+}
 
 // METODI PRIVATI DI UTILITY
 // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
@@ -37,210 +160,62 @@ string Gestore_azienda::generaCodiceUnico(char tipo) {
 }
 
 // Funzione che valida l'inserimento di 'S' e 'N'. Ritorna false se si deve annullare l'operazione, true se è andata a buon fine
-bool Gestore_azienda::valida_inserimento_S_N(string stringa_S_N&, bool flag_da_aggiornare&) {
-
-    // Funzione che restituisce true se il valore inserito è 's'/'S', false se il valore inserito è 'n'/'N', valore 1 se si vuole riprovare l'inserimento, valore 2 altrimenti
-    auto calcola_flag = [](string input) {
-        if (tolower(input) == 's') return true;
-        else if (tolower(input) == 'n') return false;
-        else {
-            cerr << "Valore inserito non valido: puoi solo inserire 'S' o 'N'. Riprova: " << endl;
-            return menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento S/N", "Annulla operazione e torna al menu principale"});
-        }          
-    };
-
+bool Gestore_azienda::valida_inserimento_S_N(string& stringa_S_N, bool& flag_da_aggiornare) {
     do{
         cin >> stringa_S_N;
-        auto flag = calcola_flag(stringa_S_N);
-        if (flag == 2) return false;
-        else if (flag == 1) continue; // Se l'utente ha scelto di riprovare, ricomincia il ciclo while (e quindi reinserisci il valore)
-        else flag_da_aggiornare = flag;
+        Esito_input_SN esito = analizza_input_sn(stringa_S_N);
+        if (esito == ANNULLA) return false;
+        else if (esito == RIPROVA) continue; // Se l'utente ha scelto di riprovare, ricomincia il ciclo while (e quindi reinserisci il valore)
+        else flag_da_aggiornare = (esito ? SI : NO);
     } while(1);
-    return true;
-}
-
-bool Gestore_azienda::salvataggio_clienti(std::ofstream& file) const {
-    for (const auto& cliente : this->clienti) {
-        file << cliente->get_codice() << ";"
-             << cliente->get_nome_completo() << ";"
-             << cliente->get_email() << ";"
-             << cliente->get_telefono() << ";"
-             << cliente->get_eta() << ";"
-             << etos(cliente->get_tipologia()) << endl;
-        cout << "Cliente " << cliente->get_nome_completo() << " salvato correttamente." << endl;
-    }
     return true;
 }
 
 bool Gestore_azienda::carica_clienti(std::ifstream& file) {
     string linea;
     int numero_riga = 0;
-    vector<string> campi;
     while (getline(file, linea)) {
+
+        // Se la linea è vuota passo alla successiva
+        if(linea.empty()) {
+            cout << "Riga #" << ++numero_riga << ": vuota";
+            continue;
+        }
+
         // Dividiamo la stringa nel file in "campi"
+        vector<string> campi;
         for (const auto& campo : split(linea, ';')) {
             campi.push_back(campo);
         }
 
-        // Assegnamo i valori a partire dei campi
-        string codice = campi[0];
-        vector<string> nome_cognome = split(campi[1], ' '); // Il campo "Nome Cognome" deve essere diviso in "Nome" e "Cognome"
-        string nome = nome_cognome[0];
-        string cognome = nome_cognome[1];
-        string email = campi[2];
-        string telefono = campi[3];
-        int eta = stoi(campi[4]);
-        auto tipologia = stoe<Tipologia_cliente>(campi[5],++numero_riga);
-        if (!tipologia.has_value()) return false; // Il template stoe restituisce una variabile senza valore in caso di errore
-
+        // Assegnazione dei valori dal file (la riga viene aggiornata in assegna_valore_cliente())
+        string codice; string nome; string cognome; string email; string telefono; int eta; Tipologia_cliente tipologia;
+        if(assegna_valore_cliente(campi,numero_riga,codice,nome,cognome,email,telefono,eta,tipologia)) continue; // Se ritorna false, passo alla riga successiva, ma segnalo l'errore e la riga (fatto dalla funzione stoe in assegna_valore_cliente)
+        
         // Se la creazione dell'elemento avviene correttamente, la funzione restituisce false
-        if(crea_elemento<Cliente>(codice, nome, cognome, email, telefono, eta, tipologia)) cout << "Cliente " << nome_cognome << " caricato correttamente." << endl;
-    }
-    return true;
-}
-
-bool Gestore_azienda::salvataggio_pacchetti(std::ofstream& file) const {
-
-    auto salva_avventura = [](const shared_ptr<Pacchetto_avventura>& pacchetto_avventura) {
-        file << etos(pacchetto_avventura->get_categoria_adrenalina()) << ";"
-             << (pacchetto_avventura->has_assicurazione() ? "Con Assicurazione" : "Senza Assicurazione") << ";";
-        for (const auto& attivita : pacchetto_avventura->get_lista_attivita()) {
-            file << attivita << ";";
-        }
-        file << endl;
-        cout << "Pacchetto Avventura " << pacchetto_avventura->get_codice() << " salvato correttamente." << endl;
-    };
-
-    auto salva_mare = [](const shared_ptr<Pacchetto_mare>& pacchetto_mare) {
-        file << (pacchetto_mare->has_ombrellone_incluso() ? "Con Ombrellone" : "Senza Ombrellone") << ";"
-             << (pacchetto_mare->has_attrezzatura_sportiva() ? "Con Attrezzatura" : "Senza Attrezzatura") << ";"
-             << etos(pacchetto_mare->get_categoria_pensione()) << endl;
-        cout << "Pacchetto Mare " << pacchetto_mare->get_codice() << " salvato correttamente." << endl;
-    };
-
-    auto salva_montagna = [](const shared_ptr<Pacchetto_montagna>& pacchetto_montagna) {
-        file << (pacchetto_montagna->has_skipass_incluso() ? "Con Skipass" : "Senza Skipass") << ";"
-             << pacchetto_montagna->get_numero_escursioni() << ";"
-             << etos(pacchetto_montagna->get_difficolta()) << endl;
-        cout << "Pacchetto Montagna " << pacchetto_montagna->get_codice() << " salvato correttamente." << endl;
-    };
-
-    auto salva_citta = [](const shared_ptr<Pacchetto_citta>& pacchetto_citta) {
-        file << (pacchetto_citta->has_guida_inclusa() ? "Con Guida" : "Senza Guida") << ";"
-             << pacchetto_citta->get_numero_musei() << ";";
-             << etos(pacchetto_citta->get_categoria_hotel()) << endl;
-        cout << "Pacchetto Città " << pacchetto_citta->get_codice() << " salvato correttamente." << endl;
-    };
-
-    for (const auto& pacchetto : this->catalogo) {
-        file << pacchetto->get_codice() << ";"
-             << pacchetto->get_destinazione() << ";";
-             << pacchetto->get_durata_giorni() << ";"
-             << (pacchetto->is_disponibile() ? "Disponibile" : "Non Disponibile") << ";";
-             << pacchetto->calcola_prezzo_finale() << ";";
-        string tipologia_pacchetto = etos(pacchetto->get_tipologia());
-        file << tipologia_pacchetto << ";";
-
-        // Salvataggio dei campi specifici in base alla tipologia
-        if (tipologia_pacchetto == "Turismo Avventura") {
-            salva_avventura(pacchetto);
-        } else if (tipologia_pacchetto == "Turismo Balneare") {
-            salva_mare(pacchetto);
-        } else if (tipologia_pacchetto == "Turismo Montano") {
-            salva_montagna(pacchetto);
-        } else if (tipologia_pacchetto == "Turismo Culturale") {
-            salva_citta(pacchetto);
-        }
+        if(crea_elemento<Cliente>(codice, nome, cognome, email, telefono, eta, tipologia)) cout << "Riga #" << numero_riga << ": Cliente " << nome_cognome << " caricato correttamente." << endl;
     }
     return true;
 }
 
 bool Gestore_azienda::carica_pacchetti(std::ifstream& file) {
-    
-    auto carica_avventura = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo,const vector<string>& campi,int& numero_linea) {
-        vector<string> lista_attivita;
-        auto categoria = stoe<Categoria_adrenalina>(campi[6],++numero_linea);
-        if (!categoria.has_value()) return false;
-        bool assicurazione = (campi[7] == "Con Assicurazione");
-        for (size_t i = 8; i < campi.size(); ++i) {
-            lista_attivita.push_back(campi[i]);
+
+        string linea;
+        int numero_riga = 0;
+        while (getline(file, linea)) {
+            vector<string> campi = split(linea,';');
+            string codice = campi[0];
+            string destinazione = campi[1];
+            int giorni = stoi(campi[2]);
+            bool disponibile = (campi[3] == "Disponibile");
+            double prezzo = stod(campi[4]);
+            string tipologia = campi[5];
+
+            auto temp = mappa_caricamento_specifico.find(tipologia)
+            if (temp != mappa_caricamento_specifico.end()) return second.mappa_caricamento_specifico(codice,destinazione,giorni,disponibile,prezzo,tipologia,campi,numero_riga);
+            else cerr << "Tipologia di pacchetto non riconosciuta durante il caricamento: " << tipologia << endl;
         }
-        if(crea_elemento<Pacchetto_avventura>(codice,destinazione,giorni,disponibile,prezzo,lista_attivita,categoria,assicurazione)) cout << "Pacchetto Avventura " << codice << " caricato correttamente." << endl;
-    }
-
-    auto carica_mare = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi,int& numero_linea) {
-        bool ombrellone = (campi[6] == "Con Ombrellone");
-        bool attrezzatura = (campi[7] == "Con Attrezzatura");
-        auto tipo = stoe<Categoria_pensione>(campi[8],++numero_linea);
-        if (!tipo.has_value()) return false;
-        if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,ombrellone,attrezzatura,tipo)) cout << "Pacchetto Mare " << codice << " caricato correttamente." << endl;
-    }
-
-    auto carica_montagna = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi, int& numero_linea) {
-        bool skipass = (campi[6] == "Con Skipass");
-        int numero_escursioni = stoi(campi[7]);
-        auto difficolta = stoe<Categoria_difficolta>(campi[8],++numero_linea);
-        if (!difficolta.has_value()) return false;
-        if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,skipass,numero_escursioni,difficolta)) cout << "Pacchetto Montagna " << codice << " caricato correttamente." << endl;
-    }
-
-    auto carica_citta = [this](string codice,string destinazione,int giorni,bool disponibile,double prezzo;const vector<string>& campi, int& numero_linea) {
-        bool guida_inclusa = (campi[6] == "Con Guida");
-        int numero_musei = stoi(campi[7]);
-        auto categoria_hotel = stoe<Categoria_hotel>(campi[8],++numero_linea);
-        if (!categoria_hotel.has_value()) return false;
-        if(crea_elemento(codice,destinazione,giorni,disponibile,prezzo,guida_inclusa,numero_musei,categoria_hotel)) cout << "Pacchetto Città " << codice << " caricato correttamente." << endl;
-    }
-    
-    string linea;
-    int numero_riga = 0;
-    vector<string> campi;
-    while (getline(file, linea)) {
-        for (const auto& campo : split(linea, ';')) {
-            campi.push_back(campo);
-        }
-        string codice = campi[0];
-        string destinazione = campi[1];
-        int giorni = stoi(campi[2]);
-        bool disponibile = (campi[3] == "Disponibile");
-        double prezzo = stod(campi[4]);
-        string tipologia = campi[5];
-
-        if (tipologia == "Turismo Avventura") {
-            // Estrazione dei campi specifici Avventura
-            carica_avventura(codice,destinazione,giorni,disponibile,prezzo,tipologia,campi,numero_riga);
-
-        } else if (tipologia == "Turismo Balneare") {
-            // Estrazione dei campi specifici Mare
-            carica_mare(campi,numero_riga);
-
-        } else if (tipologia == "Turismo Montano") {
-            // Estrazione dei campi specifici Montagna
-            carica_montagna(campi,numero_riga);
-
-        } else if (tipologia == "Turismo Culturale") {
-            // Estrazione dei campi specifici Città
-            carica_citta(campi,numero_riga);
-
-        } else {
-            cerr << "Tipologia di pacchetto non riconosciuta durante il caricamento: " << tipologia << endl;
-        }
-    }
-    return true;
-}
-
-bool Gestore_azienda::salvataggio_prenotazioni(std::ofstream& file) const {
-    for (const auto& prenotazione : this->prenotazioni) {
-        file << prenotazione->get_codice() << ";"
-             << prenotazione->get_cliente()->get_codice() << ";"
-             << prenotazione->get_pacchetto()->get_codice() << ";"
-             << prenotazione->get_numero_persone() << ";"
-             << prenotazione->get_data_prenotazione() << ";"
-             << (prenotazione->is_confermata() ? "Confermata" : "Non Confermata") << ";"
-             << prenotazione->get_prezzo_totale() << endl;
-            cout << "Prenotazione " << prenotazione->get_codice() << " salvata correttamente." << endl;
-    }
-    return true;
+        return true;
 }
 
 bool Gestore_azienda::carica_prenotazioni(std::ifstream& file) {
@@ -297,48 +272,6 @@ Gestore_azienda::~Gestore_azienda() {
 
 // Metodo per l'aggiunta di un pacchetto avventura
 bool Gestore_azienda::aggiungiPacchettoAvventura() {
-
-    auto inserisci_dati_pacchetto = [](string& codice, string& dest, int& giorni, double& prezzo,
-        vector<string>& lista_attivita, Categoria_adrenalina& categoria, bool& assicurazione) {
-        cout << "=== INSERIMENTO DATI NUOVO PACCHETTO AVVENTURA ===" << endl;
-
-        cout << "Codice Pacchetto: ";
-        cin >> codice;
-
-        cout << "Destinazione: ";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        getline(cin, dest);
-
-        cout << "Durata in giorni: ";
-        cin >> giorni;
-
-        cout << "Prezzo base: ";
-        cin >> prezzo;
-
-        cout << "Numero di attività incluse: ";
-        int num_attivita;
-        cin >> num_attivita;
-        lista_attivita.clear();
-        for (int i = 0; i < num_attivita; ++i) {
-            string attivita;
-            cout << "Attività #" << (i + 1) << ": ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            getline(cin, attivita);
-            lista_attivita.push_back(attivita);
-        }
-
-        cout << "Categoria Adrenalina (scrivere ESATTAMENTE Basso, Medio o Alto): ";
-        string categoria_str;
-        cin >> categoria_str;
-        auto temp = stoe<Categoria_adrenalina>(categoria_str);
-        if (!temp.has_value()) return false;
-        else categoria = temp;
-
-        cout << "Assicurazione inclusa? (S/N): ";
-        string stringa_assicurazione_inclusa;
-        if (!stringa_S_N(stringa_assicurazione_inclusa,assicurazione)) return false;
-
-    };
 
     do {
         string codice; string dest; int giorni; double prezzo; vector<string> lista_attivita; Categoria_adrenalina categoria; bool assicurazione;
@@ -767,15 +700,21 @@ bool Gestore_azienda::salvaDatiSuFile(const string& nomefile, const string& tipo
 
     // Salvataggio clienti
     if (tolower(tipo) == "cliente") {
-        salvataggio_clienti(file);
+        for (const auto& cliente : this->clienti) {
+            cliente->salva_dati_su_file(file);    
+        }
         
     // Salvataggio pacchetti
     } else if (tolower(tipo) == "pacchetto") {
-        salvataggio_pacchetti(file);
+        for (const auto& pacchetto : this->catalogo) {
+            pacchetto->salva_dati_su_file();
+        }
     
     // Salvataggio prenotazioni
     } else if (tolower(tipo) == "prenotazione") {
-        salvataggio_prenotazioni(file);
+        for (const auto& prenotazione : this->prenotazioni) {
+            prenotazione->salva_dati_su_file(file);
+        }
 
     } else {
         cerr << "Tipo di dato non riconosciuto per il salvataggio: " << tipo << endl;
@@ -804,10 +743,11 @@ bool Gestore_azienda::caricaDatiDaFile(const string& nomefile, const string& tip
         carica_prenotazioni(file);
 
     } else {
-        cerr << "Tipo di dato non riconosciuto per il caricamento: " << tipo << endl;
+        cerr << "Tipo di dato non riconosciuto per il caricamento." << endl;
         file.close();
         return false;
     }
+    file.close();
     return true;
 }
 

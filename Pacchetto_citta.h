@@ -34,4 +34,7 @@ public:
     // metodi statici di supporto (per convertire enum in stringa)
     static std::string categoria_to_string(Categoria_hotel cat);
     static Categoria_hotel string_to_categoria(std::string cat);
+
+    // Override del metodo di salvataggio su file
+    bool salva_dati_su_file(std::ofstream& file) const override;
 };

@@ -30,4 +30,7 @@ public:
     double get_prezzo_base() const;
     bool is_disponibile() const;
     void set_disponibile(bool disponibilita);
+
+    // Metodo virtuale per il salvataggio su file e caricamento da una riga di un file
+    virtual auto salva_dati_su_file(std::ofstream& file) const;
 };

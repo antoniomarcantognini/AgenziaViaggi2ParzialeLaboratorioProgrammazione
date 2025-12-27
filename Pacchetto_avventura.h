@@ -37,4 +37,7 @@ public:
     // Metodi statici di supporto
     static std::string categoria_to_string(Categoria_adrenalina cat);
     static Categoria_adrenalina string_to_categoria(std::string cat);
+
+    // Override del metodo di salvataggio su file
+    bool salva_dati_su_file(std::ofstream& file) const override;
 };

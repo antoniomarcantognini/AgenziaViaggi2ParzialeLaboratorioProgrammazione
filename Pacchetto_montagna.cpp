@@ -120,3 +120,12 @@ string Pacchetto_montagna::difficolta_to_string(Categoria_difficolta diff) {
 Categoria_difficolta Pacchetto_montagna::string_to_difficolta(string diff) {
     return Utils_enum::from_string<Categoria_difficolta>(diff);
 }
+
+bool Pacchetto_montagna::salva_dati_su_file(ofstream& file) const {
+    this->salva_dati_su_file(file);
+    file << (this->skipass_incluso ? "Con Skipass" : "Senza Skipass") << ";"
+         << this->numero_escursioni << ";"
+         << etos(this->difficolta) << endl;
+    cout << "Pacchetto Montagna " << this->get_codice() << " salvato correttamente." << endl;
+    return true;
+}

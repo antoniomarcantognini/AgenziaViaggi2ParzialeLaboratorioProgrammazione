@@ -128,3 +128,13 @@ string Pacchetto_citta::categoria_to_string(Categoria_hotel cat) {
 Categoria_hotel Pacchetto_citta::string_to_categoria(string cat) {
     return Utils_enum::from_string<Categoria_hotel>(cat);
 }
+
+// Override del metodo di salvataggio su file
+bool salva_dati_su_file(ofstream& file) const {
+    this->salva_dati_su_file();
+    file << (this->guida_turistica ? "Con Guida" : "Senza Guida") << ";"
+         << this->numero_musei << ";";
+         << etos(this->categoria_hotel) << endl;
+    cout << "Pacchetto Città " << this->codice << " salvato correttamente." << endl;
+    return true;
+}

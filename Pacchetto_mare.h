@@ -32,4 +32,7 @@ public:
     // metodi statici di supporto
     static std::string pensione_to_string(Categoria_pensione tipo);
     static Categoria_pensione string_to_pensione(std::string tipo);
+
+    // Override del metodo di salvataggio su file
+    bool salva_dati_su_file(std::ofstream& file) const override;
 };

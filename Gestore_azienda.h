@@ -28,14 +28,9 @@ private:
     // Metodo che valida l'inserimento corretto del valore 'S' o 'N'
     bool Gestore_azienda::valida_inserimento_S_N(std::string stringa_S_N&, bool flag_da_aggiornare&);
 
-    // Metodi per il salvataggio e il caricamento di specifiche classi
-    bool salvataggio_clienti(std::ofstream& file) const;
+    // Metodi per il caricamento di specifiche classi
     bool carica_clienti(std::ifstream& file); 
-
-    bool salvataggio_pacchetti(std::ofstream& file) const;
-    bool carica_pacchetti(std::ifstream& file);
-    
-    bool salvataggio_prenotazioni(std::ofstream& file) const;
+    bool carica_pacchetti(std::ifstream& file);    
     bool carica_prenotazioni(std::ifstream& file);
     
 public:

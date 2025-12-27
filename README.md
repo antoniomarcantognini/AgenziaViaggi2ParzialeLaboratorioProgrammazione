@@ -27,6 +27,11 @@ gestisci menu con le funzioni singole
 - (__DONE__) Creare un metodo "crea..." privato e utilizzarlo nel caricamento dei file
 - (__DONE__) Fare il controllo del "crea_elemento" nelle varie funzioni di caricamento file
 - Scrivere le funzioni di Gestore_azienda in sneak_case
+- Togliere tutti i vector<string> nei vari stampa_menu_e_scelta()
+- Cambiare la logica di salvataggio e caricamento (al posto di get_nome_cognome occorre inserire get_nome e get_cognome)
+- Modificare tutti i salvataggi dei file scrivendo file.close() e togliere in salvaDatiSuFile
+- __IMPORTANTE__ Ricordare di inserire un controllo del codice univoco nei vari caricamenti di file
+- Inserire controllo "if(linea.empty()) continue;" nelle funzioni di caricamento di file.
 # PER ANTO:
 - Togliere tipologia_to_string, string_to_tipologia ed Utils_enum (basta usare direttamente magic_enum e un template sul gestore_azienda)
 - Aggiungere il costruttore privato e try/catch nei pacchetti (poi avvisare rick e segnare nel readme di modificare gestore_azienda di conseguenza) (__DONE__)

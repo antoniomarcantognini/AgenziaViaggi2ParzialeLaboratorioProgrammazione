@@ -150,6 +150,18 @@ Tipologia_cliente Cliente::string_to_tipologia(string tipo) {
     return Utils_enum::from_string<Tipologia_cliente>(tipo); 
 }
 
+// Metodo di salvataggio di file
+bool Cliente::salva_dati_su_file(string& file) const {
+    file << this->codice_cliente << ";"
+         << this->get_nome_completo() << ";"
+         << this->email << ";"
+         << this->telefono << ";"
+         << this->eta << ";"
+         << etos(this->tipologia) << endl;
+    cout << "Cliente " << this->get_nome_completo() << " salvato correttamente." << endl;
+    return true;
+}
+
 // Distruttore
 Cliente::~Cliente() {
     cout << "Cliente " << this->codice_cliente << " distrutto." << endl;

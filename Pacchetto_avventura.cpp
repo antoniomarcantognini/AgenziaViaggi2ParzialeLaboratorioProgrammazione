@@ -147,3 +147,16 @@ string Pacchetto_avventura::categoria_to_string(Categoria_adrenalina cat) {
 Categoria_adrenalina Pacchetto_avventura::string_to_categoria(string cat) {
     return Utils_enum::from_string<Categoria_adrenalina>(cat);
 }
+
+// Override del metodo di salvataggio su file
+bool salva_dati_su_file(ofstream& file) const {
+    this->salva_dati_su_file();
+    file << etos(this->categoria_adrenalina) << ";"
+         << (this->assicurazione_extra ? "Con Assicurazione" : "Senza Assicurazione") << ";";
+    for (const auto& attivita : this->attivita) {
+        file << attivita << ";";
+    }
+    file << endl;
+    cout << "Pacchetto Avventura " << this->codice << " salvato correttamente." << endl;
+    return true;
+}

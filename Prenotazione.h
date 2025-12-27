@@ -48,6 +48,9 @@ public:
     bool conferma_prenotazione();
     bool stampa_dettagli(int indice_produzione) const;
 
+    // Metodo di salvataggio dati su un file
+    bool salva_dati_su_file(std::ofstream& file) const;
+
     // Distruttore
     ~Prenotazione();
 };

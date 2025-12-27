@@ -126,3 +126,13 @@ string Pacchetto_mare::pensione_to_string(Categoria_pensione tipo) {
 Categoria_pensione Pacchetto_mare::string_to_pensione(string tipo) {
     return Utils_enum::from_string<Categoria_pensione>(tipo);
 }
+
+// Override del metodo di salvataggio su file
+bool Pacchetto_mare::salva_dati_su_file(ofstream& file) const {
+    this->salva_dati_su_file();
+    file << (this->ombrellone_incluso ? "Con Ombrellone" : "Senza Ombrellone") << ";"
+         << (this->attrezzatura_sportiva ? "Con Attrezzatura" : "Senza Attrezzatura") << ";"
+         << etos(this->tipologia) << endl;
+    cout << "Pacchetto Mare " << this->codice << " salvato correttamente." << endl;
+    return true;
+}
