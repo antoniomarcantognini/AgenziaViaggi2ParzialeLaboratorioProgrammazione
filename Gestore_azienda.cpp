@@ -22,7 +22,7 @@ namespace {
         cerr << "Valore inserito non valido: puoi inserire solo 'S' o 'N'." << endl;
 
         // Reinserimento?
-        int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO", "Riprova inserimento S/N", "Annulla operazione e torna al menu principale"});
+        int scelta = menu::menu_reinserimento();
         if(scelta == 1) return RIPROVA;
         else return ANNULLA;
     }
@@ -360,7 +360,7 @@ bool Gestore_azienda::aggiungiPacchettoAvventura() {
 
         // Inserimento interattivo dei dati del pacchetto specifico
         if (!inserisci_dati_pacchetto(lista_attivita, categoria, assicurazione)) { // Errore -> reinserimento?
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) return false;
             else continue;
         }
@@ -370,7 +370,7 @@ bool Gestore_azienda::aggiungiPacchettoAvventura() {
             cout << "Pacchetto avventura " << codice << " aggiunto correttamente al sistema." << endl;
             return true;
         } else { // Errore -> reinserimento?
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) return false;
         }
     } while (1);
@@ -387,7 +387,7 @@ bool Gestore_azienda::aggiungiPacchettoMare() {
 
         // Inserimento interattivo dei dati del pacchetto specifici
         if (!inserisci_dati_pacchetto(ombrellone, attrezzatura, tipo)) { // Errore -> reinserimento?
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) return false; 
             else continue;
         }
@@ -397,7 +397,7 @@ bool Gestore_azienda::aggiungiPacchettoMare() {
             cout << "Pacchetto Mare " << codice << " inserito correttamente." << endl;
             return true; 
         } else { // Errore -> reinserimento?
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) return false;
         }
     } while(1);
@@ -414,7 +414,7 @@ bool Gestore_azienda::aggiungiPacchettoMontagna() {
 
         // Inserimento interattivo dei dati del pacchetto di base
         if (!inserisci_dati_pacchetto(skipass_incluso, num_escursioni, difficolta)) { // Errore -> reinserimento?
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) return false; 
             else continue;
         }
@@ -424,7 +424,7 @@ bool Gestore_azienda::aggiungiPacchettoMontagna() {
             cout << "Pacchetto Montagna " << codice << " inserito correttamente." << endl;
             return true; 
         } else { // Errore -> reinserimento?
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) return false;
         }
     } while(1);
@@ -441,7 +441,7 @@ bool Gestore_azienda::aggiungiPacchettoCitta() {
         inserisci_dati_pacchetto_base(codice,dest,giorni,prezzo);
 
         if (!inserisci_dati_pacchetto(num_musei, guida, hotel)) {
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) {
                 return false;
             } else continue;
@@ -451,7 +451,7 @@ bool Gestore_azienda::aggiungiPacchettoCitta() {
             cout << "Pacchetto Città " << codice << " inserito correttamente." << endl;
             return true; 
         } else {
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PACCHETTO", "Riprova inserimento dati pacchetto", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) {
                 return false;
             }
@@ -529,7 +529,7 @@ bool Gestore_azienda::aggiungiCliente() {
         cout << "Cliente " << nome << " " << cognome << " aggiunto correttamente al sistema." << endl;
         return true;
         } else {
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO CLIENTE", "Riprova inserimento dati cliente", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) {
                 return false;
             }
@@ -592,7 +592,7 @@ bool Gestore_azienda::aggiungiPrenotazione() {
     do {
         shared_ptr<Cliente> cliente; shared_ptr<Pacchetto_viaggio> pacchetto_viaggio; int num_persone; string data;
         if (!inserisci_dati_prenotazione(cliente, pacchetto_viaggio, num_persone, data)) {
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PRENOTAZIONE", "Riprova inserimento dati prenotazione", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) {
                 return false;
             }
@@ -603,7 +603,7 @@ bool Gestore_azienda::aggiungiPrenotazione() {
             cout << "Prenotazione per il cliente " << cliente->get_nome_completo() << " aggiunta correttamente al sistema." << endl;
             return true;
         } else {
-            int scelta = menu::stampa_menu_e_scelta({"SCELTA REINSERIMENTO PRENOTAZIONE", "Riprova inserimento dati prenotazione", "Annulla operazione e torna al menu principale"});
+            int scelta = menu::menu_reinserimento();
             if (scelta == 2) {
                 return false;
             }

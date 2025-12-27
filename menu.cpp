@@ -21,3 +21,7 @@ int stampa_menu_e_scelta(vector<std::string> nome_opzioni) {
         else cerr << "Errore! L'elemento inserito è errato: sono ammessi solo i valori 1 e 2! Riprova." << endl;
     } while (1);
 }
+
+int menu_reinserimento() {
+    stampa_menu_e_scelta({"SCELTA REINSERIMENTO", "Riprova inserimento", "Annulla operazione e torna al menu principale"});
+}

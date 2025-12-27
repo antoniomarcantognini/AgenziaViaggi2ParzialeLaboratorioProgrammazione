@@ -27,9 +27,8 @@ gestisci menu con le funzioni singole
 - (__DONE__) Creare un metodo "crea..." privato e utilizzarlo nel caricamento dei file
 - (__DONE__) Fare il controllo del "crea_elemento" nelle varie funzioni di caricamento file
 - Scrivere le funzioni di Gestore_azienda in sneak_case
-- Togliere tutti i vector<string> nei vari stampa_menu_e_scelta()
+- (__DONE__) Togliere tutti i vector<string> nei vari stampa_menu_e_scelta()
 - Cambiare la logica di salvataggio e caricamento (al posto di get_nome_cognome occorre inserire get_nome e get_cognome)
-- Modificare tutti i salvataggi dei file scrivendo file.close() e togliere in salvaDatiSuFile
 - Inserire nel main un controllo sul numero di clienti/pacchetti/prenotazioni inserite.
 - __IMPORTANTE__ Ricordare di inserire un controllo del codice univoco nei vari caricamenti di file
 - Inserire controllo "if(linea.empty()) continue;" nelle funzioni di caricamento di file.
