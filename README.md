@@ -30,6 +30,7 @@ gestisci menu con le funzioni singole
 - Togliere tutti i vector<string> nei vari stampa_menu_e_scelta()
 - Cambiare la logica di salvataggio e caricamento (al posto di get_nome_cognome occorre inserire get_nome e get_cognome)
 - Modificare tutti i salvataggi dei file scrivendo file.close() e togliere in salvaDatiSuFile
+- Inserire nel main un controllo sul numero di clienti/pacchetti/prenotazioni inserite.
 - __IMPORTANTE__ Ricordare di inserire un controllo del codice univoco nei vari caricamenti di file
 - Inserire controllo "if(linea.empty()) continue;" nelle funzioni di caricamento di file.
 # PER ANTO:

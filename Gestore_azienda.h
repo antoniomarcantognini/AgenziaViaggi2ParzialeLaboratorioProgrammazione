@@ -19,14 +19,16 @@ private:
     std::vector<std::shared_ptr<Cliente>> clienti;
     std::vector<std::shared_ptr<Prenotazione>> prenotazioni;
 
+    const map<string, function<shared_ptr<Pacchetto_viaggio>(string& codice, string& destinazione, int& giorni, bool& disponibile, double& prezzo, const vector<string>& campi, int& numero_linea)>> mappa_caricamento_specifico;
+
     // I contatori per generare codici univoci sono statici e definiti nelle rispettive classi
 
     // METODI PRIVATI DI UTILITY
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string generaCodiceUnico(char tipo);
 
-    // Metodo che valida l'inserimento corretto del valore 'S' o 'N'
-    bool Gestore_azienda::valida_inserimento_S_N(std::string stringa_S_N&, bool flag_da_aggiornare&);
+    // Metodo di inizializzazione della mappa (da usare nel costruttore)
+    bool inizializza_mappa();
 
     // Metodi per il caricamento di specifiche classi
     bool carica_clienti(std::ifstream& file); 

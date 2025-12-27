@@ -41,9 +41,9 @@ bool stampa_elementi(const vector<std::shared_ptr<T>>& lista) {
 
 // TEMPLATE PER IL CALCOLO DELLA CATEGORIA PIÙ RICHIESTA
 template <typename T>
-std::string calcola_massimo_mappa(const std::unordered_map<std::string, T> counter) {
+auto calcola_massimo_mappa(const std::unordered_map<std::string, T> counter) {
     if (counter.empty()) {
-            return "Nessuna prenotazione effettuata";
+            return nullopt;
     }
     return max_element(
         
