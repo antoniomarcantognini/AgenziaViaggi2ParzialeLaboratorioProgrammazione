@@ -3,6 +3,7 @@
 #include "Categoria_difficolta.h"
 #include <string>
 #include <memory>
+#include <fstream>
 
 class Pacchetto_montagna : public Pacchetto_viaggio{
 
