@@ -1,27 +1,33 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include "menu.h"
 
-int stampa_menu_e_scelta(vector<std::string> nome_opzioni) {
+using namespace std;
+
+int menu::stampa_menu_e_scelta(vector<string> nome_opzioni) {
     cout << " === " << nome_opzioni[0] << " === " << endl;
     size_t dimensione = nome_opzioni.size();
-    for (size_t i=0; i<dimensione; ++i) {
+    for (size_t i=1; i<dimensione; ++i) { // Partiamo da 1 perché 0 è il titolo
         cout << "   " << i << ": " << nome_opzioni[i] << endl;
     }
 
     do{
         int scelta = 0;
-        cout << "La tua scelta: " << endl;
-        cin >> scelta;
-        bool flag = true;
-        for (size_t i = 0; i<dimensione; ++i) {
-            flag = flag || scelta == i;
-            if (!flag) break;
+        cout << "La tua scelta: ";
+        if (!(cin >> scelta)) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cerr << "Input non valido." << endl;
+            continue;
         }
-        if (flag) return scelta;
-        else cerr << "Errore! L'elemento inserito è errato: sono ammessi solo i valori 1 e 2! Riprova." << endl;
+        
+        // Controllo range (1 a dimensione-1)
+        if (scelta >= 1 && scelta < (int)dimensione) return scelta;
+        else cerr << "Errore! L'elemento inserito è errato. Riprova." << endl;
     } while (1);
 }
 
-int menu_reinserimento() {
-    stampa_menu_e_scelta({"SCELTA REINSERIMENTO", "Riprova inserimento", "Annulla operazione e torna al menu principale"});
+int menu::menu_reinserimento() {
+    return stampa_menu_e_scelta({"SCELTA REINSERIMENTO", "Riprova inserimento", "Annulla operazione e torna al menu principale"});
 }
