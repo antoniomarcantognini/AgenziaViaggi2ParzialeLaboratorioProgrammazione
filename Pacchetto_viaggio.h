@@ -1,6 +1,6 @@
 #pragma once
-
 #include <iostream>
+#include <string>
 
 class Pacchetto_viaggio {
 
@@ -10,11 +10,11 @@ protected:
     int durata_giorni;
     double prezzo_base;
     bool disponibile;
-
-public:
+    static int pacchetti_creati;
     // Costruttore
-    Pacchetto_viaggio(std::string codice, std::string destinazione, int giorni, double prezzo);
-
+    Pacchetto_viaggio(std::string codice, std::string dest, int giorni, double prezzo);
+    
+public:
     // Distruttore virtuale
     virtual ~Pacchetto_viaggio();
     
@@ -27,6 +27,10 @@ public:
     std::string get_codice_pacchetto() const;
     std::string get_destinazione() const;
     int get_durata_giorni() const;
+    double get_prezzo_base() const;
     bool is_disponibile() const;
     void set_disponibile(bool disponibilita);
+
+    // Metodo virtuale per il salvataggio su file e caricamento da una riga di un file
+    virtual auto salva_dati_su_file(std::ofstream& file) const;
 };

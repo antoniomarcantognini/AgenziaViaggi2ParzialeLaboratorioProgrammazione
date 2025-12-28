@@ -1,8 +1,8 @@
 #pragma once
 
 enum class Categoria_adrenalina {
-    BASSO,
-    MEDIO,
-    ALTO,
-    UNKNOWN
+    Basso,
+    Medio,
+    Alto,
+    Unknown
 };

@@ -1,21 +1,54 @@
 #include "Pacchetto_mare.h"
+#include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
 
-// Costruttore
-Pacchetto_mare::Pacchetto_mare(string codice, string destinazione, int giorni, double prezzo,
-                               int ombrellone, bool attrezzatura, Categoria_pensione tipo)
-    : Pacchetto_viaggio(codice, destinazione, giorni, prezzo),
+// --- Metodo Privato di Validazione (Booleano) ---
+bool Pacchetto_mare::valida_dati() const {
+    // Validazione ereditata: controlli base su prezzo e giorni
+    if (get_prezzo_base() < 0) {
+        throw runtime_error("Il prezzo base non può essere negativo.");
+    }
+    if (get_durata_giorni() <= 0) {
+        throw runtime_error("La durata del viaggio deve essere positiva.");
+    }
+    if (get_categoria_pensione() == Categoria_pensione::Unknown) {
+        throw runtime_error("Tipologia pensione non valida.");
+    }
+
+    // Se arriviamo qui, è tutto valido
+    return true;
+}
+
+// Costruttore Privato
+Pacchetto_mare::Pacchetto_mare(string codice, string dest, int giorni, double prezzo,
+                               bool ombrellone, bool attrezzatura, Categoria_pensione tipo)
+    : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       ombrellone_incluso(ombrellone),
       attrezzatura_sportiva(attrezzatura),
       tipologia(tipo)
-{
-    if(ombrellone_incluso < 0) throw invalid_argument("Valore ombrellone non valido.");
-    
+{   
+    // Chiamiamo la validazione interna
+    valida_dati();
+
     cout << "Costruito Pacchetto Mare: " << codice << endl;
+}
+
+// Factory Method Statico 
+shared_ptr<Pacchetto_mare> Pacchetto_mare::crea_pacchetto(string codice, string dest, int giorni, double prezzo,
+                                                          bool ombrellone, bool attrezzatura, Categoria_pensione tipo) {
+    try {
+        // Proviamo a creare l'oggetto e usiamo new perché il costruttore è privato
+        return shared_ptr<Pacchetto_mare>(new Pacchetto_mare(codice, dest, giorni, prezzo, ombrellone, attrezzatura, tipo));
+
+    } catch (const runtime_error& e) {
+        // Gestione dell'errore
+        cerr << "Errore creazione Pacchetto Mare (" << codice << "): " << e.what() << endl;
+        return nullptr;
+    }
 }
 
 // Override di calcola prezzo finale
@@ -23,9 +56,7 @@ double Pacchetto_mare::calcola_prezzo_finale() const {
     double prezzo_totale = get_prezzo_base();
 
     // Se ombrelloneIncluso > 0 : +100€
-    if(ombrellone_incluso > 0){
-        prezzo_totale += 100.0;
-    }
+    if(ombrellone_incluso) prezzo_totale += 100.0;
 
     // Se attrezzaturaSportiva == true : +150€
     if(attrezzatura_sportiva){
@@ -34,13 +65,13 @@ double Pacchetto_mare::calcola_prezzo_finale() const {
 
     // Maggiorazione per Tipologia Pensione
     switch (tipologia) {
-        case Categoria_pensione::PENSIONE_COMPLETA:
+        case Categoria_pensione::Pensione_completa:
             prezzo_totale += 200.0;
             break;
-        case Categoria_pensione::MEZZA_PENSIONE:
+        case Categoria_pensione::Mezza_pensione:
             prezzo_totale += 100.0;
             break;
-        case Categoria_pensione::SOLO_COLAZIONE: // nessuna maggiorazione
+        case Categoria_pensione::Solo_colazione: // nessuna maggiorazione
             break;
         default:
             break;
@@ -75,7 +106,7 @@ string Pacchetto_mare::get_tipologia() const {
 }
 
 // Getter specifici
-int Pacchetto_mare::get_ombrellone_incluso() const {
+bool Pacchetto_mare::has_ombrellone_incluso() const {
     return this->ombrellone_incluso;
 }
 
@@ -87,20 +118,21 @@ Categoria_pensione Pacchetto_mare::get_categoria_pensione() const {
     return this->tipologia;
 }
 
-// Metodi statici per enum
-
+// Metodi di conversione usando il template
 string Pacchetto_mare::pensione_to_string(Categoria_pensione tipo) {
-    switch (tipo) {
-        case Categoria_pensione::SOLO_COLAZIONE:    return "Solo Colazione";
-        case Categoria_pensione::MEZZA_PENSIONE:    return "Mezza Pensione";
-        case Categoria_pensione::PENSIONE_COMPLETA: return "Pensione Completa";
-        default: return "Sconosciuto";
-    }
+    return Utils_enum::to_string(tipo); 
 }
 
 Categoria_pensione Pacchetto_mare::string_to_pensione(string tipo) {
-    if (tipo == "Solo Colazione")    return Categoria_pensione::SOLO_COLAZIONE;
-    if (tipo == "Mezza Pensione")    return Categoria_pensione::MEZZA_PENSIONE;
-    if (tipo == "Pensione Completa") return Categoria_pensione::PENSIONE_COMPLETA;
-    return Categoria_pensione::UNKNOWN;
+    return Utils_enum::from_string<Categoria_pensione>(tipo);
+}
+
+// Override del metodo di salvataggio su file
+bool Pacchetto_mare::salva_dati_su_file(ofstream& file) const {
+    this->salva_dati_su_file();
+    file << (this->ombrellone_incluso ? "Con Ombrellone" : "Senza Ombrellone") << ";"
+         << (this->attrezzatura_sportiva ? "Con Attrezzatura" : "Senza Attrezzatura") << ";"
+         << etos(this->tipologia) << endl;
+    cout << "Pacchetto Mare " << this->codice << " salvato correttamente." << endl;
+    return true;
 }

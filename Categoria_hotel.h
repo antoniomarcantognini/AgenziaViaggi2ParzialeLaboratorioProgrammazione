@@ -1,8 +1,8 @@
 #pragma once
 
 enum class Categoria_hotel{
-    TRE_STELLE,
-    QUATTRO_STELLE,
-    CINQUE_STELLE,
-    UNKNOWN // Valore di default
+    Tre_stelle,
+    Quattro_stelle,
+    Cinque_stelle,
+    Unknown
 };
