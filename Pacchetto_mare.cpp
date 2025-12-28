@@ -5,8 +5,8 @@
 #include <sstream>
 
 using namespace std;
+using namespace magic_enum;
 
-// --- Metodo Privato di Validazione (Booleano) ---
 bool Pacchetto_mare::valida_dati() const {
     // Validazione ereditata: controlli base su prezzo e giorni
     if (get_prezzo_base() < 0) {
