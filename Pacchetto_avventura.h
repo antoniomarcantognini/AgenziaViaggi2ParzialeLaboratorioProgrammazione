@@ -1,6 +1,6 @@
 #pragma once
 #include "Pacchetto_viaggio.h"
-#include "Categoria_adrenalina.h" // Oppure il tuo file enum specifico
+#include "Categoria_adrenalina.h"
 #include <string>
 #include <vector>
 #include <memory>
