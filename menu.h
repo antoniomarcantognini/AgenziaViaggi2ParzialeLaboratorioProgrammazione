@@ -1,8 +1,10 @@
 #pragma once
-
-#include <iostream>
+#include <vector>
 #include <string>
 
-int stampa_menu_e_scelta(vector<std::string> nome_opzioni);
+using namespace std;
 
-int menu_reinserimento();
+namespace menu {
+    int stampa_menu_e_scelta(vector<string> nome_opzioni);
+    int menu_reinserimento();
+}
