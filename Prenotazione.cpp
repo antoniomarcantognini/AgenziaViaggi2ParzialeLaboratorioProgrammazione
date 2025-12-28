@@ -5,9 +5,22 @@
 
 using namespace std;
 
-// Metodi privati di validazione
+// INIZIALIZZAZIONE STATICHE PRIVATE
+int Prenotazione::prenotazioni_create = 0;
+double Prenotazione::fatturato_totale = 0.0;
+std::unordered_map<std::string, int> Prenotazione::destinazioni_counter;
+std::unordered_map<std::string, int> Prenotazione::pacchetti_counter;
+std::unordered_map<std::string, int> Prenotazione::spesa_clienti;
 
-bool valida_input_prenotazione() const {
+// IMPLEMENTAZIONE GETTER STATICHE
+int Prenotazione::get_prenotazioni_create() { return prenotazioni_create; }
+double Prenotazione::get_fatturato_totale() { return fatturato_totale; }
+const std::unordered_map<std::string, int>& Prenotazione::get_destinazioni_counter() { return destinazioni_counter; }
+const std::unordered_map<std::string, int>& Prenotazione::get_pacchetti_counter() { return pacchetti_counter; }
+const std::unordered_map<std::string, int>& Prenotazione::get_spesa_clienti() { return spesa_clienti; }
+
+// Metodi privati di validazione
+bool Prenotazione::valida_input_prenotazione() const {
     auto check_pacchetto = [this]() {
         if (pacchetto_viaggio == nullptr) {
         throw runtime_error("Pacchetto non valido (nullptr).");
