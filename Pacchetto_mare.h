@@ -3,6 +3,7 @@
 #include "Categoria_pensione.h"
 #include <string>
 #include <memory>
+#include <fstream>
 
 class Pacchetto_mare : public Pacchetto_viaggio{
     
