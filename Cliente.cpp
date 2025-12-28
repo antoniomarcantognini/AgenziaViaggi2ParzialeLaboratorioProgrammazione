@@ -8,6 +8,14 @@
 
 using namespace std;
 
+// INIZIALIZZAZIONE STATIC
+int Cliente::clienti_creati = 0;
+
+// IMPLEMENTAZIONE GETTER STATIC
+int Cliente::get_clienti_creati() {
+    return clienti_creati;
+}
+
 // Metodo di Validazione input cliente con Lambda Functions
 bool Cliente::valida_dati() const {
     
@@ -78,14 +86,7 @@ Cliente::Cliente(string codice, string nome, string cognome,
       tipologia(tipo) 
 {
     valida_dati();
-
-    // Nota: l'incremento di clienti_creati di solito si fa qui, ma se lo gestisci
-    // nel gestore per generare l'ID prima di chiamare il costruttore, va bene.
-    // Se generaCodiceUnico usa clienti_creati, allora qui NON va incrementato di nuovo
-    // se non vuoi sfalsare il conteggio. Se invece generaCodiceUnico legge solo,
-    // allora decommenta la riga sotto.
-    // clienti_creati++; 
-    
+    clienti_creati++;
     cout << "Cliente " << this->codice_cliente << " creato correttamente." << endl;
 }
 
