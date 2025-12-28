@@ -29,7 +29,7 @@ Pacchetto_viaggio::Pacchetto_viaggio(string codice, string dest, int giorni, dou
 }
 
 Pacchetto_viaggio::~Pacchetto_viaggio(){
-    // cout << "Distruzione pacchetto base." << endl;
+     cout << "Distruzione pacchetto base." << endl;
 }
 
 // Getter
