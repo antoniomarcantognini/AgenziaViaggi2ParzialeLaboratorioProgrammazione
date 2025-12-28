@@ -3,6 +3,7 @@
 #include "Categoria_hotel.h"
 #include <string>
 #include <memory>
+#include <fstream>
 
 class Pacchetto_citta : public Pacchetto_viaggio{
 
