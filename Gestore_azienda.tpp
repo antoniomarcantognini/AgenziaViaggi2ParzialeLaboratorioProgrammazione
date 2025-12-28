@@ -67,7 +67,7 @@ string etos(T campo) {
 
 template <typename T>
 auto stoe(string stringa, int linea) {
-    auto tipologia = enum_cast<T>(replace( s.begin(), s.end(), ' ', '_'));
+    auto tipologia = enum_cast<T>(replace( s.begin(), s.end(), ' ', '_'));
     if (!tipologia.has_value()) {
         cerr < "Errore! La tipologia non è stata inserita correttamente in linea " << linea << "!" << endl;
         return nullopt;
@@ -76,7 +76,7 @@ auto stoe(string stringa, int linea) {
 
 template <typename T>
 auto stoe(string stringa) {
-    auto tipologia = enum_cast<T>(replace( s.begin(), s.end(), ' ', '_'));
+    auto tipologia = enum_cast<T>(replace( s.begin(), s.end(), ' ', '_'));
     if (!tipologia.has_value()) {
         cerr < "Errore! La tipologia non è stata inserita correttamente!" << endl;
         return nullopt;
