@@ -1,5 +1,5 @@
 #include "Pacchetto_mare.h"
-#include "Utils_enum.h"
+#include "magic_enum.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
