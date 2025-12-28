@@ -72,7 +72,7 @@ public:
     
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
-                     std::vector<std::shared_ptr<Prenotazione>> prenotazioni);
+                      std::vector<std::shared_ptr<Prenotazione>> prenotazioni);
     ~Gestore_agenzia(); 
 
     // === GESTIONE CATALOGO PACCHETTI ===
@@ -96,9 +96,9 @@ public:
     
     // === GESTIONE PRENOTAZIONI ===
     bool aggiungiPrenotazione(); 
-    bool confermaPrenotazione(std::string codicePrenotazione);
+    bool confermaPrenotazione(std::string codice_prenotazione);
     bool visualizzaPrenotazioni() const;
-    bool visualizzaPrenotazioniCliente(std::string codiceCliente) const;
+    bool visualizzaPrenotazioniCliente(std::string codice_cliente) const;
     bool visualizzaPrenotazioniConfermate() const;
 
     // === STATISTICHE ===
@@ -121,4 +121,4 @@ public:
 
 #include "Gestore_azienda.tpp"
 
-#endif 
+#endif
