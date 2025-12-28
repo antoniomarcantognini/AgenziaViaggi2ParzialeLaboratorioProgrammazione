@@ -1,9 +1,10 @@
 #include "Cliente.h"
-#include "Utils_enum.h"
 #include <sstream>
 #include <stdexcept>
 #include <cctype>
 #include <algorithm>
+#include <iostream>
+#include "magic_enum.hpp" 
 
 using namespace std;
 
@@ -45,7 +46,7 @@ bool Cliente::valida_dati() const {
 
     // 6. Lambda per Tipologia
     auto check_tipo = [](Tipologia_cliente t) {
-        if (t == Tipologia_cliente::UNKNOWN) 
+        if (t == Tipologia_cliente::Unknown) // Assumendo che esista Unknown nell'enum
             throw runtime_error("Tipologia cliente non valida.");
     };
 
@@ -78,7 +79,12 @@ Cliente::Cliente(string codice, string nome, string cognome,
 {
     valida_dati();
 
-    clienti_creati++; // Aggiorno il contatore statico
+    // Nota: l'incremento di clienti_creati di solito si fa qui, ma se lo gestisci
+    // nel gestore per generare l'ID prima di chiamare il costruttore, va bene.
+    // Se generaCodiceUnico usa clienti_creati, allora qui NON va incrementato di nuovo
+    // se non vuoi sfalsare il conteggio. Se invece generaCodiceUnico legge solo,
+    // allora decommenta la riga sotto.
+    // clienti_creati++; 
     
     cout << "Cliente " << this->codice_cliente << " creato correttamente." << endl;
 }
@@ -99,6 +105,14 @@ shared_ptr<Cliente> Cliente::crea_cliente(string codice, string nome, string cog
 // Getter
 string Cliente::get_codice() const{
     return this->codice_cliente;
+}
+
+string Cliente::get_nome() const {
+    return this->nome;
+}
+
+string Cliente::get_cognome() const {
+    return this->cognome;
 }
 
 string Cliente::get_nome_completo() const{
@@ -125,8 +139,8 @@ string Cliente::get_telefono() const{
 double Cliente::applica_sconto(double prezzo_base) const {
     if (prezzo_base < 0) return 0.0; // Controllo difensivo extra
     switch (this->tipologia) {
-        case Tipologia_cliente::VIP:      return prezzo_base * 0.80;
-        case Tipologia_cliente::Premium:  return prezzo_base * 0.90;
+        case Tipologia_cliente::VIP:      return prezzo_base * 0.80; // Sconto 20%
+        case Tipologia_cliente::Premium:  return prezzo_base * 0.90; // Sconto 10%
         default:                          return prezzo_base;
     }
 }
@@ -137,32 +151,32 @@ string Cliente::stampa_dettagli() const {
     ss << "Cliente: " << get_nome_completo() << " (" << this->codice_cliente << ")" << endl;
     ss << "Email: " << this->email << " | Tel: " << this->telefono << endl;
     ss << "Età: " << this->eta << endl;
-    ss << "Tipologia: " << tipologia_to_string(this->tipologia);
+    // Usa magic_enum per stampare il nome dell'enum
+    ss << "Tipologia: " << magic_enum::enum_name(this->tipologia); 
     return ss.str();
 }
 
-// Metodi di conversione usando il template
-string Cliente::tipologia_to_string(Tipologia_cliente tipo) {
-    return Utils_enum::to_string(tipo); 
-}
-
-Tipologia_cliente Cliente::string_to_tipologia(string tipo) {
-    return Utils_enum::from_string<Tipologia_cliente>(tipo); 
-}
-
 // Metodo di salvataggio di file
-bool Cliente::salva_dati_su_file(string& file) const {
+// CORRETTO: prende ofstream& e separa nome/cognome
+bool Cliente::salva_dati_su_file(ofstream& file) const {
+    if (!file.is_open()) return false;
+
+    // Nota: nel tuo parser (Gestore_azienda::assegna_valore_cliente) usi:
+    // vector<string> nome_cognome = split(campi[1], ' ');
+    // Quindi qui DEVI salvarli separati da uno spazio ma nello stesso campo CSV (separato da ; dagli altri)
+    
     file << this->codice_cliente << ";"
-         << this->get_nome_completo() << ";"
+         << this->nome << " " << this->cognome << ";" // Campo 1 unito da spazio per compatibilità con tuo parser
          << this->email << ";"
          << this->telefono << ";"
          << this->eta << ";"
-         << etos(this->tipologia) << endl;
+         << magic_enum::enum_name(this->tipologia) << endl;
+         
     cout << "Cliente " << this->get_nome_completo() << " salvato correttamente." << endl;
     return true;
 }
 
 // Distruttore
 Cliente::~Cliente() {
-    cout << "Cliente " << this->codice_cliente << " distrutto." << endl;
+    // cout << "Cliente " << this->codice_cliente << " distrutto." << endl;
 }
