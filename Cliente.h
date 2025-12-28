@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <fstream>
 #include "Tipologia_cliente.h"
 
 class Cliente {
@@ -22,6 +23,9 @@ private:
             std::string email, std::string tel, int eta, Tipologia_cliente tipo);
 
  public:
+    
+    static int get_clienti_creati();
+    
     static std::shared_ptr<Cliente> crea_cliente(std::string codice, std::string nome, std::string cognome, 
                                                  std::string email, std::string tel, int eta, Tipologia_cliente tipo);
 
