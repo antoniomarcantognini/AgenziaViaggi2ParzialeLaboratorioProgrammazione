@@ -94,5 +94,5 @@ auto crea_elemento(Args...& args) { {
         return false; // aggiungi_elemento da errore solo se nuovo_pacchetto è nullo, quindi non è necessario controllare nuovo_pacchetto. 
     }
     return true;
-};
+    };
 }

@@ -70,7 +70,6 @@ public:
     template <typename T, typename... Args>
     auto crea_elemento(Args...& args);
     
-
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
                      std::vector<std::shared_ptr<Prenotazione>> prenotazioni);
@@ -78,17 +77,8 @@ public:
 
     // === GESTIONE CATALOGO PACCHETTI ===
 
-    // Aggiunta pacchetto avventura
-    bool aggiungiPacchettoAvventura();
-    
-    // Aggiunta pacchetto mare
-    bool aggiungiPacchettoMare();
-    
-    // Aggiunta pacchetto montagna
-    bool aggiungiPacchettoMontagna();
-    
-    // Aggiunta pacchetto città
-    bool aggiungiPacchettoCitta();
+    // Aggiunta pacchetto
+    bool aggiungiPacchetto();
 
     // Metodo che trova un pacchetto in funzione del codice univoco
     std::shared_ptr<Pacchetto_viaggio> cercaPacchetto(std::string codice);

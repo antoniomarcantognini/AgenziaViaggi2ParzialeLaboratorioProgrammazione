@@ -16,11 +16,10 @@ gestisci menu con le funzioni singole
 - (__DONE__) Modificare codice gestore_azienda dopo l'aggiornamento dei costruttori dei pacchetti 
 - (__DONE__) Inserire tutti i riferimenti nelle funzioni "Aggiungi..." 
 - (__DONE__) Creare file menu.h con dentro la funzione stampa_menu_e_scelta(vector<std::string> nome_opzioni) 
-- (__DONE__) Inserire template per enum_name ed enum_cast 
-- Inserire controlli input di passaggi nei metodi "Aggiungi..."
+- (__DONE__) Inserire template per enum_name ed enum_cast
 - (__DONE__) Assicurarsi che vengano effettuati tutti i controlli su stoe tramite if(...has_value()) 
-- Snellire il codice del gestore_azienda
-- Scrivere i commenti nel gestore_azienda
+- (__DONE__) Snellire il codice del gestore_azienda (Manca solo da unire "AggiungiPacchettoAvventura", "AggiungiPacchettoMare", ... in un unico "AggiungiPacchetto()")
+- (__DONE__) Scrivere i commenti nel gestore_azienda
 - (__DONE__) Finire il main
 - (__DONE__) Aggiungere i prototipi
 - (__DONE__) Correggere la visualizzazione per tipologia (eliminare template)
@@ -29,9 +28,9 @@ gestisci menu con le funzioni singole
 - Scrivere le funzioni di Gestore_azienda in sneak_case
 - (__DONE__) Togliere tutti i vector<string> nei vari stampa_menu_e_scelta()
 - Cambiare la logica di salvataggio e caricamento (al posto di get_nome_cognome occorre inserire get_nome e get_cognome)
-- Inserire nel main un controllo sul numero di clienti/pacchetti/prenotazioni inserite.
-- __IMPORTANTE__ Ricordare di inserire un controllo del codice univoco nei vari caricamenti di file
-- Inserire controllo "if(linea.empty()) continue;" nelle funzioni di caricamento di file.
+- (__DONE__) Inserire nel main un controllo sul numero di clienti/pacchetti/prenotazioni inserite.
+- (__DONE__) __IMPORTANTE__ Ricordare di inserire un controllo del codice univoco nei vari caricamenti di file
+- (__DONE__) Inserire controllo "if(linea.empty()) continue;" nelle funzioni di caricamento di file.
 # PER ANTO:
 - Togliere tipologia_to_string, string_to_tipologia ed Utils_enum (basta usare direttamente magic_enum e un template sul gestore_azienda)
 - Aggiungere il costruttore privato e try/catch nei pacchetti (poi avvisare rick e segnare nel readme di modificare gestore_azienda di conseguenza) (__DONE__)

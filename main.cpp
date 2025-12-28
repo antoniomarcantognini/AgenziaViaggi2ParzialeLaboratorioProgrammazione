@@ -28,7 +28,6 @@ bool menu_clienti();
 bool ricerca_cliente();
 bool visualizza_tipologia_clienti();
 bool menu_pacchetti();
-bool aggiunta_pacchetto();
 bool ricerca_pacchetto();
 bool visualizza_tipologia_pacchetti();
 
@@ -125,6 +124,10 @@ bool stampa_destinazioni_prenotate() {
 bool menu_prenotazioni() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU GESTIONE PRENOTAZIONI","Crea una nuova prenotazione","Conferma prenotazione","Visualizza tutte le prenotazioni", "Visualizza prenotazioni confermate", "Torna al menù principale"});
+        if (gestore->prenotazioni.size() == 0 && scelta != 1 && scelta != 6) {
+            cout << "Non sono presenti prenotazioni nel database! Puoi solo scegliere 1 o 6!" << endl;
+            continue;
+        }
         switch (scelta) {
             case 1: gestore.aggiungiPrenotazione();
             case 2: conferma_prenotazioni();
@@ -163,6 +166,10 @@ bool visualizza_prenotazioni_cliente() {
 bool menu_clienti() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU GESTIONE CLIENTI","Registra un nuovo cliente","Visualizza tutti i clienti","Cerca cliente per codice","Visualizza clienti per tipologia","Torna al menù principale"});
+        if (gestore->clienti.size() == 0 && scelta != 1 && scelta != 5) {
+            cout << "Non sono presenti clienti nel database! Puoi solo scegliere 1 o 5!" << endl;
+            continue;
+        }
         switch (scelta) {
             case 1: gestore.aggiungiCliente();
             case 2: gestore.visualizzaClienti();
@@ -194,8 +201,12 @@ bool visualizza_tipologia_clienti() {
 bool menu_pacchetti() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU GESTIONE PACCHETTI","Aggiungi un nuovo pacchetto","Visualizza tutti i pacchetti","Cerca pacchetto tramite codice","Visualizza pacchetti per tipologia","Visualizza solo pacchetti disponibili","Torna al menu principale"});
+        if (gestore->catalogo.size() == 0 && scelta != 1 && scelta != 6) {
+            cout << "Non sono presenti pacchetit nel catalogo! Puoi solo scegliere 1 o 6!" << endl;
+            continue;
+        }
         switch (scelta) {
-            case 1: aggiunta_pacchetto();
+            case 1: gestore.aggiungiPacchetto();
             case 2: gestore.visualizzaCatalogo();
             case 3: ricerca_pacchetto();
             case 4: visualizza_tipologia_pacchetti();
@@ -203,16 +214,6 @@ bool menu_pacchetti() {
             case 6: return true;
         }
     }while(1);
-}
-
-bool aggiunta_pacchetto() {
-    int scelta = menu::stampa_menu_e_scelta({"MENU SCELTA TIPOLOGIA PACCHETTO","Turismo Avventura","Turismo Balneare","Turismo Montano","Città d'arte"});
-    switch (scelta) {
-        case 1: gestore.aggiungiPacchettoAvventura(); return true;
-        case 2: gestore.aggiungiPacchettoMare(); return true;
-        case 3: gestore.aggiungiPacchettoMontagna(); return true;
-        case 4: gestore.aggiungiPacchettoCitta(); return true;
-    }
 }
 
 bool ricerca_pacchetto() {
