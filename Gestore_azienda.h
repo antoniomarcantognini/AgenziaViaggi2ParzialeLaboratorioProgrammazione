@@ -7,9 +7,18 @@
 #include <string>
 #include <memory>
 #include <iostream>
+#include <fstream>
+#include <map>
+#include <functional>
+#include <unordered_map>
+#include <optional>
 #include "Pacchetto_viaggio.h"
 #include "Cliente.h"
 #include "Prenotazione.h"
+#include "magic_enum.hpp"
+#include "Esito_input_SN.h"
+
+using namespace std;
 
 class Gestore_agenzia {
 
@@ -19,13 +28,36 @@ private:
     std::vector<std::shared_ptr<Cliente>> clienti;
     std::vector<std::shared_ptr<Prenotazione>> prenotazioni;
 
-    const map<string, function<shared_ptr<Pacchetto_viaggio>(string& codice, string& destinazione, int& giorni, bool& disponibile, double& prezzo, const vector<string>& campi, int& numero_linea)>> mappa_caricamento_specifico;
+    // Mappa per il factory: aggiornata per ritornare bool e gestire i tipi corretti
+    const map<string, function<bool(string&, string&, int&, bool&, double&, const vector<string>&, int&)>> mappa_caricamento_specifico;
 
-    // I contatori per generare codici univoci sono statici e definiti nelle rispettive classi
+    // I contatori per generare codici univoci sono statici e definiti nelle rispettive classi (Getter usati nel .cpp)
 
-    // METODI PRIVATI DI UTILITY
+    // === METODI HELPER PRIVATI (Input e Utility) ===
+    
+    // Helper statici (non modificano lo stato della classe)
+    static vector<string> split(const string& s, char delimiter);
+    static Esito_input_SN analizza_input_sn(const string& input);
+    static bool valida_inserimento_sn(string& stringa_s_n, bool& flag_da_aggiornare);
+    
+    // Helper membri (hanno bisogno di accedere a this o altri metodi)
+    string tolower_string(string stringa);
+    bool assegna_valore_cliente(vector<string>& campi, int& numero_riga, string& codice, string& nome, string& cognome, string& email, string& telefono, int& eta, Tipologia_cliente& tipologia);
+
+    // Funzioni di inserimento manuale dei dati da tastiera (Overload)
+    bool inserisci_dati_pacchetto_base(string& dest, int& giorni, double& prezzo);
+    bool inserisci_dati_pacchetto(vector<string>& lista_attivita, Categoria_adrenalina& categoria, bool& assicurazione);
+    bool inserisci_dati_pacchetto(bool& ombrellone, bool& attrezzatura, Categoria_pensione& tipo);
+    bool inserisci_dati_pacchetto(bool& skipass_incluso, int& num_escursioni, Categoria_difficolta& difficolta);
+    bool inserisci_dati_pacchetto(int& num_musei, bool& guida, Categoria_hotel& hotel);
+    
+    bool inserimento_dati_cliente(string& nome, string& cognome, string& email, string& telefono, int& eta, string& tipo_str, Tipologia_cliente& tipo);
+    bool inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio, int& num_persone, string& data);
+
+    // === METODI PRIVATI DI UTILITY LOGICA ===
+    
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
-    std::string generaCodiceUnico(char tipo);
+    std::string genera_codice_unico(char tipo);
 
     // Metodo di inizializzazione della mappa (da usare nel costruttore)
     bool inizializza_mappa();
@@ -44,31 +76,31 @@ public:
 
     // Template per la ricerca di un elemento dato il codice e la lista in cui cercare
     template <typename T>
-    std::shared_ptr<T> cerca_elemento(const vector<std::shared_ptr<T>>& lista, const std::string& codice)
+    std::shared_ptr<T> cerca_elemento(const vector<std::shared_ptr<T>>& lista, const std::string& codice);
     
     // Template di stampa di tutti gli elementi di una certa lista
     template <typename T>
-    bool stampa_elementi(const vector<std::shared_ptr<T>>& lista)
+    bool stampa_elementi(const vector<std::shared_ptr<T>>& lista) const;
 
     // Template che calcola il massimo valore in una mappa con valori interi in .second
     template <typename T>
-    std::string calcola_massimo_mappa(const std::unordered_map<std::string, T> counter)
+    std::optional<std::string> calcola_massimo_mappa(const std::unordered_map<std::string, T> counter) const;
     
     // Template che trasfroma variabili enum in stringhe
     template <typename T>
-    std::string etos(T categoria);
+    std::string etos(T categoria) const;
 
     // Template che trasforma stringhe in variabili enum (stampa anche il numero di riga in cui è presente l'errore - per caricamento di file)
     template <typename T>
-    auto stoe(string stringa, int numero_riga);
+    std::optional<T> stoe(string stringa, int numero_riga);
     
     // Template che trasforma stringhe in variabili enum
     template <typename T>
-    auto stoe(string stringa);
+    std::optional<T> stoe(string stringa);
 
-    // Template che crea un elemento della tipologia T
-    template <typename T, typename... Args>
-    auto crea_elemento(Args...& args);
+    // Template che crea un elemento della tipologia T (Nota: implementato nel factory specifico nel .cpp, questo template può rimanere se usato genericamente)
+    // template <typename T, typename... Args>
+    // auto crea_elemento(Args...& args); // Deprecato se usi i factory method specifici, ma puoi lasciarlo se lo usi nel .tpp
     
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
@@ -78,45 +110,45 @@ public:
     // === GESTIONE CATALOGO PACCHETTI ===
 
     // Aggiunta pacchetto
-    bool aggiungiPacchetto();
+    bool aggiungi_pacchetto();
 
     // Metodo che trova un pacchetto in funzione del codice univoco
-    std::shared_ptr<Pacchetto_viaggio> cercaPacchetto(std::string codice);
+    std::shared_ptr<Pacchetto_viaggio> cerca_pacchetto(std::string codice);
 
     // Metodi di stampa pacchetti
-    bool visualizzaCatalogo() const;
-    bool visualizzaPacchettiPerTipologia(std::string tipo) const; 
-    bool visualizzaPacchettiDisponibili() const;
+    bool visualizza_catalogo() const;
+    bool visualizza_pacchetti_per_tipologia(std::string tipo) const; 
+    bool visualizza_pacchetti_disponibili() const;
 
     // === GESTIONE CLIENTI ===
-    bool aggiungiCliente();
-    std::shared_ptr<Cliente> cercaCliente(std::string codice);
-    bool visualizzaClienti() const;
-    bool visualizzaClientiPerTipologia(std::string tipo) const;
+    bool aggiungi_cliente();
+    std::shared_ptr<Cliente> cerca_cliente(std::string codice);
+    bool visualizza_clienti() const;
+    bool visualizza_clienti_per_tipologia(std::string tipo) const;
     
     // === GESTIONE PRENOTAZIONI ===
-    bool aggiungiPrenotazione(); 
-    bool confermaPrenotazione(std::string codice_prenotazione);
-    bool visualizzaPrenotazioni() const;
-    bool visualizzaPrenotazioniCliente(std::string codice_cliente) const;
-    bool visualizzaPrenotazioniConfermate() const;
+    bool aggiungi_prenotazione(); 
+    bool conferma_prenotazione(std::string codice_prenotazione);
+    bool visualizza_prenotazioni() const;
+    bool visualizza_prenotazioni_cliente(std::string codice_cliente) const;
+    bool visualizza_prenotazioni_confermate() const;
 
     // === STATISTICHE ===
 
     // Stampa: Totale pacchetti, clienti, prenotazioni, Fatturato, Top Pacchetto, Top Destinazione
-    bool statisticheGenerali() const;
+    bool statistiche_generali() const;
     
     // Stampa quante prenotazioni ci sono per Mare, Montagna, ecc.
-    bool statistichePerTipologia() const;
+    bool statistiche_per_tipologia() const;
 
     // Ritorna il cliente che ha speso di più
-    std::shared_ptr<Cliente> clienteMigliore() const;
+    std::shared_ptr<Cliente> cliente_migliore() const;
 
     // === GESTIONE FILE ===
     
     // Salva/Carica lo stato intero dell'agenzia (CSV simulato)
-    bool salvaDatiSuFile(const std::string& nomefile, const string& tipo) const;
-    bool caricaDatiDaFile(const std::string& nomefile, const string& tipo);
+    bool salva_dati_su_file(const std::string& nomefile, std::string& tipo);
+    bool carica_dati_da_file(const std::string& nomefile, const string& tipo);
 };
 
 #include "Gestore_azienda.tpp"
