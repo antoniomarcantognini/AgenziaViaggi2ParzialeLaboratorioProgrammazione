@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef PRENOTAZIONE_H
+#define PRENOTAZIONE_H
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -24,7 +27,7 @@ private:
     static double fatturato_totale;
     static std::unordered_map<std::string, int> destinazioni_counter; // Mappa per contare le prenotazioni per destinazione
     static std::unordered_map<std::string, int> pacchetti_counter;   // Mappa per contare le prenotazioni per pacchetto
-    static std::unordered_map<std::string, int> spesa_clienti;      // Mappa per contare la spesa totale per cliente
+    static std::unordered_map<std::string, double> spesa_clienti;      // Mappa per contare la spesa totale per cliente
 
     // Metodo privato di validazione
     bool valida_input_prenotazione() const;
@@ -38,7 +41,7 @@ public:
     static double get_fatturato_totale();
     static const std::unordered_map<std::string, int>& get_destinazioni_counter();
     static const std::unordered_map<std::string, int>& get_pacchetti_counter();
-    static const std::unordered_map<std::string, int>& get_spesa_clienti();
+    static const std::unordered_map<std::string, double>& get_spesa_clienti();
     // Metodo statico per creare una prenotazione (shared_ptr per permettere la condivisione tra più prenotazioni dello stesso cliente o pacchetto)
     static std::shared_ptr<Prenotazione> crea_prenotazione(std::string codice, std::shared_ptr<Cliente> cliente, std::shared_ptr<Pacchetto_viaggio> pacchetto_viaggio, int num_persone, std::string data);
     
@@ -57,7 +60,7 @@ public:
     bool calcola_prezzo_totale();
 
     bool conferma_prenotazione();
-    bool stampa_info(int indice_produzione) const;
+    bool stampa_dettagli(int indice_produzione) const;
 
     // Metodo di salvataggio dati su un file
     bool salva_dati_su_file(std::ofstream& file) const;
@@ -65,3 +68,5 @@ public:
     // Distruttore
     ~Prenotazione();
 };
+
+#endif
