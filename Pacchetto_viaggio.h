@@ -30,7 +30,7 @@ public:
     virtual std::string get_tipologia() const = 0;
 
     // Getter
-    std::string get_codice_pacchetto() const;
+    std::string get_codice() const;
     std::string get_destinazione() const;
     int get_durata_giorni() const;
     double get_prezzo_base() const;
