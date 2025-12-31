@@ -27,7 +27,7 @@ bool Pacchetto_citta::valida_dati() const {
     return true;
 }
 
-// --- Costruttore Privato ---
+// Costruttore Privato
 Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
                                  int num_musei, bool guida, Categoria_hotel hotel)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
