@@ -16,7 +16,7 @@ using namespace Esito_input_SN;
 // === IMPLEMENTAZIONE METODI HELPER PRIVATI (STATIC) ===
 
 // Helper per split stringa
-vector<string> Gestore_agenzia::split(const string& s, char delimiter) {
+vector<string> Gestore_azienda::split(const string& s, char delimiter) {
     vector<string> tokens;
     string token;
     istringstream tokenStream(s);
@@ -27,7 +27,7 @@ vector<string> Gestore_agenzia::split(const string& s, char delimiter) {
 }
 
 // Funzione che restituisce SI se il valore inserito è 's'/'S', NO se il valore inserito è 'n'/'N', RIPROVA se si vuole riprovare l'inserimento, ANNULLA altrimenti.
-Esito_input_SN Gestore_agenzia::analizza_input_sn(const string& input) {
+Esito_input_SN Gestore_azienda::analizza_input_sn(const string& input) {
     if (input.empty()) return ANNULLA;
     char c = tolower(input[0]);
     if (c == 's') return SI;
@@ -45,7 +45,7 @@ Esito_input_SN Gestore_agenzia::analizza_input_sn(const string& input) {
 // continua il ciclo se si vuole riprovare, altrimenti ritorna true e aggiorna flag_da_aggiornare.
 // flag_da_aggiornare = true se è stato inserito 'S'/'s'
 // flag_da_aggiornare = false se è stato inserito 'N'/'n'
-bool Gestore_agenzia::valida_inserimento_sn(string& stringa_s_n, bool& flag_da_aggiornare) {
+bool Gestore_azienda::valida_inserimento_sn(string& stringa_s_n, bool& flag_da_aggiornare) {
     do{
         cin >> stringa_s_n;
         Esito_input_SN esito = analizza_input_sn(stringa_s_n);
@@ -58,9 +58,9 @@ bool Gestore_agenzia::valida_inserimento_sn(string& stringa_s_n, bool& flag_da_a
     } while(1);
 }
 
-// === IMPLEMENTAZIONE METODI MEMBRI DI GESTORE_AGENZIA ===
+// === IMPLEMENTAZIONE METODI MEMBRI DI Gestore_azienda ===
 
-string Gestore_agenzia::tolower_string(string stringa){
+string Gestore_azienda::tolower_string(string stringa){
     for (char &c : stringa) {
         c = tolower((unsigned char)c);
     }
@@ -68,7 +68,7 @@ string Gestore_agenzia::tolower_string(string stringa){
 }
 
 // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
-string Gestore_agenzia::genera_codice_unico(char tipo) {
+string Gestore_azienda::genera_codice_unico(char tipo) {
     int numero = 0;
     string codice_univoco;
     switch (tipo) {
@@ -92,7 +92,7 @@ string Gestore_agenzia::genera_codice_unico(char tipo) {
 }
 
 // Metodo di inizializzazione della mappa
-bool Gestore_agenzia::inizializza_mappa() {
+bool Gestore_azienda::inizializza_mappa() {
     try {
         // Lambda per caricamento Avventura
         mappa_caricamento_specifico["Turismo Avventura"] = [this](string& codice, string& dest, int& giorni, bool& disp, double& prezzo, const vector<string>& campi, int& riga) -> bool {
@@ -163,10 +163,10 @@ bool Gestore_agenzia::inizializza_mappa() {
     }
 }
 
-// === METODI DI INPUT DATI ===
+// === METODI DI INPUT DATI  ===
 
 // Funzione di inserimento manuale dei dati da tastiera per pacchetti generico
-bool Gestore_agenzia::inserisci_dati_pacchetto_base(string& dest, int& giorni, double& prezzo) {
+bool Gestore_azienda::inserisci_dati_pacchetto_base(string& dest, int& giorni, double& prezzo) {
     cout << "=== INSERIMENTO DATI NUOVO PACCHETTO ===" << endl;
     cout << "Destinazione: ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -182,7 +182,7 @@ bool Gestore_agenzia::inserisci_dati_pacchetto_base(string& dest, int& giorni, d
 }
 
 // Funzione di inserimento manuale dei dati da tastiera per pacchetti avventura
-bool Gestore_agenzia::inserisci_dati_pacchetto(vector<string>& lista_attivita, Categoria_adrenalina& categoria, bool& assicurazione) {
+bool Gestore_azienda::inserisci_dati_pacchetto(vector<string>& lista_attivita, Categoria_adrenalina& categoria, bool& assicurazione) {
     cout << "Numero di attività incluse: ";
     int num_attivita;
     if (!(cin >> num_attivita)) return false;
@@ -211,7 +211,7 @@ bool Gestore_agenzia::inserisci_dati_pacchetto(vector<string>& lista_attivita, C
 }
 
 // Funzione di inserimento manuale dei dati da tastiera per pacchetti mare
-bool Gestore_agenzia::inserisci_dati_pacchetto(bool& ombrellone, bool& attrezzatura, Categoria_pensione& tipo) {
+bool Gestore_azienda::inserisci_dati_pacchetto(bool& ombrellone, bool& attrezzatura, Categoria_pensione& tipo) {
     cout << "Ombrellone incluso? (S/N): ";
     string stringa_omb;
     if(!valida_inserimento_sn(stringa_omb, ombrellone)) return false;
@@ -232,7 +232,7 @@ bool Gestore_agenzia::inserisci_dati_pacchetto(bool& ombrellone, bool& attrezzat
 }
 
 // Funzione di inserimento manuale dei dati da tastiera per pacchetti montagna
-bool Gestore_agenzia::inserisci_dati_pacchetto(bool& skipass_incluso, int& num_escursioni, Categoria_difficolta& difficolta) {
+bool Gestore_azienda::inserisci_dati_pacchetto(bool& skipass_incluso, int& num_escursioni, Categoria_difficolta& difficolta) {
     cout << "Skipass incluso? (S/N): ";
     string stringa_skip;
     if(!valida_inserimento_sn(stringa_skip, skipass_incluso)) return false;
@@ -251,7 +251,7 @@ bool Gestore_agenzia::inserisci_dati_pacchetto(bool& skipass_incluso, int& num_e
 }
 
 // Funzione di inserimento manuale dei dati da tastiera per pacchetti città
-bool Gestore_agenzia::inserisci_dati_pacchetto(int& num_musei, bool& guida, Categoria_hotel& hotel) {
+bool Gestore_azienda::inserisci_dati_pacchetto(int& num_musei, bool& guida, Categoria_hotel& hotel) {
     cout << "Numero di musei: ";
     if (!(cin >> num_musei)) return false;
 
@@ -271,7 +271,7 @@ bool Gestore_agenzia::inserisci_dati_pacchetto(int& num_musei, bool& guida, Cate
 }
 
 // Funzione inserimento dati cliente
-bool Gestore_agenzia::inserimento_dati_cliente(string& nome, string& cognome, string& email, string& telefono,
+bool Gestore_azienda::inserimento_dati_cliente(string& nome, string& cognome, string& email, string& telefono,
     int& eta, string& tipo_str, Tipologia_cliente& tipo) {
     
     cout << "=== INSERIMENTO DATI NUOVO CLIENTE ===" << endl;
@@ -300,7 +300,7 @@ bool Gestore_agenzia::inserimento_dati_cliente(string& nome, string& cognome, st
 }
 
 // Funzione inserimento dati prenotazione
-bool Gestore_agenzia::inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio,
+bool Gestore_azienda::inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio,
     int& num_persone, string& data) {
     
     string codice_cliente; string codice_pacchetto;
@@ -334,7 +334,7 @@ bool Gestore_agenzia::inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente
 // === CARICAMENTO FILE ===
 
 // Funzione che carica il valore
-bool Gestore_agenzia::assegna_valore_cliente(vector<string>& campi, int& numero_riga, string& codice, string& nome, string& cognome, string& email, string& telefono, int& eta, Tipologia_cliente& tipologia) {
+bool Gestore_azienda::assegna_valore_cliente(vector<string>& campi, int& numero_riga, string& codice, string& nome, string& cognome, string& email, string& telefono, int& eta, Tipologia_cliente& tipologia) {
     if(campi.size() < 6) return false;
     codice = campi[0];
     
@@ -362,7 +362,7 @@ bool Gestore_agenzia::assegna_valore_cliente(vector<string>& campi, int& numero_
 }
 
 // Metodo che carica i clienti da un file
-bool Gestore_agenzia::carica_clienti(ifstream& file) {
+bool Gestore_azienda::carica_clienti(ifstream& file) {
     string linea;
     int numero_riga = 0;
     while (getline(file, linea)) {
@@ -398,7 +398,7 @@ bool Gestore_agenzia::carica_clienti(ifstream& file) {
 }
 
 // Metodo che carica i pacchetti da un file
-bool Gestore_agenzia::carica_pacchetti(ifstream& file) {
+bool Gestore_azienda::carica_pacchetti(ifstream& file) {
     string linea;
     int numero_riga = 0; // Variabile per stampare in quale riga del file compaiono eventuali errori di formato
     
@@ -436,7 +436,7 @@ bool Gestore_agenzia::carica_pacchetti(ifstream& file) {
 }
 
 // Metodo che carica le prenotazioni da un file
-bool Gestore_agenzia::carica_prenotazioni(ifstream& file) {
+bool Gestore_azienda::carica_prenotazioni(ifstream& file) {
     string linea;
     while (getline(file, linea)) {
         if(linea.empty()) continue;
@@ -472,7 +472,7 @@ bool Gestore_agenzia::carica_prenotazioni(ifstream& file) {
 }
 
 // === COSTRUTTORE E DISTRUTTORE ===
-Gestore_agenzia::Gestore_agenzia(vector<shared_ptr<Pacchetto_viaggio>> cat, vector<shared_ptr<Cliente>> cli,
+Gestore_azienda::Gestore_azienda(vector<shared_ptr<Pacchetto_viaggio>> cat, vector<shared_ptr<Cliente>> cli,
                     vector<shared_ptr<Prenotazione>> pre) :
     catalogo(cat), clienti(cli), prenotazioni(pre) {
         
@@ -482,13 +482,13 @@ Gestore_agenzia::Gestore_agenzia(vector<shared_ptr<Pacchetto_viaggio>> cat, vect
         cout << "Gestione azienda inizializzata correttamente!" << endl;
 }
 
-Gestore_agenzia::~Gestore_agenzia() {
+Gestore_azienda::~Gestore_azienda() {
     cout << "Gestore azienda distrutto correttamente." << endl;
 }
 
 // === METODI PUBBLICI DI AGGIUNTA ===
 
-bool Gestore_agenzia::aggiungi_pacchetto() {
+bool Gestore_azienda::aggiungi_pacchetto() {
     do{
         string codice; string dest; int giorni; double prezzo;
         // Inserimento interattivo dei dati del pacchetto di base
@@ -548,16 +548,16 @@ bool Gestore_agenzia::aggiungi_pacchetto() {
 }
 
 // Wrapper metodi ricerca e visualizzazione
-shared_ptr<Pacchetto_viaggio> Gestore_agenzia::cerca_pacchetto(string codice) {
+shared_ptr<Pacchetto_viaggio> Gestore_azienda::cerca_pacchetto(string codice) {
     return cerca_elemento(this->catalogo, codice);
 }
 
-bool Gestore_agenzia::visualizza_catalogo() const {
+bool Gestore_azienda::visualizza_catalogo() const {
     return stampa_elementi(this->catalogo);
 }
 
 // Metodo che ritorna true se la stampa è andata a buon fine, false altrimenti
-bool Gestore_agenzia::visualizza_pacchetti_per_tipologia(string tipo) const {
+bool Gestore_azienda::visualizza_pacchetti_per_tipologia(string tipo) const {
     bool flag = false;
     // Ciclo di stampa dei dettagli
     for (const auto& elemento : this->catalogo) {
@@ -570,7 +570,7 @@ bool Gestore_agenzia::visualizza_pacchetti_per_tipologia(string tipo) const {
     return flag;
 }
 
-bool Gestore_agenzia::visualizza_pacchetti_disponibili() const {
+bool Gestore_azienda::visualizza_pacchetti_disponibili() const {
     bool found = false;
     for (const auto& pacchetto : catalogo) {
         if (pacchetto->is_disponibile()) { // Controllo che il pacchetto sia disponibile
@@ -581,7 +581,7 @@ bool Gestore_agenzia::visualizza_pacchetti_disponibili() const {
     return found;
 }
 
-bool Gestore_agenzia::aggiungi_cliente() {
+bool Gestore_azienda::aggiungi_cliente() {
     do {
         string nome, cognome, email, telefono, tipo_str;
         int eta;
@@ -603,15 +603,15 @@ bool Gestore_agenzia::aggiungi_cliente() {
     } while (1);
 }
 
-shared_ptr<Cliente> Gestore_agenzia::cerca_cliente(string codice) {
+shared_ptr<Cliente> Gestore_azienda::cerca_cliente(string codice) {
     return cerca_elemento(this->clienti, codice);
 }
 
-bool Gestore_agenzia::visualizza_clienti() const {
+bool Gestore_azienda::visualizza_clienti() const {
     return stampa_elementi(this->clienti);
 }
 
-bool Gestore_agenzia::visualizza_clienti_per_tipologia(string tipo) const {
+bool Gestore_azienda::visualizza_clienti_per_tipologia(string tipo) const {
     bool flag = false;
     // Ciclo di stampa dettagli
     for (const auto& elemento : this->clienti) {
@@ -624,7 +624,7 @@ bool Gestore_agenzia::visualizza_clienti_per_tipologia(string tipo) const {
     return flag;
 }
 
-bool Gestore_agenzia::aggiungi_prenotazione() {
+bool Gestore_azienda::aggiungi_prenotazione() {
     do {
         shared_ptr<Cliente> cliente; shared_ptr<Pacchetto_viaggio> pacchetto_viaggio; 
         int num_persone; string data;
@@ -649,7 +649,7 @@ bool Gestore_agenzia::aggiungi_prenotazione() {
 
 // Metodo che conferma la prenotazione che possiede il codice inserito in input
 // Questo metodo ritorna true se la modifica è stata apportata, altrimenti ritorna false (se il codice era già stato confermato ritorna false)
-bool Gestore_agenzia::conferma_prenotazione(string codice) {
+bool Gestore_azienda::conferma_prenotazione(string codice) {
     shared_ptr<Prenotazione> prenotazione = cerca_elemento(this->prenotazioni, codice);
     if (prenotazione != nullptr) { // Controllo errori di ricerca
         if (!prenotazione->conferma_prenotazione()) { // Controllo se il codice è già confermato
@@ -662,12 +662,12 @@ bool Gestore_agenzia::conferma_prenotazione(string codice) {
     }
 }
 
-bool Gestore_agenzia::visualizza_prenotazioni() const {
+bool Gestore_azienda::visualizza_prenotazioni() const {
     return stampa_elementi(this->prenotazioni);
 }
 
 // Metodo che stampa le prenotazione del cliente associato al codiceCliente inserito in input
-bool Gestore_agenzia::visualizza_prenotazioni_cliente(string codice_cliente) const {
+bool Gestore_azienda::visualizza_prenotazioni_cliente(string codice_cliente) const {
     int i = 0;
     bool found = false;
     // Ciclo su tutte le prenotazioni, con filtro su quelli associati al giusto codice
@@ -682,7 +682,7 @@ bool Gestore_agenzia::visualizza_prenotazioni_cliente(string codice_cliente) con
     return found;
 }
 
-bool Gestore_agenzia::visualizza_prenotazioni_confermate() const {
+bool Gestore_azienda::visualizza_prenotazioni_confermate() const {
     int i = 0;
     bool flag = false;
 
@@ -700,7 +700,7 @@ bool Gestore_agenzia::visualizza_prenotazioni_confermate() const {
 // === STATISTICHE ===
 
 // Metodo che stampa: Totale pacchetti, clienti, prenotazioni, Fatturato, Pacchetto più prenotato, Destinazione più richiesta
-bool Gestore_agenzia::statistiche_generali() const {
+bool Gestore_azienda::statistiche_generali() const {
 
     // Controllo errore nei pacchetti
     auto flag_pacchetti = calcola_massimo_mappa(Prenotazione::get_pacchetti_counter());    
@@ -710,7 +710,7 @@ bool Gestore_agenzia::statistiche_generali() const {
     if (!flag_destinazioni.has_value()) {cout << "Non ci sono pacchetti nel database" << endl; return false;}
 
     // Stampa di tutto
-    cout << "=== Statistiche Generali Agenzia Viaggi ===" << endl;
+    cout << "=== Statistiche Generali Azienda Viaggi ===" << endl;
     cout << "Totale Pacchetti nel Catalogo: " << Pacchetto_viaggio::get_pacchetti_creati() << endl;
     cout << "Totale Clienti Registrati: " << Cliente::get_clienti_creati() << endl;
     cout << "Totale Prenotazioni Effettuate: " << Prenotazione::get_prenotazioni_create() << endl;
@@ -721,7 +721,7 @@ bool Gestore_agenzia::statistiche_generali() const {
 }
     
 // Metodo che stampa il numero di prenotazioni per ogni tipologia di pacchetto
-bool Gestore_agenzia::statistiche_per_tipologia() const {
+bool Gestore_azienda::statistiche_per_tipologia() const {
     cout << "=== Numero di prenotazioni per ogni Tipologia di Pacchetto ===" << endl;
     
     // Ciclo su tutti gli elementi della mappa (chiave: tipologia, valore: numero di prenotazioni)
@@ -732,7 +732,7 @@ bool Gestore_agenzia::statistiche_per_tipologia() const {
 }
 
 // Ritorna il cliente che ha speso di più
-shared_ptr<Cliente> Gestore_agenzia::cliente_migliore() const {
+shared_ptr<Cliente> Gestore_azienda::cliente_migliore() const {
 
     // Controllo errore nel calcolo sulla mappa
     auto flag = calcola_massimo_mappa(Prenotazione::get_spesa_clienti());
@@ -742,8 +742,8 @@ shared_ptr<Cliente> Gestore_agenzia::cliente_migliore() const {
 }
 
 // === GESTIONE FILE ===
-// Salva/Carica lo stato intero dell'agenzia (CSV simulato)
-bool Gestore_agenzia::salva_dati_su_file(const string& nomefile, string& tipo) {
+// Salva/Carica lo stato intero dell'azienda (CSV simulato)
+bool Gestore_azienda::salva_dati_su_file(const string& nomefile, string& tipo) {
     ofstream file(nomefile);
     if (!file) {cerr << "Errore nell'apertura del file per la scrittura: " << nomefile << endl; return false;}
 
@@ -777,7 +777,7 @@ bool Gestore_agenzia::salva_dati_su_file(const string& nomefile, string& tipo) {
     return true;
 }
 
-bool Gestore_agenzia::carica_dati_da_file(const string& nomefile, const string& tipo) {
+bool Gestore_azienda::carica_dati_da_file(const string& nomefile, const string& tipo) {
     ifstream file(nomefile);
     if (!file) { cerr << "Errore nell'apertura del file per la lettura: " << nomefile << endl; return false; }
 
