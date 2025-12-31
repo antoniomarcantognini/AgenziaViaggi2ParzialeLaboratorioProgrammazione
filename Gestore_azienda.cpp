@@ -157,12 +157,13 @@ bool Gestore_agenzia::inizializza_mappa() {
         };
         
         return true; // Mappa inizializzata con successo
-    } catch (...) {
-        return false; // Errore durante l'inizializzazione
+    } catch (const std::exception& e) {
+        cerr << "Errore inizializzazione mappa: " << e.what() << endl;
+        return false;
     }
 }
 
-// === METODI DI INPUT DATI (Members) ===
+// === METODI DI INPUT DATI ===
 
 // Funzione di inserimento manuale dei dati da tastiera per pacchetti generico
 bool Gestore_agenzia::inserisci_dati_pacchetto_base(string& dest, int& giorni, double& prezzo) {
@@ -269,6 +270,7 @@ bool Gestore_agenzia::inserisci_dati_pacchetto(int& num_musei, bool& guida, Cate
     return true;
 }
 
+// Funzione inserimento dati cliente
 bool Gestore_agenzia::inserimento_dati_cliente(string& nome, string& cognome, string& email, string& telefono,
     int& eta, string& tipo_str, Tipologia_cliente& tipo) {
     
@@ -297,6 +299,7 @@ bool Gestore_agenzia::inserimento_dati_cliente(string& nome, string& cognome, st
     return true;
 }
 
+// Funzione inserimento dati prenotazione
 bool Gestore_agenzia::inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio,
     int& num_persone, string& data) {
     
@@ -328,7 +331,7 @@ bool Gestore_agenzia::inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente
     return true;
 }
 
-// === CARICAMENTO FILE (Parsing) ===
+// === CARICAMENTO FILE ===
 
 // Funzione che carica il valore
 bool Gestore_agenzia::assegna_valore_cliente(vector<string>& campi, int& numero_riga, string& codice, string& nome, string& cognome, string& email, string& telefono, int& eta, Tipologia_cliente& tipologia) {
@@ -346,7 +349,10 @@ bool Gestore_agenzia::assegna_valore_cliente(vector<string>& campi, int& numero_
     
     try {
         eta = stoi(campi[4]);
-    } catch (...) { return false; }
+    } catch (const std::exception& e) {
+        cerr << "Errore conversione età (" << campi[4] << "): " << e.what() << endl;
+        return false; 
+    }
 
     // Il template stoe restituisce una variabile senza valore in caso di errore
     auto temp = stoe<Tipologia_cliente>(campi[5], ++numero_riga);
@@ -363,7 +369,6 @@ bool Gestore_agenzia::carica_clienti(ifstream& file) {
         if(linea.empty()) continue;
         
         // Se la linea è vuota passo alla successiva
-        // (Nota: il check sopra copre già il caso, ma lascio il tuo commento/logica originale)
         if(linea.empty()) {
             cout << "Riga #" << ++numero_riga << ": vuota";
             continue;
@@ -411,7 +416,10 @@ bool Gestore_agenzia::carica_pacchetti(ifstream& file) {
         try {
             giorni = stoi(campi[2]);
             prezzo = stod(campi[4]);
-        } catch(...) { continue; }
+        } catch(const std::exception& e) {
+            cerr << "Errore riga " << numero_riga << ": Giorni o Prezzo non validi (" << e.what() << ")" << endl;
+            continue; // Salta questa riga e passa alla prossima
+        }
         
         bool disponibile = (campi[3] == "Disponibile");
         string tipologia = campi[5];
@@ -478,7 +486,7 @@ Gestore_agenzia::~Gestore_agenzia() {
     cout << "Gestore azienda distrutto correttamente." << endl;
 }
 
-// === METODI PUBBLICI AGGIUNTA ===
+// === METODI PUBBLICI DI AGGIUNTA ===
 
 bool Gestore_agenzia::aggiungi_pacchetto() {
     do{
@@ -520,7 +528,7 @@ bool Gestore_agenzia::aggiungi_pacchetto() {
                 if (nuovo) flag = (aggiungi_elemento(this->catalogo, dynamic_pointer_cast<Pacchetto_viaggio>(nuovo)) != nullptr);
                 break;
             }
-            case 4: {
+            default: {
                 int mus; bool gui; Categoria_hotel hotel;
                 if (!inserisci_dati_pacchetto(mus, gui, hotel)) { // Errore -> reinserimento?
                     if (menu::menu_reinserimento() == 2) return false; else continue;
