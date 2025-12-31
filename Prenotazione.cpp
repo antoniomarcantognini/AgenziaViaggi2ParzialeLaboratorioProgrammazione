@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include "Prenotazione.h"
 #include "Cliente.h"
 #include "Pacchetto_viaggio.h"
@@ -10,14 +11,14 @@ int Prenotazione::prenotazioni_create = 0;
 double Prenotazione::fatturato_totale = 0.0;
 std::unordered_map<std::string, int> Prenotazione::destinazioni_counter;
 std::unordered_map<std::string, int> Prenotazione::pacchetti_counter;
-std::unordered_map<std::string, int> Prenotazione::spesa_clienti;
+std::unordered_map<std::string, double> Prenotazione::spesa_clienti;
 
 // IMPLEMENTAZIONE GETTER STATICHE
 int Prenotazione::get_prenotazioni_create() { return prenotazioni_create; }
 double Prenotazione::get_fatturato_totale() { return fatturato_totale; }
 const std::unordered_map<std::string, int>& Prenotazione::get_destinazioni_counter() { return destinazioni_counter; }
 const std::unordered_map<std::string, int>& Prenotazione::get_pacchetti_counter() { return pacchetti_counter; }
-const std::unordered_map<std::string, int>& Prenotazione::get_spesa_clienti() { return spesa_clienti; }
+const std::unordered_map<std::string, double>& Prenotazione::get_spesa_clienti() { return spesa_clienti; }
 
 // Metodi privati di validazione
 bool Prenotazione::valida_input_prenotazione() const {
@@ -39,8 +40,8 @@ bool Prenotazione::valida_input_prenotazione() const {
 
     auto check_codice_prenotazione = [this]() {
         if (
+            codice_prenotazione.length() != 8 ||
             codice_prenotazione.substr(0,4) != "BKG-" ||
-            codice_prenotazione.length() != 8 || 
             !isdigit(codice_prenotazione[4]) || 
             !isdigit(codice_prenotazione[5]) || 
             !isdigit(codice_prenotazione[6]) || 
@@ -176,7 +177,7 @@ bool Prenotazione::calcola_prezzo_totale() {
 bool Prenotazione::conferma_prenotazione() {
     
     // Lambda per modificare i valori statici solo se la prenotazione viene confermata
-    auto modifica_valori_static = []() {
+    auto modifica_valori_static = [this]() {
         
         // Modifica del fatturato clienti e totale
         if (this->prezzo_totale != 0.0) { // Se il prezzo totale è stato calcolato, aggiorno il fatturato
@@ -214,30 +215,34 @@ bool Prenotazione::conferma_prenotazione() {
 }
 
 // Metodo che stampa i dettagli della prenotazione (anche dettagli cliente e pacchetto)
-bool Prenotazione::stampa_info(int indice_produzione) const {
+bool Prenotazione::stampa_dettagli() const {
     cout << "Dettagli Prenotazione:" << endl;
     cout << "Codice Prenotazione: " << this->codice_prenotazione << endl;
     cout << "Data Prenotazione: " << this->data_prenotazione << endl;
     cout << "Numero Persone: " << this->numero_persone << endl;
     cout << "Prezzo Totale: " << this->prezzo_totale << endl;
     cout << "Stato Conferma: " << (this->confermata ? "Confermata" : "Non Confermata") << endl;
+    
     cout << "Dettagli Cliente:" << endl;
-    cout << cliente->stampa_info() << endl;
+    if(cliente) cliente->stampa_dettagli();
+    
     cout << "Dettagli Pacchetto Viaggio:" << endl;
-    cout << pacchetto_viaggio->stampa_dettagli() << endl;
+    if(pacchetto_viaggio) pacchetto_viaggio->stampa_dettagli();
+    
     return true;
 }
 
 // Metodo per il savataggio di dati su un file
 bool Prenotazione::salva_dati_su_file(std::ofstream& file) const {
-    file << this->codice << ";"
+    file << this->codice_prenotazione << ";"
          << this->cliente->get_codice() << ";"
-         << this->pacchetto->get_codice() << ";"
+         << this->pacchetto_viaggio->get_codice() << ";"
          << this->numero_persone << ";"
          << this->data_prenotazione << ";"
          << (this->confermata ? "Confermata" : "Non Confermata") << ";"
          << this->prezzo_totale << endl;
-    cout << "Prenotazione " << this->codice << " salvata correttamente." << endl;
+    cout << "Prenotazione " << this->codice_prenotazione << " salvata correttamente." << endl;
+    return true;
 }
 
 // Distruttore
