@@ -22,6 +22,8 @@ private:
             std::string email, std::string tel, int eta, Tipologia_cliente tipo);
 
  public:
+
+    static int get_clienti_creati();
     static std::shared_ptr<Cliente> crea_cliente(std::string codice, std::string nome, std::string cognome, 
                                                  std::string email, std::string tel, int eta, Tipologia_cliente tipo);
 
