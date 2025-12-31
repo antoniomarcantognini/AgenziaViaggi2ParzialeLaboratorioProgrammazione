@@ -54,7 +54,7 @@ private:
     bool inserimento_dati_cliente(string& nome, string& cognome, string& email, string& telefono, int& eta, string& tipo_str, Tipologia_cliente& tipo);
     bool inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio, int& num_persone, string& data);
 
-    // === METODI PRIVATI DI UTILITY LOGICA ===
+    // === METODI PRIVATI DI UTILITY  ===
     
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string genera_codice_unico(char tipo);
@@ -100,7 +100,7 @@ public:
 
     // Template che crea un elemento della tipologia T (Nota: implementato nel factory specifico nel .cpp, questo template può rimanere se usato genericamente)
     // template <typename T, typename... Args>
-    // auto crea_elemento(Args...& args); // Deprecato se usi i factory method specifici, ma puoi lasciarlo se lo usi nel .tpp
+    // auto crea_elemento(Args...& args);
     
     // === COSTRUTTORE E DISTRUTTORE ===
     Gestore_agenzia(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
