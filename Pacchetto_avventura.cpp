@@ -17,16 +17,14 @@ bool Pacchetto_avventura::valida_dati() const {
     if (get_durata_giorni() <= 0) {
         throw runtime_error("La durata del viaggio deve essere positiva.");
     }
-
     // Validazione specifica Avventura
     if (attivita.empty()) {
         throw runtime_error("Un pacchetto avventura deve contenere almeno un'attività.");
     }
-    
-    // Controllo enum (opzionale se usi enum class strong typed, ma utile se c'è un valore Unknown)
-    // if(categoria_adrenalina == Categoria_adrenalina::Unknown){
-    //    throw runtime_error("Livello di adrenalina non valido");
-    // }
+    // Controllo enum (valore Unknown)
+     if(categoria_adrenalina == Categoria_adrenalina::Unknown){
+        throw runtime_error("Livello di adrenalina non valido");
+     }
     
     return true;
 }
