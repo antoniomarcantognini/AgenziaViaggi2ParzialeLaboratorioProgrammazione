@@ -20,7 +20,7 @@
 
 using namespace std;
 
-class Gestore_agenzia {
+class Gestore_azienda {
 
 private:
     
@@ -54,7 +54,7 @@ private:
     bool inserimento_dati_cliente(string& nome, string& cognome, string& email, string& telefono, int& eta, string& tipo_str, Tipologia_cliente& tipo);
     bool inserimento_dati_prenotazione(shared_ptr<Cliente>& cliente, shared_ptr<Pacchetto_viaggio>& pacchetto_viaggio, int& num_persone, string& data);
 
-    // === METODI PRIVATI DI UTILITY  ===
+    // === METODI PRIVATI DI UTILITY ===
     
     // Genera codici progressivi formattati (es. generaCodice('C') -> "CLT-0005")
     std::string genera_codice_unico(char tipo);
@@ -100,12 +100,12 @@ public:
 
     // Template che crea un elemento della tipologia T (Nota: implementato nel factory specifico nel .cpp, questo template può rimanere se usato genericamente)
     // template <typename T, typename... Args>
-    // auto crea_elemento(Args...& args);
+    // auto crea_elemento(Args...& args); // Deprecato se usi i factory method specifici, ma puoi lasciarlo se lo usi nel .tpp
     
     // === COSTRUTTORE E DISTRUTTORE ===
-    Gestore_agenzia(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
+    Gestore_azienda(std::vector<std::shared_ptr<Pacchetto_viaggio>> catalogo, std::vector<std::shared_ptr<Cliente>> clienti,
                       std::vector<std::shared_ptr<Prenotazione>> prenotazioni);
-    ~Gestore_agenzia(); 
+    ~Gestore_azienda(); 
 
     // === GESTIONE CATALOGO PACCHETTI ===
 
@@ -146,7 +146,7 @@ public:
 
     // === GESTIONE FILE ===
     
-    // Salva/Carica lo stato intero dell'agenzia (CSV simulato)
+    // Salva/Carica lo stato intero dell'azienda (CSV simulato)
     bool salva_dati_su_file(const std::string& nomefile, std::string& tipo);
     bool carica_dati_da_file(const std::string& nomefile, const string& tipo);
 };
