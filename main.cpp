@@ -1,4 +1,5 @@
 #include "Gestore_azienda.h"
+#include "menu.h"
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -11,7 +12,9 @@ using namespace std;
 static vector<shared_ptr<Pacchetto_viaggio>> catalogo;
 static vector<shared_ptr<Cliente>> clienti;
 static vector<shared_ptr<Prenotazione>> prenotazioni;
-static Gestore_agenzia gestore(catalogo, clienti, prenotazioni);
+
+// Istanza globale del gestore
+static Gestore_azienda gestore(catalogo, clienti, prenotazioni);
 
 // Prototipi
 bool uscita();
@@ -30,45 +33,66 @@ bool menu_pacchetti();
 bool ricerca_pacchetto();
 bool visualizza_tipologia_pacchetti();
 
+// Main
 int main() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU PRINCIPALE","Gestione catalogo pacchetti","Gestione clienti","Gestione prenotazioni","Statistiche e report","Gestione file","Esci"});
+        
+        bool esito_operazione = false;
+
         switch (scelta) {
-            case 1: menu_pacchetti(); break;
-            case 2: menu_clienti(); break;
-            case 3: menu_prenotazioni(); break;
-            case 4: menu_statistiche_report(); break;
-            case 5: menu_file(); break;
-            case 6: if(uscita()); return 0;
+            case 1: esito_operazione = menu_pacchetti(); break;
+            case 2: esito_operazione = menu_clienti(); break;
+            case 3: esito_operazione = menu_prenotazioni(); break;
+            case 4: esito_operazione =menu_statistiche_report(); break;
+            case 5: esito_operazione =  menu_file(); break;
+            case 6: 
+                if(uscita()){
+                    cout << "Chiusura applicazione. Arrivederci !" << endl;
+                    return 0;
+                }
+                break;
         }
     } while(1);
 }
 
+// Implementazione funzioni
 bool uscita() {
     int scelta = menu::stampa_menu_e_scelta({"MENU SALVATAGGIO IN USCITA","Salvare dati su un file","Non salvare i dati","Annulla uscita"});
     switch (scelta) {
         case 1: 
             do{
-                salvataggio_dati(); 
-                int scelta_2 menu::stampa_menu_e_scelta("MENU SALVATAGGIO IN USCITA","Salvare altri tipi di dato o su altri file","Non salvare altri dati","Annulla uscita");
+                if(salvataggio_dati()) cout << "Salvataggio riuscito." << endl; 
+                else cerr << "Salvataggio fallito o annullato." << endl;
+
+                int scelta_2 = menu::stampa_menu_e_scelta("MENU SALVATAGGIO IN USCITA","Salvare altri tipi di dato o su altri file","Non salvare altri dati","Annulla uscita");
+                
                 switch (scelta_2) {
                     case 1: continue;
-                    case 2: return true;
-                    case 3: return false;
-                }while(1);
-            }
-        case 2: return true;
-        case 3: return false;
+                    case 2: return true; // esce dal programma
+                    case 3: return false; // annulla l'uscita
+                }
+            }while(1);
+        case 2: return true;  // Esce senza salvare
+        case 3: return false; // Annulla
     }
+    return false;
 }
 
 bool menu_file() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU FILE","Salva dati su file","Carica dati da file","Torna al menù principale"});
+        bool esito = false;
         switch (scelta) {
-            case 1: salvataggio_dati(); break;
-            case 2: caricamento_dati(); break;
-            case 3: return true;
+            case 1: 
+                esito = salvataggio_dati(); 
+                if(esito) cout << "Operazione completata con successo." << endl;
+                break;
+            case 2: 
+                esito = caricamento_dati();
+                if(esito) cout << "Operazione completata con successo." << endl;
+                break;
+            case 3: return true; // Torna al main
         }
     }while(1);
 }
@@ -79,7 +103,8 @@ bool salvataggio_dati() {
     cin >> nome_file;
     cout << "Inserisci il tipo di variabile che deve essere salvata su questo file (Cliente, Pacchetto o Prenotazione): ";
     cin >> tipo;
-    return gestore.salvaDatiSuFile(nome_file, tipo);
+    // Ritorna true se il gestore salva correttamente
+    return gestore.salva_dati_su_file(nome_file, tipo);
 }
 
 bool caricamento_dati() {
@@ -88,47 +113,75 @@ bool caricamento_dati() {
     cin >> nome_file;
     cout << "Inserisci il tipo di variabile che deve essere caricata da questo file (Cliente, Pacchetto o Prenotazione): ";
     cin >> tipo;
-    return gestore.caricaDatiDaFile(nome_file, tipo);
+    // Ritorna true se il gestore carica correttamente
+    return gestore.carica_dati_da_file(nome_file, tipo);
 }
 
 bool menu_statistiche_report() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU STATISTICHE E REPORT","Statistiche generali","Statistiche per tipologia di pacchetto","Trova cliente migliore","Report delle destinazioni più popolari"});
+        
         switch (scelta) {
-            case 1: gestore.statisticheGenerali(); break;
-            case 2: gestore.statistichePerTipologia() break;
-            case 3: gestore.clienteMigliore(); break;
-            case 4: stampa_destinazioni_prenotate(); break;
-            case 5: return true;
+            case 1: gestore.statistiche_generali(); break;
+            case 2: gestore.statistiche_per_tipologia(); break;
+            case 3: {
+                auto migliore = gestore.cliente_migliore();
+                if(migliore) {
+                    migliore->stampa_dettagli();
+                } else {
+                    cout << "Nessun cliente o dati insufficienti." << endl;
+                }
+                break;
+            }
+            case 4: 
+                if(!stampa_destinazioni_prenotate()) cout << "Nessun dato sulle destinazioni disponibile." << endl;
+                break;
+            case 5: return true;  // Torna indietro
         }
     }while(1);
 }
 
 bool stampa_destinazioni_prenotate() {
-    vector<pair<string, int>> destinazioni_ordinate(destinazioni.begin(), destinazioni.end());
+    const auto& mappa = Prenotazione::get_destinazioni_counter();
+
+    if(mappa.empty()) return false; // Segnala che non c'erano dati
+
+    vector<pair<string, int>> destinazioni_ordinate(mappa.begin(), mappa.end());
+    
     sort(destinazioni_ordinate.begin(), destinazioni_ordinate.end(), 
         [](const pair<string, int>& a, const pair<string, int>& b) {
-            return a.second < b.second;
+            return a.second > b.second;
         }
-    )
-    for (const auto& elementi : destinazioni_ordinate) {
-        cout << pair.first << ": " << pair.second << endl;
+    );
+
+    cout << "--- Destinazioni più popolari ---" << endl;
+    for (const auto& elem : destinazioni_ordinate) {
+        cout << elem.first << ": " << elem.second << " prenotazioni" << endl;
     }
+    return true; // Stampa avvenuta con successo
 }
 
 bool menu_prenotazioni() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU GESTIONE PRENOTAZIONI","Crea una nuova prenotazione","Conferma prenotazione","Visualizza tutte le prenotazioni", "Visualizza prenotazioni confermate", "Torna al menù principale"});
-        if (gestore->prenotazioni.size() == 0 && scelta != 1 && scelta != 6) {
-            cout << "Non sono presenti prenotazioni nel database! Puoi solo scegliere 1 o 6!" << endl;
-            continue;
-        }
+        
         switch (scelta) {
-            case 1: gestore.aggiungiPrenotazione();
-            case 2: conferma_prenotazioni();
-            case 3: gestore.visualizzaPrenotazioni();
-            case 4: visualizza_prenotazioni_cliente();
-            case 5: gestore.visualizzaPrenotazioniConfermate();
+            case 1: 
+                if(gestore.aggiungi_prenotazione()) cout << "Prenotazione aggiunta." << endl;
+                else cerr << "Operazione annullata o fallita." << endl;
+                break;
+            case 2: 
+                if(conferma_prenotazioni()) cout << "Conferma registrata." << endl;
+                break;
+            case 3: 
+                if(!gestore.visualizza_prenotazioni()) cout << "Lista vuota." << endl;
+                break;
+            case 4: 
+                if(!visualizza_prenotazioni_cliente()) cout << "Nessuna prenotazione trovata per questo cliente." << endl;
+                break;
+            case 5: 
+                if(!gestore.visualizza_prenotazioni_confermate()) cout << "Nessuna prenotazione confermata." << endl;
+                break;
             case 6: return true;
         }
     }while(1);
@@ -139,10 +192,14 @@ bool conferma_prenotazioni() {
         string src;
         cout << "Inserisci il codice univoco del pacchetto (PKG-XXXX, dove X è una cifra): ";
         cin >> src;
-        if(!gestore.confermaPrenotazione(src)) {
-            int scelta = menu::stampa_menu_e_scelta("MENU CONFERMA PRENOTAZIONE","Inserisci un altro codice univoco", "Torna al menù gestione prenotazioni");
-            if (scelta == 2) return false;
-        } else return true;
+        
+        if(!gestore.conferma_prenotazione(src)) {
+            // Se fallisce, chiediamo se vuole riprovare
+            int scelta = menu::stampa_menu_e_scelta({"MENU CONFERMA PRENOTAZIONE","Inserisci un altro codice univoco", "Torna al menù gestione prenotazioni"});
+            if (scelta == 2) return false; // Operazione non completata
+        } else {
+            return true; // Successo
+        }
     }while(1);
 }
 
@@ -151,25 +208,35 @@ bool visualizza_prenotazioni_cliente() {
         string src;
         cout << "Inserisci il codice univoco del cliente (CLT-XXXX, dove X è una cifra): ";
         cin >> src;
-        if(!gestore.visualizzaPrenotazioniCliente(src)) {
-            int scelta = menu::stampa_menu_e_scelta("MENU CONFERMA PRENOTAZIONE","Inserisci un altro codice univoco", "Torna al menù gestione prenotazioni");
-            if (scelta == 2) return false;
-        } else return true;
-    }
+
+        if(!gestore.visualizza_prenotazioni_cliente(src)) {
+            // Se fallisce chiediamo se vuole riprovare
+            int scelta = menu::stampa_menu_e_scelta({"MENU CONFERMA PRENOTAZIONE","Inserisci un altro codice univoco", "Torna al menù gestione prenotazioni"});
+            if (scelta == 2) return false; // Annullamento
+        } else {
+            return true;  // Successo
+        }
+    } while(1);
 }
 
 bool menu_clienti() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU GESTIONE CLIENTI","Registra un nuovo cliente","Visualizza tutti i clienti","Cerca cliente per codice","Visualizza clienti per tipologia","Torna al menù principale"});
-        if (gestore->clienti.size() == 0 && scelta != 1 && scelta != 5) {
-            cout << "Non sono presenti clienti nel database! Puoi solo scegliere 1 o 5!" << endl;
-            continue;
-        }
+        
         switch (scelta) {
-            case 1: gestore.aggiungiCliente();
-            case 2: gestore.visualizzaClienti();
-            case 3: ricerca_cliente();
-            case 4: visualizza_tipologia_clienti();
+            case 1: 
+                if(gestore.aggiungi_cliente()) cout << "Cliente registrato." << endl;
+                else cerr << "Inserimento annullato o fallito." << endl;
+                break;
+            case 2: 
+                if(!gestore.visualizza_clienti()) cout << "Nessun cliente in archivio." << endl;
+                break;
+            case 3: 
+                if(!ricerca_cliente()) cout << "Ricerca senza risultati." << endl;
+                break;
+            case 4: 
+                visualizza_tipologia_clienti(); 
+                break;
             case 5: return true;
         }
     }while(1);
@@ -177,35 +244,49 @@ bool menu_clienti() {
 
 bool ricerca_cliente() {
     string src;
-    cout << "Inserisci il codice univoco del pacchetto (CLT-XXXX, dove X è una cifra): ";
+    cout << "Inserisci il codice univoco del cliente (CLT-XXXX, dove X è una cifra): ";
     cin >> src;
-    shared_ptr<Pacchetto_viaggio> src_ptr = gestore.cercaCliente(src);
-    if (src_ptr == nullptr) return false;
-    else src_ptr->stampa_dettagli();
+
+    auto cliente_ptr = gestore.cerca_cliente(src);
+    if (cliente_ptr == nullptr) {
+        return false; // Non trovato
+    } else {
+        cout << cliente_ptr->stampa_dettagli() << endl;
+        return true; // Trovato e stampato
+    }
 }
 
 bool visualizza_tipologia_clienti() {
     int scelta = menu::stampa_menu_e_scelta({"MENU SCELTA TIPOLOGIA CLIENTE","Standard","Premium","VIP"});
+    bool found = false;
     switch (scelta) {
-        case 1: gestore.visualizzaClientiPerTipologia("Standard");
-        case 2: gestore.visualizzaClientiPerTipologia("Premium");
-        case 3: gestore.visualizzaClientiPerTipologia("VIP");
+        case 1: found = gestore.visualizza_clienti_per_tipologia("Standard"); break;
+        case 2: found = gestore.visualizza_clienti_per_tipologia("Premium"); break;
+        case 3: found = gestore.visualizza_clienti_per_tipologia("VIP"); break;
     }
+    return found;  // Ritorna true se ha trovato qualcosa, false altrimenti
 }
 
 bool menu_pacchetti() {
     do{
         int scelta = menu::stampa_menu_e_scelta({"MENU GESTIONE PACCHETTI","Aggiungi un nuovo pacchetto","Visualizza tutti i pacchetti","Cerca pacchetto tramite codice","Visualizza pacchetti per tipologia","Visualizza solo pacchetti disponibili","Torna al menu principale"});
-        if (gestore->catalogo.size() == 0 && scelta != 1 && scelta != 6) {
-            cout << "Non sono presenti pacchetit nel catalogo! Puoi solo scegliere 1 o 6!" << endl;
-            continue;
-        }
+        
         switch (scelta) {
-            case 1: gestore.aggiungiPacchetto();
-            case 2: gestore.visualizzaCatalogo();
-            case 3: ricerca_pacchetto();
-            case 4: visualizza_tipologia_pacchetti();
-            case 5: gestore.visualizzaPacchettiDisponibili();
+            case 1: 
+                if(gestore.aggiungi_pacchetto()) cout << "Pacchetto aggiunto." << endl;
+                break;
+            case 2: 
+                gestore.visualizza_catalogo(); 
+                break;
+            case 3: 
+                if(!ricerca_pacchetto()) cout << "Pacchetto non trovato." << endl;
+                break;
+            case 4: 
+                visualizza_tipologia_pacchetti(); 
+                break;
+            case 5: 
+                if(!gestore.visualizza_pacchetti_disponibili()) cout << "Nessun pacchetto disponibile." << endl;
+                break;
             case 6: return true;
         }
     }while(1);
@@ -215,17 +296,24 @@ bool ricerca_pacchetto() {
     string src;
     cout << "Inserisci il codice univoco del pacchetto (PKG-XXXX, dove X è una cifra): ";
     cin >> src;
-    shared_ptr<Pacchetto_viaggio> src_ptr = gestore.cercaPacchetto(src);
-    if (src_ptr == nullptr) return false;
-    else src_ptr->stampa_dettagli();
+    
+    auto pacchetto_ptr = gestore.cerca_pacchetto(src);
+    if (pacchetto_ptr == nullptr) {
+        return false;
+    } else {
+        pacchetto_ptr->stampa_dettagli();
+        return true;
+    }
 }
 
 bool visualizza_tipologia_pacchetti() {
     int scelta = menu::stampa_menu_e_scelta({"MENU SCELTA TIPOLOGIA PACCHETTO","Turismo Avventura","Turismo Balneare","Turismo Montano","Città d'Arte"});
+    bool found = false;
     switch (scelta) {
-        case 1: gestore.visualizzaPacchettiPerTipologia("Turismo Avventura");
-        case 2: gestore.visualizzaPacchettiPerTipologia("Turismo Balneare");
-        case 3: gestore.visualizzaPacchettiPerTipologia("Turismo Montano");
-        case 4: gestore.visualizzaPacchettiPerTipologia("Città d'Arte");
+        case 1: found = gestore.visualizza_pacchetti_per_tipologia("Turismo Avventura"); break;
+        case 2: found = gestore.visualizza_pacchetti_per_tipologia("Turismo Balneare"); break;
+        case 3: found = gestore.visualizza_pacchetti_per_tipologia("Turismo Montano"); break;
+        case 4: found = gestore.visualizza_pacchetti_per_tipologia("Città d'Arte"); break;
     }
+    return found;
 }
