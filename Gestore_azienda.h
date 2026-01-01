@@ -12,11 +12,18 @@
 #include <functional>
 #include <unordered_map>
 #include <optional>
+#include <algorithm>
+
 #include "Pacchetto_viaggio.h"
 #include "Cliente.h"
 #include "Prenotazione.h"
 #include "magic_enum.hpp"
 #include "Esito_input_SN.h"
+#include "Pacchetto_avventura.h"
+#include "Pacchetto_mare.h"      
+#include "Pacchetto_montagna.h"  
+#include "Pacchetto_citta.h"     
+#include "Utils_enum.h"          
 
 using namespace std;
 
