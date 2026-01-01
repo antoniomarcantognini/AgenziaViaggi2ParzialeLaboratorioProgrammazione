@@ -1,5 +1,6 @@
 #include "Pacchetto_montagna.h"
-#include "magic_enum.hpp" // Usa magic_enum come negli altri file
+#include "magic_enum.hpp"
+#include "Utils_enum.it"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
