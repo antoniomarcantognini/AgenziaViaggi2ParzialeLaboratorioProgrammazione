@@ -2,9 +2,8 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 namespace menu {
-    int stampa_menu_e_scelta(vector<string> nome_opzioni);
+    int stampa_menu_e_scelta(const std::vector<string>& nome_opzioni);
+    
     int menu_reinserimento();
 }
