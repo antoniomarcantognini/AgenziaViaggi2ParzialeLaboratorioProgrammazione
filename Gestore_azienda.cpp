@@ -1,5 +1,6 @@
 #include "magic_enum.hpp"
 #include "Gestore_azienda.h"
+#include "Utils_enum.h"
 #include "Esito_input_SN.h"
 #include <fstream>
 #include <algorithm>
