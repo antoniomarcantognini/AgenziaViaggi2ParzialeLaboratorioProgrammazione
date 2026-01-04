@@ -1,0 +1,106 @@
+TEST ID: T01
+Funzionalità: Aggiunta pacchetto città (il codice dei pacchetti viene gestito in modo automatico)
+Input:
+-destinazione: Milano
+-durata giorni 7
+-prezzo base 50
+-tipo pacchetto: città d'arte
+-numero musei 5
+-guida turistica SI
+-Categoria Hotel 5 Stelle
+
+Output atteso:
+-Pacchetto citta aggiunto al catalogo con numero di serie che si autoincrementa
+-prezzo finale : 50 +(5*15) + 10% sul tot +30% sultot = 178.75 euro
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T02
+Funzionalità: Aggiunta pacchetto mare
+Input:
+-destinazione: Cagliari
+-durata giorni 10
+-prezzo base 100
+-tipo pacchetto: turismo balneare
+-ombrellone incluso SI
+- attrezzatura sportiva SI
+-trattamento: mezza pensione
+Output atteso:
+- pacchetto mare aggiunto con codice autoincrementato e prezzo finale 450 euro
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T03
+Funzionalità: aggiunta pacchetto montagna
+Input:
+- Cortina
+-7giorni
+-turismo montano
+-skipass incluso SI
+-numero di escursioni 6
+-difficoltà difficile
+Output atteso:
+-aggiunta pacchetto con codice incrementato e prezzo finale 744 euro
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T04
+Funzionalità: Aggiunta pacchetto avventura
+Input:
+-Bergamo
+-9 giorni
+-prezzo base 85
+-turismo avventura
+-numero attività incluse 4: Alpinismo, Scii, escursione, ricerca funghi
+- categoria adrenalina medio
+-assicurazione inclusa si
+
+Output atteso: pacchetto costruito con codice autoincrementato e prezzo finale 565.75
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T05
+Funzionalità: aggiunta di un nuovo cliente con input corretti
+Input:
+-nome: CLaudio
+-cognome: Rossi
+-email: claudiorossi@gmail.com
+-telefono: 1234567890
+-età: 52
+-tipologia cliente VIP
+Output atteso: aggiunta corretta cliente con codice autoincrementato
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T06
+Funzionalità: tentativo di aggiunta cliente senza @ nell'email e con tipologia cliente VIPP non valida
+Input: come prima ma senza @ nella email , VIIP al posto di VIP
+Output atteso: non viene creato il cliente, e viene mandato a schermo il menu di scelta di reinserimento correttamente
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T07
+Funzionalità: Caricamento del file PacchettiViaggio.txt
+Input:
+- 2 carica dati da file, nome del file , variabile da caricare nel database
+Output atteso: costruzione e corretto salvataggio dei pacchetti
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T08
+Funzionalità: creazione e conferma prenotazione
+Input: vedi screen
+Output atteso: corretta creazione prenotazione con sconti applicati
+
+Output ottenuto:
+Esito: SUPERATO
