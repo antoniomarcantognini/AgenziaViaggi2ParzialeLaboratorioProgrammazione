@@ -150,12 +150,13 @@ Output atteso: corretta distruzione degli smart pointer
 Output ottenuto: vedi screen
 Esito: SUPERATO
 
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
 
-Output ottenuto:
+TEST ID: T14
+Funzionalità: Corretto caricamento del file Prenotazioni.txt sul database
+Input: Caricamento dei file PacchettoViaggio.txt, Clienti.txt e Prenotazioni.txt dalla cartella
+Output atteso: corretto caricamento e corretta sincronizzazione delle statistiche nel database
+
+Output ottenuto: vedi screen
 Esito: SUPERATO
 
 TEST ID: 
