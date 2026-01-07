@@ -118,7 +118,7 @@ Esito: SUPERATO
 
 
 TEST ID: T10
-Funzionalità: salvataggio su file txt variabili cliente
+Funzionalità: salvataggio su file txt variabili cliente (per le altre variabili è analogo, vedi file txt)
 Input: creazione di due clienti con input corretti e salvataggio su file Clienti.txt
 Output atteso: corretto salvataggio file
 
@@ -159,98 +159,19 @@ Output atteso: corretto caricamento e corretta sincronizzazione delle statistich
 Output ottenuto: vedi screen
 Esito: SUPERATO
 
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
+TEST ID: T15
+Funzionalità: Tentativo di conferma prenotazione esistente (BKG-0004) e inesistente (BKG-0005)
+Input: Caricamento dei file del test precedente + creazione valida della prenotazione BKG-0004 (con sconto VIP)
++ successiva conferma di BKG-0004 e BKG-0005
+Output atteso: Conferma esatta della prenotazione BKG-0004 ed errore per prenotazione non trovata nella successiva con ritorno al menu di scelta
 
-Output ottenuto:
+Output ottenuto: vedi screen
 Esito: SUPERATO
 
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
+TEST ID: T16
+Funzionalità: Visualizza prenotazioni con database popolato dai precedenti file txt
+Input: precedenti file txt
+Output atteso: corretto calcolo dei prezzi con maggiorazioni + sconti per tipologia clienti e conteggi vari
 
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
-Esito: SUPERATO
-
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
-
-Output ottenuto:
+Output ottenuto: vedi screen
 Esito: SUPERATO
