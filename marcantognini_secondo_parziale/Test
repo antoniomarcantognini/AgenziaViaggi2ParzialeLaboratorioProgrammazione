@@ -1,0 +1,177 @@
+g++ main.cpp Gestore_azienda.cpp Pacchetto_viaggio.cpp Pacchetto_avventura.cpp Pacchetto_mare.cpp Pacchetto_montagna.cpp Pacchetto_citta.cpp Cliente.cpp Prenotazione.cpp menu.cpp -o gestionale.exe -std=c++17 -Wall
+
+TEST ID: T01
+Funzionalità: Aggiunta pacchetto città (il codice dei pacchetti viene gestito in modo automatico)
+Input:
+-destinazione: Milano
+-durata giorni 7
+-prezzo base 50
+-tipo pacchetto: città d'arte
+-numero musei 5
+-guida turistica SI
+-Categoria Hotel 5 Stelle
+
+Output atteso:
+-Pacchetto citta aggiunto al catalogo con numero di serie che si autoincrementa
+-prezzo finale : 50 +(5*15) + 10% sul tot +30% sultot = 178.75 euro
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T02
+Funzionalità: Aggiunta pacchetto mare
+Input:
+-destinazione: Cagliari
+-durata giorni 10
+-prezzo base 100
+-tipo pacchetto: turismo balneare
+-ombrellone incluso SI
+- attrezzatura sportiva SI
+-trattamento: mezza pensione
+Output atteso:
+- pacchetto mare aggiunto con codice autoincrementato e prezzo finale 450 euro
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T03
+Funzionalità: aggiunta pacchetto montagna
+Input:
+- Cortina
+-7giorni
+-turismo montano
+-skipass incluso SI
+-numero di escursioni 6
+-difficoltà difficile
+Output atteso:
+-aggiunta pacchetto con codice incrementato e prezzo finale 744 euro
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T04
+Funzionalità: Aggiunta pacchetto avventura
+Input:
+-Bergamo
+-9 giorni
+-prezzo base 85
+-turismo avventura
+-numero attività incluse 4: Alpinismo, Scii, escursione, ricerca funghi
+- categoria adrenalina medio
+-assicurazione inclusa si
+
+Output atteso: pacchetto costruito con codice autoincrementato e prezzo finale 565.75
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T05
+Funzionalità: aggiunta di un nuovo cliente con input corretti
+Input:
+-nome: CLaudio
+-cognome: Rossi
+-email: claudiorossi@gmail.com
+-telefono: 1234567890
+-età: 52
+-tipologia cliente VIP
+Output atteso: aggiunta corretta cliente con codice autoincrementato
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T06
+Funzionalità: tentativo di aggiunta cliente senza @ nell'email e con tipologia cliente VIPP non valida
+Input: come prima ma senza @ nella email , VIIP al posto di VIP
+Output atteso: non viene creato il cliente, e viene mandato a schermo il menu di scelta di reinserimento correttamente
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T07
+Funzionalità: Caricamento del file PacchettiViaggio.txt
+Input:
+- 2 carica dati da file, nome del file , variabile da caricare nel database
+Output atteso: costruzione e corretto salvataggio dei pacchetti
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T08
+Funzionalità: creazione e conferma prenotazione
+Input: vedi screen
+Output atteso: corretta creazione prenotazione con sconti applicati
+
+Output ottenuto:
+Esito: SUPERATO
+
+
+TEST ID: T09
+Funzionalità: ricerca pacchetto esistente (PKG-0004) e inesistente (PKG-0005)
+Input: ricerca pacchetto esistente PKG-0004 e inesistente PKG-0005
+Output atteso: stampa del primo pacchetto e pacchetto non trovato per il secondo
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T10
+Funzionalità: salvataggio su file txt variabili cliente (per le altre variabili è analogo, vedi file txt)
+Input: creazione di due clienti con input corretti e salvataggio su file Clienti.txt
+Output atteso: corretto salvataggio file
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T11
+Funzionalità: applicazione corretta sconti su cliente VIP (Paolo rossi CLT-0002)
+Input: creazione prenotazione BKG-0004 e successiva conferma per pacchetto montagna PKG-0004 a nome di Paolo rossi per 1 persona, mi aspetto lo sconto VIP
+Output atteso:
+
+Output ottenuto:
+Esito: SUPERATO
+
+
+TEST ID: T12
+Funzionalità: Statistiche complete con database popolato da pacchetti, clienti e prenotazioni
+Input: caricamento dei file PacchettiViaggio.txt , Clienti.txt e Prenotazioni.txt
+Output atteso: corretta stampa delle statistiche calcolate
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T13
+Funzionalità: Corretta gestione della memoria, uscita dal programma
+Input: 6, uscita dal programma
+Output atteso: corretta distruzione degli smart pointer
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+
+TEST ID: T14
+Funzionalità: Corretto caricamento del file Prenotazioni.txt sul database
+Input: Caricamento dei file PacchettoViaggio.txt, Clienti.txt e Prenotazioni.txt dalla cartella
+Output atteso: corretto caricamento e corretta sincronizzazione delle statistiche nel database
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T15
+Funzionalità: Tentativo di conferma prenotazione esistente (BKG-0004) e inesistente (BKG-0005)
+Input: Caricamento dei file del test precedente + creazione valida della prenotazione BKG-0004 (con sconto VIP)
++ successiva conferma di BKG-0004 e BKG-0005
+Output atteso: Conferma esatta della prenotazione BKG-0004 ed errore per prenotazione non trovata nella successiva con ritorno al menu di scelta
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
+
+TEST ID: T16
+Funzionalità: Visualizza prenotazioni con database popolato dai precedenti file txt
+Input: precedenti file txt
+Output atteso: corretto calcolo dei prezzi con maggiorazioni + sconti per tipologia clienti e conteggi vari
+
+Output ottenuto: vedi screen
+Esito: SUPERATO
