@@ -126,27 +126,28 @@ Output ottenuto: vedi screen
 Esito: SUPERATO
 
 TEST ID: T11
-Funzionalità: applicazione corretta sconti su cliente VIP (Paolo rossi di prima)
-Input: creazione prenotazione per pacchetto montagna PKG-0004 a nome di Paolo rossi per 1 persona, mi aspetto lo sconto VIP
+Funzionalità: applicazione corretta sconti su cliente VIP (Paolo rossi CLT-0002)
+Input: creazione prenotazione BKG-0004 e successiva conferma per pacchetto montagna PKG-0004 a nome di Paolo rossi per 1 persona, mi aspetto lo sconto VIP
 Output atteso:
 
 Output ottenuto:
 Esito: SUPERATO
 
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
 
-Output ottenuto:
+TEST ID: T12
+Funzionalità: Statistiche complete con database popolato da pacchetti, clienti e prenotazioni
+Input: caricamento dei file PacchettiViaggio.txt , Clienti.txt e Prenotazioni.txt
+Output atteso: corretta stampa delle statistiche calcolate
+
+Output ottenuto: vedi screen
 Esito: SUPERATO
 
-TEST ID: 
-Funzionalità:
-Input:
-Output atteso:
+TEST ID: T13
+Funzionalità: Corretta gestione della memoria, uscita dal programma
+Input: 6, uscita dal programma
+Output atteso: corretta distruzione degli smart pointer
 
-Output ottenuto:
+Output ottenuto: vedi screen
 Esito: SUPERATO
 
 TEST ID: 
