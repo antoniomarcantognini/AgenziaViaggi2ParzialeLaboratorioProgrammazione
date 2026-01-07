@@ -1,0 +1,4 @@
+PKG-0001;Milano;7;Disponibile;50;Citta' d'Arte;5;Con Guida;Cinque stelle
+PKG-0002;Cagliari;10;Disponibile;100;Turismo Balneare;Con Ombrellone;Con Attrezzatura;Mezza pensione
+PKG-0003;Cortina;6;Disponibile;170;Turismo Montano;Con Skipass;6;Difficile
+PKG-0004;Bergamo;9;Disponibile;85;Turismo Avventura;Medio;Con Assicurazione;Alpinismo;Scii;escursione;ricerca funghi;

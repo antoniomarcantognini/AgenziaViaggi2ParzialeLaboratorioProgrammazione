@@ -1,0 +1,2 @@
+CLT-0001;Claudio Bianchi;claudiobianchi@gmail.com;1234567898;50;Premium
+CLT-0002;Paolo Rossi;paolorossi@gmail.com;1234567897;40;VIP
