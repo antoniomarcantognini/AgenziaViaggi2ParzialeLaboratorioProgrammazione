@@ -1,10 +1,12 @@
 #include "Pacchetto_montagna.h"
+#include "magic_enum.hpp"
 #include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+using namespace magic_enum;
 
 // Metodo Privato di Validazione 
 bool Pacchetto_montagna::valida_dati() const {
@@ -18,7 +20,7 @@ bool Pacchetto_montagna::valida_dati() const {
         throw runtime_error("Il numero di escursioni non può essere negativo.");
     }
     if (get_difficolta() == Categoria_difficolta::Unknown) {
-        throw runtime_error("Categoria difficoltà non valida (Unknown).");
+        throw runtime_error("Categoria difficolta' non valida (Unknown).");
     }
 
     // Se arriviamo qui, è tutto valido
@@ -59,16 +61,15 @@ double Pacchetto_montagna::calcola_prezzo_finale() const {
 
     // Se skipassIncluso: + durataGiorni * 45€
     if (skipass_incluso) {
-        // get_durata_giorni() viene dalla classe padre Pacchetto_viaggio
         prezzo_totale += (get_durata_giorni() * 45.0);
     }
 
     // numeroEscursioni * 30€
     prezzo_totale += (numero_escursioni * 30.0);
 
-    // Se difficolta == "Difficile": +20% sul totale (equipaggiamento specializzato)
+    // Se difficolta == "Difficile": +20% sul totale
     if (difficolta == Categoria_difficolta::Difficile) {
-        prezzo_totale += (prezzo_totale * 0.20); // Aumento del 20%
+        prezzo_totale += (prezzo_totale * 0.20);
     }
 
     return prezzo_totale;
@@ -79,15 +80,15 @@ string Pacchetto_montagna::stampa_dettagli() const {
     stringstream ss;
 
     ss << "--- Pacchetto Vacanze Montagna ---" << endl;
-    ss << "Codice: " << get_codice_pacchetto() << endl;
+    ss << "Codice: " << get_codice() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
 
     // Dettagli specifici
-    ss << "Skipass Incluso: " << (skipass_incluso ? "Sì" : "No") << endl;
+    ss << "Skipass Incluso: " << (skipass_incluso ? "Si" : "No") << endl;
     ss << "Numero Escursioni: " << numero_escursioni << endl;
-    ss << "Livello Difficoltà: " << difficolta_to_string(difficolta) << endl;
+    ss << "Livello Difficolta': " << Utils_enum::etos(difficolta) << endl;
 
     ss << "Prezzo Finale: " << calcola_prezzo_finale() << " EUR" << endl;
 
@@ -112,20 +113,11 @@ Categoria_difficolta Pacchetto_montagna::get_difficolta() const {
     return this->difficolta;
 }
 
-// Metodi statici di conversione usando il template
-string Pacchetto_montagna::difficolta_to_string(Categoria_difficolta diff) {
-    return Utils_enum::to_string(diff);
-}
-
-Categoria_difficolta Pacchetto_montagna::string_to_difficolta(string diff) {
-    return Utils_enum::from_string<Categoria_difficolta>(diff);
-}
-
 bool Pacchetto_montagna::salva_dati_su_file(ofstream& file) const {
-    this->salva_dati_su_file(file);
+    Pacchetto_viaggio::salva_dati_su_file(file); // Chiama il metodo della classe base
     file << (this->skipass_incluso ? "Con Skipass" : "Senza Skipass") << ";"
          << this->numero_escursioni << ";"
-         << etos(this->difficolta) << endl;
+         << Utils_enum::etos(this->difficolta) << endl;
     cout << "Pacchetto Montagna " << this->get_codice() << " salvato correttamente." << endl;
     return true;
 }
