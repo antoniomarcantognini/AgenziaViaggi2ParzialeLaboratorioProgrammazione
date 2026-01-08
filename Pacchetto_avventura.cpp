@@ -1,10 +1,12 @@
 #include "Pacchetto_avventura.h"
-#include "Utils_enum.h"
+#include "magic_enum.hpp"
+#include "Utils_enum.h" 
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+using namespace magic_enum;
 
 // Metodo Privato di Validazione
 bool Pacchetto_avventura::valida_dati() const {
@@ -18,12 +20,14 @@ bool Pacchetto_avventura::valida_dati() const {
 
     // Validazione specifica Avventura
     if (attivita.empty()) {
-        // Questa è una scelta di business: decidiamo che un pacchetto avventura DEVE avere attività
-        throw runtime_error("Un pacchetto avventura deve contenere almeno un'attività.");
+        throw runtime_error("Un pacchetto avventura deve contenere almeno un'attivita'.");
     }
-    if(get_categoria_adrenalina() == Categoria_adrenalina::Unknown){
+    
+    // Controllo enum
+    if(categoria_adrenalina == Categoria_adrenalina::Unknown){
         throw runtime_error("Livello di adrenalina non valido");
     }
+    
     return true;
 }
 
@@ -33,12 +37,10 @@ Pacchetto_avventura::Pacchetto_avventura(string codice, string dest, int giorni,
                                          Categoria_adrenalina categoria, bool assicurazione)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
       attivita(lista_attivita),
-      assicurazione_extra(assicurazione),
-      categoria_adrenalina(categoria)
+      categoria_adrenalina(categoria),
+      assicurazione_extra(assicurazione)
 {
-    // Chiamiamo la validazione. Se fallisce, il costruttore si interrompe e lancia eccezione.
     valida_dati();
-
     cout << "Costruito Pacchetto Avventura: " << codice << endl;
 }
 
@@ -47,11 +49,8 @@ shared_ptr<Pacchetto_avventura> Pacchetto_avventura::crea_pacchetto(string codic
                                                                     const vector<string>& lista_attivita, 
                                                                     Categoria_adrenalina categoria, bool assicurazione) {
     try {
-        // Proviamo a creare l'oggetto, e usiamo 'new' perché il costruttore è privato
         return shared_ptr<Pacchetto_avventura>(new Pacchetto_avventura(codice, dest, giorni, prezzo, lista_attivita, categoria, assicurazione));
-        
     } catch (const runtime_error& e) {
-        // Gestione dell'errore centralizzata: stampa e ritorna nullptr
         cerr << "Errore creazione Pacchetto Avventura (" << codice << "): " << e.what() << endl;
         return nullptr;
     }
@@ -61,7 +60,7 @@ shared_ptr<Pacchetto_avventura> Pacchetto_avventura::crea_pacchetto(string codic
 double Pacchetto_avventura::calcola_prezzo_finale() const {
     double prezzo_totale = get_prezzo_base();
 
-    // attivita.size() * 80€ (costo per attività)
+    // Costo per attività: 80€
     double costo_attivita = attivita.size() * 80.0;
     prezzo_totale += costo_attivita;
 
@@ -80,7 +79,7 @@ double Pacchetto_avventura::calcola_prezzo_finale() const {
             break;
     }
 
-    // Se assicurazioneExtra: +100€ (sommato alla fine)
+    // Se assicurazione_extra: +100€
     if (assicurazione_extra) {
         prezzo_totale += 100.0;
     }
@@ -91,19 +90,15 @@ double Pacchetto_avventura::calcola_prezzo_finale() const {
 // Override di stampa dettagli
 string Pacchetto_avventura::stampa_dettagli() const {
     stringstream ss;
-
     ss << "--- Pacchetto Vacanze Avventura ---" << endl;
-    ss << "Codice: " << get_codice_pacchetto() << endl;
+    ss << "Codice: " << get_codice() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
-
-    // Dettagli specifici
-    ss << "Livello Adrenalina: " << categoria_to_string(categoria_adrenalina) << endl;
-    ss << "Assicurazione Extra: " << (assicurazione_extra ? "Sì" : "No") << endl;
+    ss << "Livello Adrenalina: " << Utils_enum::etos(categoria_adrenalina) << endl;
+    ss << "Assicurazione Extra: " << (assicurazione_extra ? "Si" : "No") << endl;
     
-    // Stampa attività
-    ss << "Attività incluse (" << attivita.size() << "): ";
+    ss << "Attivita' incluse (" << attivita.size() << "): ";
     if (attivita.empty()) {
         ss << "Nessuna";
     } else {
@@ -139,24 +134,20 @@ Categoria_adrenalina Pacchetto_avventura::get_categoria_adrenalina() const {
     return this->categoria_adrenalina;
 }
 
-// Metodi statici di conversione usando i template
-string Pacchetto_avventura::categoria_to_string(Categoria_adrenalina cat) {
-    return Utils_enum::to_string(cat);
-}
-
-Categoria_adrenalina Pacchetto_avventura::string_to_categoria(string cat) {
-    return Utils_enum::from_string<Categoria_adrenalina>(cat);
-}
-
 // Override del metodo di salvataggio su file
-bool salva_dati_su_file(ofstream& file) const {
-    this->salva_dati_su_file();
-    file << etos(this->categoria_adrenalina) << ";"
+bool Pacchetto_avventura::salva_dati_su_file(ofstream& file) const {
+    // Chiama il metodo della classe base per salvare i campi comuni
+    Pacchetto_viaggio::salva_dati_su_file(file);
+    
+    // Salva i campi specifici
+    file << Utils_enum::etos(this->categoria_adrenalina) << ";"
          << (this->assicurazione_extra ? "Con Assicurazione" : "Senza Assicurazione") << ";";
-    for (const auto& attivita : this->attivita) {
-        file << attivita << ";";
+    
+    for (const auto& att : this->attivita) {
+        file << att << ";";
     }
     file << endl;
-    cout << "Pacchetto Avventura " << this->codice << " salvato correttamente." << endl;
+    
+     cout << "Pacchetto Avventura " << this->get_codice() << " salvato correttamente." << endl;
     return true;
 }
