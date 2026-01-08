@@ -35,14 +35,12 @@ private:
     std::vector<std::shared_ptr<Cliente>> clienti;
     std::vector<std::shared_ptr<Prenotazione>> prenotazioni;
 
-    // Mappa per il factory: aggiornata per ritornare bool e gestire i tipi corretti
+    // Mappa per il factory
     map<string, function<bool(string&, string&, int&, bool&, double&, const vector<string>&, int&)>> mappa_caricamento_specifico;
-
-    // I contatori per generare codici univoci sono statici e definiti nelle rispettive classi (Getter usati nel .cpp)
 
     // === METODI HELPER PRIVATI (Input e Utility) ===
     
-    // Helper statici (non modificano lo stato della classe)
+    // Helper statici (non modificano lo stato dell'oggetto)
     static vector<string> split(const string& s, char delimiter);
     static Esito_input_SN analizza_input_sn(const string& input);
     static bool valida_inserimento_sn(string& stringa_s_n, bool& flag_da_aggiornare);
