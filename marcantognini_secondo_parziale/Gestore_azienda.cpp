@@ -15,7 +15,6 @@ using namespace std;
 using namespace magic_enum;
 
 // === IMPLEMENTAZIONE METODI HELPER PRIVATI (STATIC) ===
-
 // Helper per split stringa
 vector<string> Gestore_azienda::split(const string& s, char delimiter) {
     vector<string> tokens;
@@ -35,8 +34,7 @@ Esito_input_SN Gestore_azienda::analizza_input_sn(const string& input) {
     if (c == 'n') return NO;
 
     cerr << "Valore inserito non valido: puoi inserire solo 'S' o 'N'." << endl;
-
-    // Reinserimento?
+    // Reinserimento
     int scelta = menu::menu_reinserimento();
     if(scelta == 1) return RIPROVA;
     else return ANNULLA;
@@ -138,7 +136,16 @@ bool Gestore_azienda::inizializza_mappa() {
         // Lambda per caricamento Montagna
         mappa_caricamento_specifico["Turismo Montano"] = [this](string& codice, string& dest, int& giorni, bool& disp, double& prezzo, const vector<string>& campi, int& riga) -> bool {
             bool skip = (campi[6] == "Con Skipass");
-            int esc = stoi(campi[7]);
+            int esc = 0;
+            
+            try{
+                int esc = stoi(campi[7]);  // Prova a convertire a intero
+            }
+            catch(const std::exception& e){
+                cerr << "Errore riga " << riga << ": Il campo 'escursioni' (" << campi[7] << ") non e' valido (" << e.what() << ")."<< endl;
+                return false;
+            }
+            
             auto diff_opt = Utils_enum::stoe<Categoria_difficolta>(campi[8], ++riga);
             if (!diff_opt) return false; // Controllo errori
 
@@ -154,13 +161,14 @@ bool Gestore_azienda::inizializza_mappa() {
         mappa_caricamento_specifico["Citta' d'Arte"] = [this](string& codice, string& dest, int& giorni, bool& disp, double& prezzo, const vector<string>& campi, int& riga) -> bool {
             int musei = 0;
             try {
-                musei = stoi(campi[6]); // Leggiamo il numero musei dalla posizione 6
-            } catch (...) { 
-                cerr << "Errore conversione musei riga " << riga << endl;
+                musei = stoi(campi[6]); // Prova a convertire a intero
+            } 
+            catch (const std::exception& e) { 
+                cerr << "Errore riga " << riga << ": Il campo 'musei' (" << campi[6] << ") non e' valido (" << e.what() << ")." << endl;
                 return false; 
             }
 
-            bool guida = (campi[7] == "Con Guida"); // Leggiamo la guida dalla posizione 7
+            bool guida = (campi[7] == "Con Guida");
             
             auto hotel_opt = Utils_enum::stoe<Categoria_hotel>(campi[8], ++riga);
             if (!hotel_opt) return false; 
@@ -466,7 +474,6 @@ bool Gestore_azienda::carica_prenotazioni(ifstream& file) {
         try { numero_persone = stoi(campi[3]); } catch(...) { continue; }
         string data_prenotazione = campi[4];
         bool confermata = (campi[5] == "Confermata");
-        // double prezzo_totale = stod(campi[6]); // Non usato, si ricalcola
 
         auto cliente = cerca_cliente(codice_cliente);
         auto pacchetto = cerca_pacchetto(codice_pacchetto);
@@ -776,15 +783,14 @@ bool Gestore_azienda::sincronizza_statistiche() {
             double costo = prenot->get_prezzo_totale();
             string codice_cli = prenot->get_cliente()->get_codice();
 
-            // Chiama il metodo statico di aggiornamento (che ora ritorna bool)
+            // Chiama il metodo statico di aggiornamento
             if (!Prenotazione::aggiorna_statistiche_da_load(dest, pacc, costo, codice_cli)) {
                 stato_aggiornamento = false;
             }
         }
     }
 
-
-    // 4. Aggiorna i contatori totali delle altre classi
+    // Aggiorna i contatori totali delle altre classi
     if (!Prenotazione::set_prenotazioni_create(this->prenotazioni.size())) {
         stato_aggiornamento = false;
     }
