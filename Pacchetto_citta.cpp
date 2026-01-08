@@ -1,10 +1,12 @@
 #include "Pacchetto_citta.h"
+#include "magic_enum.hpp"
 #include "Utils_enum.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 
 using namespace std;
+using namespace magic_enum;
 
 // Metodo Privato di Validazione
 bool Pacchetto_citta::valida_dati() const {
@@ -26,7 +28,7 @@ bool Pacchetto_citta::valida_dati() const {
     return true;
 }
 
-// --- Costruttore Privato ---
+// Costruttore Privato
 Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double prezzo,
                                  int num_musei, bool guida, Categoria_hotel hotel)
     : Pacchetto_viaggio(codice, dest, giorni, prezzo),
@@ -37,7 +39,7 @@ Pacchetto_citta::Pacchetto_citta(string codice, string dest, int giorni, double 
     // Chiamiamo la validazione
     valida_dati();
     
-    cout << "Costruito Pacchetto Città: " << codice << endl;
+    cout << "Costruito Pacchetto Citta': " << codice << endl;
 }
 
 // Factory Method Statico
@@ -49,7 +51,7 @@ shared_ptr<Pacchetto_citta> Pacchetto_citta::crea_pacchetto(string codice, strin
 
     } catch (const runtime_error& e) {
         // Gestione errore
-        cerr << "Errore creazione Pacchetto Città (" << codice << "): " << e.what() << endl;
+        cerr << "Errore creazione Pacchetto Citta' (" << codice << "): " << e.what() << endl;
         return nullptr;
     }
 }
@@ -82,21 +84,15 @@ double Pacchetto_citta::calcola_prezzo_finale() const{
 
 // Override di stampa dettagli
 string Pacchetto_citta::stampa_dettagli() const{
-    stringstream ss; // uso stringstream ss per incollare insieme stringhe e numeri in stringhe, altrimenti si concatenano con to_string
-    
-    ss << "--- Pacchetto Città d'Arte ---" << endl;
-    ss << "Codice: " << get_codice_pacchetto() << endl;
+    stringstream ss;
+    ss << "--- Pacchetto Citta' d'Arte ---" << endl;
+    ss << "Codice: " << get_codice() << endl;
     ss << "Destinazione: " << get_destinazione() << endl;
     ss << "Durata: " << get_durata_giorni() << " giorni" << endl;
     ss << "Prezzo Base: " << get_prezzo_base() << " EUR" << endl;
-    
-    // Dettagli specifici della classe derivata
     ss << "Numero Musei: " << numero_musei << endl;
-    // Operatore ternario per stampare Sì/No invece di 1/0
-    ss << "Guida Turistica: " << (guida_turistica ? "Sì" : "No") << endl; 
-    // Usiamo il metodo statico per stampare la stringa dell'enum
-    ss << "Categoria Hotel: " << categoria_to_string(categoria_hotel) << endl;
-    
+    ss << "Guida Turistica: " << (guida_turistica ? "Si" : "No") << endl; 
+    ss << "Categoria Hotel: " << Utils_enum::etos(categoria_hotel) << endl;
     ss << "Prezzo Finale: " << calcola_prezzo_finale() << " EUR" << endl;
 
     return ss.str();
@@ -104,7 +100,7 @@ string Pacchetto_citta::stampa_dettagli() const{
 
 // Override del metodo get_tipologia
 string Pacchetto_citta::get_tipologia() const {
-    return "Città d'Arte";
+    return "Citta' d'Arte";
 }
 
 // getter
@@ -120,21 +116,16 @@ Categoria_hotel Pacchetto_citta::get_categoria_hotel() const {
     return this->categoria_hotel;
 }
 
-// Metodi statici di conversione usando i template
-string Pacchetto_citta::categoria_to_string(Categoria_hotel cat) {
-    return Utils_enum::to_string(cat);
-}
-
-Categoria_hotel Pacchetto_citta::string_to_categoria(string cat) {
-    return Utils_enum::from_string<Categoria_hotel>(cat);
-}
-
 // Override del metodo di salvataggio su file
-bool salva_dati_su_file(ofstream& file) const {
-    this->salva_dati_su_file();
-    file << (this->guida_turistica ? "Con Guida" : "Senza Guida") << ";"
-         << this->numero_musei << ";";
-         << etos(this->categoria_hotel) << endl;
-    cout << "Pacchetto Città " << this->codice << " salvato correttamente." << endl;
+bool Pacchetto_citta::salva_dati_su_file(ofstream& file) const {
+    // Chiama il base
+    Pacchetto_viaggio::salva_dati_su_file(file);
+    
+    // Salva i campi specifici
+    file << this->numero_musei << ";"
+         << (this->guida_turistica ? "Con Guida" : "Senza Guida") << ";"
+         << Utils_enum::etos(this->categoria_hotel) << endl;
+         
+    cout << "Pacchetto Citta' " << this->get_codice() << " salvato correttamente." << endl;
     return true;
 }
