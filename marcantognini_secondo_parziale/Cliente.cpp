@@ -50,12 +50,12 @@ bool Cliente::valida_dati() const {
     // 5. Lambda per Età
     auto check_eta = [](int n) {
         if (n <= 0) throw runtime_error("L'età deve essere un numero positivo.");
-        if (n > 130) throw runtime_error("Età non valida (troppo alta).");
+        if (n > 120) throw runtime_error("Età non valida (troppo alta).");
     };
 
     // 6. Lambda per Tipologia
     auto check_tipo = [](Tipologia_cliente t) {
-        if (t == Tipologia_cliente::Unknown) // Assumendo che esista Unknown nell'enum
+        if (t == Tipologia_cliente::Unknown)
             throw runtime_error("Tipologia cliente non valida.");
     };
 
@@ -98,7 +98,7 @@ shared_ptr<Cliente> Cliente::crea_cliente(string codice, string nome, string cog
         // Tenta di creare l'oggetto. Se le lambda nel costruttore lanciano eccezione, andiamo al catch.
         return shared_ptr<Cliente>(new Cliente(codice, nome, cognome, email, tel, eta, tipo));
     } catch (const runtime_error& e) {
-        // Gestione uniforme dell'errore (cerr + return nullptr)
+        // Gestione uniforme dell'errore
         cerr << "Errore creazione Cliente (" << nome << " " << cognome << "): " << e.what() << endl;
         return nullptr;
     }
@@ -153,7 +153,6 @@ string Cliente::stampa_dettagli() const {
     ss << "Cliente: " << get_nome_completo() << " (" << this->codice_cliente << ")" << endl;
     ss << "Email: " << this->email << " | Tel: " << this->telefono << endl;
     ss << "Età: " << this->eta << endl;
-    // Usa magic_enum per stampare il nome dell'enum
     ss << "Tipologia: " << Utils_enum::etos(this->tipologia); 
     return ss.str();
 }
@@ -170,7 +169,7 @@ bool Cliente::salva_dati_su_file(ofstream& file) const {
     if (!file.is_open()) return false;
   
     file << this->codice_cliente << ";"
-         << this->nome << " " << this->cognome << ";" // Campo 1 unito da spazio per compatibilità con tuo parser
+         << this->nome << " " << this->cognome << ";"
          << this->email << ";"
          << this->telefono << ";"
          << this->eta << ";"
